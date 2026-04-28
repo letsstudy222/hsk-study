@@ -7,43 +7,63 @@
 <title>HSK 学习 - Học tiếng Trung</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Cormorant+Garamond:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 <style>
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
   html, body { margin: 0; padding: 0; }
   body {
-    font-family: 'Manrope', system-ui, -apple-system, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Nunito', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
+    letter-spacing: 0.01em;
   }
-  /* Loading screen */
+  /* Loading screen - pastel blue */
   .loading-screen {
     position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
-    flex-direction: column; gap: 20px;
-    background: #faf6ef; z-index: 9999;
-    font-family: 'Noto Serif SC', serif;
+    flex-direction: column; gap: 24px;
+    background: #f0f7ff; z-index: 9999;
+    font-family: 'Noto Sans SC', sans-serif;
+    background-image: radial-gradient(circle at 30% 30%, rgba(168, 200, 232, 0.3) 0%, transparent 50%), radial-gradient(circle at 70% 70%, rgba(126, 180, 220, 0.2) 0%, transparent 50%);
   }
   .loading-char {
-    font-size: 80px; color: #c41e3a; font-weight: 700;
-    animation: pulse 1.5s ease-in-out infinite;
+    font-size: 88px; color: #5b9bd5; font-weight: 500;
+    animation: pulse 1.8s ease-in-out infinite;
+    text-shadow: 0 4px 24px rgba(91, 155, 213, 0.2);
   }
   .loading-text {
-    font-size: 14px; color: #7a6f60; letter-spacing: 0.3em;
+    font-size: 13px; color: #6b8caf; letter-spacing: 0.4em; font-family: 'Quicksand', sans-serif; font-weight: 500;
   }
+  .loading-dots {
+    display: flex; gap: 8px; margin-top: 8px;
+  }
+  .loading-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: #a8c8e8;
+    animation: bounce 1.4s ease-in-out infinite;
+  }
+  .loading-dot:nth-child(1) { animation-delay: 0s; }
+  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
   @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(1.05); }
+    50% { opacity: 0.7; transform: scale(1.06); }
+  }
+  @keyframes bounce {
+    0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+    40% { transform: translateY(-12px); opacity: 1; }
   }
 </style>
 </head>
 <body>
 <div id="loading" class="loading-screen">
   <div class="loading-char">学</div>
-  <div class="loading-text">ĐANG TẢI...</div>
+  <div class="loading-text">ĐANG TẢI</div>
+  <div class="loading-dots">
+    <div class="loading-dot"></div>
+    <div class="loading-dot"></div>
+    <div class="loading-dot"></div>
+  </div>
 </div>
 <div id="root"></div>
 
@@ -503,79 +523,296 @@ const grammar = {
   hsk1: [
     {
       id: "g1-1",
-      title: "Câu khẳng định cơ bản với 是 (shì)",
+      title: "Câu khẳng định với 是 (shì) - Là",
       structure: "A + 是 + B",
-      explanation: "Dùng để khẳng định 'A là B'. 是 (shì) có nghĩa là 'là'.",
+      explanation: "Đây là cấu trúc câu cơ bản nhất trong tiếng Trung. 是 (shì) tương đương 'là' trong tiếng Việt, dùng để khẳng định 'A là B'. 是 không thay đổi theo ngôi như tiếng Anh (am/is/are).",
       examples: [
         { hanzi: "我是学生。", pinyin: "Wǒ shì xuésheng.", meaning: "Tôi là học sinh." },
         { hanzi: "他是老师。", pinyin: "Tā shì lǎoshī.", meaning: "Anh ấy là giáo viên." },
-        { hanzi: "这是书。", pinyin: "Zhè shì shū.", meaning: "Đây là sách." }
+        { hanzi: "这是书。", pinyin: "Zhè shì shū.", meaning: "Đây là sách." },
+        { hanzi: "她是我的朋友。", pinyin: "Tā shì wǒ de péngyou.", meaning: "Cô ấy là bạn của tôi." }
       ]
     },
     {
       id: "g1-2",
-      title: "Câu phủ định với 不 (bù)",
+      title: "Câu phủ định với 不 (bù) - Không",
       structure: "Chủ ngữ + 不 + Động từ/Tính từ",
-      explanation: "不 (bù) đặt trước động từ hoặc tính từ để phủ định. Lưu ý: 不 đổi thành thanh 2 (bú) khi đứng trước thanh 4.",
+      explanation: "不 (bù) được đặt trước động từ hoặc tính từ để phủ định. Quy tắc biến điệu quan trọng: khi 不 đứng trước thanh 4, nó đọc thành thanh 2 (bú). Ví dụ: 不去 đọc là 'bú qù', 不是 đọc là 'bú shì'.",
       examples: [
         { hanzi: "我不去。", pinyin: "Wǒ bú qù.", meaning: "Tôi không đi." },
         { hanzi: "他不是中国人。", pinyin: "Tā bú shì Zhōngguó rén.", meaning: "Anh ấy không phải người Trung Quốc." },
-        { hanzi: "今天不冷。", pinyin: "Jīntiān bù lěng.", meaning: "Hôm nay không lạnh." }
+        { hanzi: "今天不冷。", pinyin: "Jīntiān bù lěng.", meaning: "Hôm nay không lạnh." },
+        { hanzi: "我不喜欢咖啡。", pinyin: "Wǒ bù xǐhuan kāfēi.", meaning: "Tôi không thích cà phê." }
       ]
     },
     {
       id: "g1-3",
-      title: "Câu nghi vấn với 吗 (ma)",
+      title: "Câu hỏi Yes/No với 吗 (ma)",
       structure: "Câu khẳng định + 吗?",
-      explanation: "Thêm 吗 (ma) vào cuối câu khẳng định để tạo câu hỏi Có/Không.",
+      explanation: "Cách tạo câu hỏi đơn giản nhất: chỉ cần thêm 吗 (ma) vào cuối câu khẳng định. Câu trả lời thường dùng động từ chính (有/没有, 是/不是, 喜欢/不喜欢).",
       examples: [
         { hanzi: "你好吗?", pinyin: "Nǐ hǎo ma?", meaning: "Bạn khỏe không?" },
         { hanzi: "你是学生吗?", pinyin: "Nǐ shì xuésheng ma?", meaning: "Bạn có phải là học sinh không?" },
-        { hanzi: "他来吗?", pinyin: "Tā lái ma?", meaning: "Anh ấy có đến không?" }
+        { hanzi: "他来吗?", pinyin: "Tā lái ma?", meaning: "Anh ấy có đến không?" },
+        { hanzi: "你喜欢中国菜吗?", pinyin: "Nǐ xǐhuan Zhōngguó cài ma?", meaning: "Bạn có thích món Trung Quốc không?" }
       ]
     },
     {
       id: "g1-4",
-      title: "Đại từ nghi vấn 什么 (shénme)",
+      title: "Đại từ nghi vấn 什么 (shénme) - Cái gì",
       structure: "什么 + Danh từ / Động từ + 什么",
-      explanation: "什么 (shénme) có nghĩa là 'gì, cái gì', dùng để hỏi về vật.",
+      explanation: "什么 (shénme) dùng để hỏi về vật, sự việc, có nghĩa là 'gì, cái gì'. Lưu ý: vị trí của 什么 trong câu hỏi tiếng Trung ở chỗ thông tin cần hỏi (giống như vị trí của câu trả lời).",
       examples: [
         { hanzi: "这是什么?", pinyin: "Zhè shì shénme?", meaning: "Đây là cái gì?" },
         { hanzi: "你叫什么名字?", pinyin: "Nǐ jiào shénme míngzi?", meaning: "Bạn tên là gì?" },
-        { hanzi: "你吃什么?", pinyin: "Nǐ chī shénme?", meaning: "Bạn ăn gì?" }
+        { hanzi: "你吃什么?", pinyin: "Nǐ chī shénme?", meaning: "Bạn ăn gì?" },
+        { hanzi: "你做什么工作?", pinyin: "Nǐ zuò shénme gōngzuò?", meaning: "Bạn làm công việc gì?" }
       ]
     },
     {
       id: "g1-5",
-      title: "Cấu trúc sở hữu với 的 (de)",
-      structure: "A + 的 + B",
-      explanation: "的 (de) dùng để biểu thị quan hệ sở hữu, có nghĩa là 'của'. A là chủ sở hữu, B là vật được sở hữu.",
+      title: "Đại từ nghi vấn 谁 (shéi) - Ai",
+      structure: "谁 + Động từ / Động từ + 谁 / 是 + 谁",
+      explanation: "谁 (shéi) dùng để hỏi về người. Vị trí của 谁 trong câu cũng giống như vị trí của câu trả lời.",
       examples: [
-        { hanzi: "我的书", pinyin: "wǒ de shū", meaning: "sách của tôi" },
-        { hanzi: "老师的电脑", pinyin: "lǎoshī de diànnǎo", meaning: "máy tính của giáo viên" },
-        { hanzi: "他的朋友", pinyin: "tā de péngyou", meaning: "bạn của anh ấy" }
+        { hanzi: "他是谁?", pinyin: "Tā shì shéi?", meaning: "Anh ấy là ai?" },
+        { hanzi: "谁是你的老师?", pinyin: "Shéi shì nǐ de lǎoshī?", meaning: "Ai là giáo viên của bạn?" },
+        { hanzi: "你找谁?", pinyin: "Nǐ zhǎo shéi?", meaning: "Bạn tìm ai?" }
       ]
     },
     {
       id: "g1-6",
-      title: "Phó từ 很 (hěn) với tính từ",
-      structure: "Chủ ngữ + 很 + Tính từ",
-      explanation: "很 (hěn) thường đứng trước tính từ. Trong tiếng Trung, tính từ có thể trực tiếp làm vị ngữ mà không cần 是.",
+      title: "Đại từ nghi vấn 哪 (nǎ) và 哪儿 (nǎr)",
+      structure: "哪 + Lượng từ + Danh từ / Động từ + 哪儿",
+      explanation: "哪 (nǎ) hỏi về 'cái nào' trong nhiều lựa chọn, thường đi kèm lượng từ. 哪儿 (nǎr) hoặc 哪里 (nǎlǐ) hỏi về 'ở đâu'.",
       examples: [
-        { hanzi: "我很好。", pinyin: "Wǒ hěn hǎo.", meaning: "Tôi rất khỏe." },
-        { hanzi: "今天很热。", pinyin: "Jīntiān hěn rè.", meaning: "Hôm nay rất nóng." },
-        { hanzi: "汉语很难。", pinyin: "Hànyǔ hěn nán.", meaning: "Tiếng Trung rất khó." }
+        { hanzi: "你是哪国人?", pinyin: "Nǐ shì nǎ guó rén?", meaning: "Bạn là người nước nào?" },
+        { hanzi: "你在哪儿?", pinyin: "Nǐ zài nǎr?", meaning: "Bạn ở đâu?" },
+        { hanzi: "她去哪儿?", pinyin: "Tā qù nǎr?", meaning: "Cô ấy đi đâu?" },
+        { hanzi: "哪个是你的?", pinyin: "Nǎ ge shì nǐ de?", meaning: "Cái nào là của bạn?" }
       ]
     },
     {
       id: "g1-7",
+      title: "Cấu trúc sở hữu với 的 (de)",
+      structure: "A + 的 + B = B của A",
+      explanation: "的 (de) biểu thị quan hệ sở hữu, có nghĩa là 'của'. A là chủ sở hữu, B là vật/người được sở hữu. Lưu ý: với người thân và mối quan hệ thân mật, có thể bỏ 的 (我妈妈, 我朋友).",
+      examples: [
+        { hanzi: "我的书", pinyin: "wǒ de shū", meaning: "sách của tôi" },
+        { hanzi: "老师的电脑", pinyin: "lǎoshī de diànnǎo", meaning: "máy tính của giáo viên" },
+        { hanzi: "他的朋友", pinyin: "tā de péngyou", meaning: "bạn của anh ấy" },
+        { hanzi: "我妈妈 (= 我的妈妈)", pinyin: "wǒ māma", meaning: "mẹ tôi (có thể bỏ 的)" }
+      ]
+    },
+    {
+      id: "g1-8",
+      title: "Phó từ 很 (hěn) với tính từ",
+      structure: "Chủ ngữ + 很 + Tính từ",
+      explanation: "Trong tiếng Trung, tính từ trực tiếp làm vị ngữ mà KHÔNG cần 是. Phó từ 很 (rất) thường được dùng để cân bằng câu, kể cả khi không thực sự muốn nhấn mạnh 'rất'. Không có 很, câu có thể mang ý so sánh.",
+      examples: [
+        { hanzi: "我很好。", pinyin: "Wǒ hěn hǎo.", meaning: "Tôi (rất) khỏe." },
+        { hanzi: "今天很热。", pinyin: "Jīntiān hěn rè.", meaning: "Hôm nay (rất) nóng." },
+        { hanzi: "汉语很难。", pinyin: "Hànyǔ hěn nán.", meaning: "Tiếng Trung (rất) khó." },
+        { hanzi: "她很漂亮。", pinyin: "Tā hěn piàoliang.", meaning: "Cô ấy (rất) đẹp." }
+      ]
+    },
+    {
+      id: "g1-9",
       title: "Số từ + Lượng từ + Danh từ",
       structure: "Số từ + Lượng từ + Danh từ",
-      explanation: "Khi đếm danh từ trong tiếng Trung, phải có lượng từ giữa số từ và danh từ. 个 (gè) là lượng từ phổ biến nhất.",
+      explanation: "Khi đếm danh từ trong tiếng Trung, BẮT BUỘC phải có lượng từ giữa số và danh từ. Mỗi loại danh từ có lượng từ riêng. 个 (gè) là lượng từ phổ biến và đa năng nhất.",
       examples: [
         { hanzi: "一个人", pinyin: "yí ge rén", meaning: "một người" },
         { hanzi: "两本书", pinyin: "liǎng běn shū", meaning: "hai quyển sách" },
-        { hanzi: "三杯茶", pinyin: "sān bēi chá", meaning: "ba cốc trà" }
+        { hanzi: "三杯茶", pinyin: "sān bēi chá", meaning: "ba cốc trà" },
+        { hanzi: "五块钱", pinyin: "wǔ kuài qián", meaning: "năm đồng tiền" }
+      ]
+    },
+    {
+      id: "g1-10",
+      title: "二 (èr) và 两 (liǎng) - Cả hai đều là 'hai'",
+      structure: "二 dùng để đếm số / 两 dùng trước lượng từ",
+      explanation: "Đây là điểm dễ nhầm cho người mới học. 二 (èr) dùng cho số học và số thứ tự (số hai, tháng hai). 两 (liǎng) dùng khi đếm vật cụ thể với lượng từ (hai cái, hai người).",
+      examples: [
+        { hanzi: "二月", pinyin: "èr yuè", meaning: "tháng hai (số thứ tự)" },
+        { hanzi: "两个人", pinyin: "liǎng ge rén", meaning: "hai người (đếm)" },
+        { hanzi: "二十", pinyin: "èr shí", meaning: "hai mươi (số đếm)" },
+        { hanzi: "两本书", pinyin: "liǎng běn shū", meaning: "hai quyển sách (đếm)" }
+      ]
+    },
+    {
+      id: "g1-11",
+      title: "Câu với 有 (yǒu) - Có",
+      structure: "Khẳng định: A + 有 + B / Phủ định: A + 没有 + B",
+      explanation: "有 (yǒu) có nghĩa là 'có' (sở hữu hoặc tồn tại). Phủ định CHỈ dùng 没有 (méiyǒu), KHÔNG dùng 不有.",
+      examples: [
+        { hanzi: "我有一个弟弟。", pinyin: "Wǒ yǒu yí ge dìdi.", meaning: "Tôi có một em trai." },
+        { hanzi: "我没有钱。", pinyin: "Wǒ méiyǒu qián.", meaning: "Tôi không có tiền." },
+        { hanzi: "你有时间吗?", pinyin: "Nǐ yǒu shíjiān ma?", meaning: "Bạn có thời gian không?" },
+        { hanzi: "桌子上有书。", pinyin: "Zhuōzi shàng yǒu shū.", meaning: "Trên bàn có sách." }
+      ]
+    },
+    {
+      id: "g1-12",
+      title: "Câu với 在 (zài) - Ở, đang ở",
+      structure: "Chủ ngữ + 在 + Địa điểm",
+      explanation: "在 (zài) chỉ vị trí, có nghĩa 'ở đâu đó'. Đây là động từ, không phải giới từ trong cấu trúc này.",
+      examples: [
+        { hanzi: "我在家。", pinyin: "Wǒ zài jiā.", meaning: "Tôi ở nhà." },
+        { hanzi: "她在学校。", pinyin: "Tā zài xuéxiào.", meaning: "Cô ấy ở trường." },
+        { hanzi: "书在桌子上。", pinyin: "Shū zài zhuōzi shàng.", meaning: "Sách ở trên bàn." },
+        { hanzi: "你在哪儿?", pinyin: "Nǐ zài nǎr?", meaning: "Bạn ở đâu?" }
+      ]
+    },
+    {
+      id: "g1-13",
+      title: "Hỏi tuổi với 几岁 và 多大",
+      structure: "Trẻ em: 几岁? / Người lớn: 多大?",
+      explanation: "Tiếng Trung phân biệt cách hỏi tuổi theo độ tuổi. 几岁 (jǐ suì) dùng cho trẻ em dưới 10 tuổi. 多大 (duō dà) dùng cho người lớn hoặc thanh thiếu niên. Với người cao tuổi, dùng 多大年纪 (duō dà niánjì) để lịch sự.",
+      examples: [
+        { hanzi: "你几岁?", pinyin: "Nǐ jǐ suì?", meaning: "Em mấy tuổi? (hỏi trẻ em)" },
+        { hanzi: "你多大?", pinyin: "Nǐ duō dà?", meaning: "Bạn bao nhiêu tuổi?" },
+        { hanzi: "我二十岁。", pinyin: "Wǒ èrshí suì.", meaning: "Tôi hai mươi tuổi." },
+        { hanzi: "我女儿五岁。", pinyin: "Wǒ nǚ'ér wǔ suì.", meaning: "Con gái tôi 5 tuổi." }
+      ]
+    },
+    {
+      id: "g1-14",
+      title: "Hỏi giờ với 几点 (jǐ diǎn)",
+      structure: "现在 + 几点? / Số + 点 + Số + 分",
+      explanation: "几点 (jǐ diǎn) dùng để hỏi mấy giờ. Trả lời: số + 点 (giờ) + số + 分 (phút). 半 (bàn) = ba mươi (rưỡi), 一刻 (yí kè) = mười lăm phút.",
+      examples: [
+        { hanzi: "现在几点?", pinyin: "Xiànzài jǐ diǎn?", meaning: "Bây giờ mấy giờ?" },
+        { hanzi: "现在三点。", pinyin: "Xiànzài sān diǎn.", meaning: "Bây giờ 3 giờ." },
+        { hanzi: "七点半", pinyin: "qī diǎn bàn", meaning: "7 giờ rưỡi (7:30)" },
+        { hanzi: "九点一刻", pinyin: "jiǔ diǎn yí kè", meaning: "9 giờ 15 phút" }
+      ]
+    },
+    {
+      id: "g1-15",
+      title: "Hỏi giá với 多少钱 (duōshao qián)",
+      structure: "Vật + 多少钱? / Số + 块/元",
+      explanation: "多少钱 (duōshao qián) hỏi 'bao nhiêu tiền'. Trong văn nói dùng 块 (kuài), văn viết dùng 元 (yuán). Cả hai cùng nghĩa.",
+      examples: [
+        { hanzi: "这个多少钱?", pinyin: "Zhège duōshao qián?", meaning: "Cái này bao nhiêu tiền?" },
+        { hanzi: "十块钱。", pinyin: "Shí kuài qián.", meaning: "Mười đồng." },
+        { hanzi: "一本书多少钱?", pinyin: "Yì běn shū duōshao qián?", meaning: "Một quyển sách bao nhiêu tiền?" }
+      ]
+    },
+    {
+      id: "g1-16",
+      title: "Hỏi ngày, thứ với 几月几号 và 星期几",
+      structure: "今天 + 几月几号? / 今天 + 星期几?",
+      explanation: "Cách hỏi ngày tháng và thứ trong tuần. Lưu ý thứ tự ngày tháng trong tiếng Trung: NĂM → THÁNG → NGÀY (ngược với tiếng Việt).",
+      examples: [
+        { hanzi: "今天几月几号?", pinyin: "Jīntiān jǐ yuè jǐ hào?", meaning: "Hôm nay là ngày mấy tháng mấy?" },
+        { hanzi: "今天五月十号。", pinyin: "Jīntiān wǔ yuè shí hào.", meaning: "Hôm nay là 10 tháng 5." },
+        { hanzi: "今天星期几?", pinyin: "Jīntiān xīngqī jǐ?", meaning: "Hôm nay là thứ mấy?" },
+        { hanzi: "今天星期一。", pinyin: "Jīntiān xīngqī yī.", meaning: "Hôm nay là thứ Hai." }
+      ]
+    },
+    {
+      id: "g1-17",
+      title: "Cấu trúc 喜欢 (xǐhuan) - Thích",
+      structure: "Chủ ngữ + 喜欢 + Danh từ / Động từ",
+      explanation: "喜欢 (xǐhuan) có thể đi với danh từ (thích vật) hoặc động từ (thích làm gì). Phủ định: 不喜欢.",
+      examples: [
+        { hanzi: "我喜欢咖啡。", pinyin: "Wǒ xǐhuan kāfēi.", meaning: "Tôi thích cà phê." },
+        { hanzi: "我喜欢看电影。", pinyin: "Wǒ xǐhuan kàn diànyǐng.", meaning: "Tôi thích xem phim." },
+        { hanzi: "他不喜欢我。", pinyin: "Tā bù xǐhuan wǒ.", meaning: "Anh ấy không thích tôi." },
+        { hanzi: "你喜欢什么?", pinyin: "Nǐ xǐhuan shénme?", meaning: "Bạn thích cái gì?" }
+      ]
+    },
+    {
+      id: "g1-18",
+      title: "Cấu trúc 想 (xiǎng) - Muốn",
+      structure: "Chủ ngữ + 想 + Động từ",
+      explanation: "想 (xiǎng) đứng trước động từ biểu thị mong muốn. Khác với 要 (yào) mang nghĩa quyết tâm hơn, 想 nhẹ nhàng hơn.",
+      examples: [
+        { hanzi: "我想喝水。", pinyin: "Wǒ xiǎng hē shuǐ.", meaning: "Tôi muốn uống nước." },
+        { hanzi: "我想去中国。", pinyin: "Wǒ xiǎng qù Zhōngguó.", meaning: "Tôi muốn đi Trung Quốc." },
+        { hanzi: "你想吃什么?", pinyin: "Nǐ xiǎng chī shénme?", meaning: "Bạn muốn ăn gì?" },
+        { hanzi: "我不想睡觉。", pinyin: "Wǒ bù xiǎng shuìjiào.", meaning: "Tôi không muốn ngủ." }
+      ]
+    },
+    {
+      id: "g1-19",
+      title: "Trợ động từ 会 (huì) - Biết (kỹ năng)",
+      structure: "Chủ ngữ + 会 + Động từ",
+      explanation: "会 (huì) chỉ kỹ năng/khả năng học được (nói, đọc, viết, lái xe...). Phủ định: 不会.",
+      examples: [
+        { hanzi: "我会说汉语。", pinyin: "Wǒ huì shuō Hànyǔ.", meaning: "Tôi biết nói tiếng Trung." },
+        { hanzi: "他会开车。", pinyin: "Tā huì kāi chē.", meaning: "Anh ấy biết lái xe." },
+        { hanzi: "我不会游泳。", pinyin: "Wǒ bú huì yóuyǒng.", meaning: "Tôi không biết bơi." },
+        { hanzi: "你会写汉字吗?", pinyin: "Nǐ huì xiě Hànzì ma?", meaning: "Bạn biết viết chữ Hán không?" }
+      ]
+    },
+    {
+      id: "g1-20",
+      title: "Trợ động từ 能 (néng) - Có thể",
+      structure: "Chủ ngữ + 能 + Động từ",
+      explanation: "能 (néng) chỉ khả năng hoặc điều kiện cho phép thực hiện hành động. Khác 会 (kỹ năng học được), 能 chỉ tình huống có thể làm hay không.",
+      examples: [
+        { hanzi: "我能去。", pinyin: "Wǒ néng qù.", meaning: "Tôi có thể đi." },
+        { hanzi: "你能帮我吗?", pinyin: "Nǐ néng bāng wǒ ma?", meaning: "Bạn có thể giúp tôi không?" },
+        { hanzi: "我不能喝酒。", pinyin: "Wǒ bù néng hē jiǔ.", meaning: "Tôi không thể uống rượu." }
+      ]
+    },
+    {
+      id: "g1-21",
+      title: "Câu mệnh lệnh và đề nghị với 请 (qǐng)",
+      structure: "请 + Động từ + ...",
+      explanation: "请 (qǐng) là cách lịch sự để mời, yêu cầu hoặc đề nghị, tương đương 'please' tiếng Anh.",
+      examples: [
+        { hanzi: "请坐。", pinyin: "Qǐng zuò.", meaning: "Mời ngồi." },
+        { hanzi: "请喝茶。", pinyin: "Qǐng hē chá.", meaning: "Mời uống trà." },
+        { hanzi: "请问,你叫什么名字?", pinyin: "Qǐngwèn, nǐ jiào shénme míngzi?", meaning: "Xin hỏi, bạn tên là gì?" }
+      ]
+    },
+    {
+      id: "g1-22",
+      title: "Cấu trúc 也 (yě) - Cũng",
+      structure: "Chủ ngữ + 也 + Động từ/Tính từ",
+      explanation: "也 (yě) có nghĩa 'cũng', đặt giữa chủ ngữ và động từ/tính từ.",
+      examples: [
+        { hanzi: "我也是学生。", pinyin: "Wǒ yě shì xuésheng.", meaning: "Tôi cũng là học sinh." },
+        { hanzi: "他也喜欢咖啡。", pinyin: "Tā yě xǐhuan kāfēi.", meaning: "Anh ấy cũng thích cà phê." },
+        { hanzi: "我也不知道。", pinyin: "Wǒ yě bù zhīdào.", meaning: "Tôi cũng không biết." }
+      ]
+    },
+    {
+      id: "g1-23",
+      title: "Cấu trúc 都 (dōu) - Đều, tất cả",
+      structure: "Chủ ngữ (số nhiều) + 都 + Động từ/Tính từ",
+      explanation: "都 (dōu) có nghĩa 'đều, tất cả', đặt SAU chủ ngữ và TRƯỚC động từ. Dùng khi chủ ngữ là số nhiều.",
+      examples: [
+        { hanzi: "我们都是学生。", pinyin: "Wǒmen dōu shì xuésheng.", meaning: "Chúng tôi đều là học sinh." },
+        { hanzi: "他们都喜欢中国菜。", pinyin: "Tāmen dōu xǐhuan Zhōngguó cài.", meaning: "Họ đều thích món Trung Quốc." },
+        { hanzi: "我们都不知道。", pinyin: "Wǒmen dōu bù zhīdào.", meaning: "Chúng tôi đều không biết." }
+      ]
+    },
+    {
+      id: "g1-24",
+      title: "Phó từ 太...了 (tài...le) - Quá...",
+      structure: "太 + Tính từ + 了",
+      explanation: "Cấu trúc 太...了 biểu thị mức độ cao, có thể mang ý khen ngợi tích cực hoặc phàn nàn tiêu cực tùy ngữ cảnh.",
+      examples: [
+        { hanzi: "太好了!", pinyin: "Tài hǎo le!", meaning: "Tuyệt quá!" },
+        { hanzi: "太贵了!", pinyin: "Tài guì le!", meaning: "Đắt quá!" },
+        { hanzi: "太累了。", pinyin: "Tài lèi le.", meaning: "Mệt quá." },
+        { hanzi: "今天太冷了。", pinyin: "Jīntiān tài lěng le.", meaning: "Hôm nay lạnh quá." }
+      ]
+    },
+    {
+      id: "g1-25",
+      title: "Trợ từ thì 了 (le) cuối câu - Thay đổi tình huống",
+      structure: "Câu + 了",
+      explanation: "了 đặt CUỐI CÂU biểu thị thay đổi trạng thái hoặc tình huống mới (khác với 了 sau động từ chỉ hành động đã hoàn thành - sẽ học ở HSK 2).",
+      examples: [
+        { hanzi: "下雨了。", pinyin: "Xià yǔ le.", meaning: "Trời mưa rồi." },
+        { hanzi: "我饿了。", pinyin: "Wǒ è le.", meaning: "Tôi đói rồi." },
+        { hanzi: "他来了。", pinyin: "Tā lái le.", meaning: "Anh ấy đến rồi." },
+        { hanzi: "天气热了。", pinyin: "Tiānqì rè le.", meaning: "Trời nóng lên rồi." }
       ]
     }
   ],
@@ -583,73 +820,308 @@ const grammar = {
     {
       id: "g2-1",
       title: "Cấu trúc so sánh với 比 (bǐ)",
-      structure: "A + 比 + B + Tính từ",
-      explanation: "比 (bǐ) dùng để so sánh hai đối tượng. A so với B thì... (như thế nào).",
+      structure: "A + 比 + B + Tính từ (+ Mức độ)",
+      explanation: "比 (bǐ) so sánh hai đối tượng. KHÔNG dùng 很/非常 với cấu trúc 比, mà dùng các từ chỉ mức độ như 一点 (một chút), 得多 (nhiều hơn nhiều), 多了 (nhiều hơn).",
       examples: [
         { hanzi: "我比你高。", pinyin: "Wǒ bǐ nǐ gāo.", meaning: "Tôi cao hơn bạn." },
         { hanzi: "今天比昨天热。", pinyin: "Jīntiān bǐ zuótiān rè.", meaning: "Hôm nay nóng hơn hôm qua." },
-        { hanzi: "汉语比英语难。", pinyin: "Hànyǔ bǐ Yīngyǔ nán.", meaning: "Tiếng Trung khó hơn tiếng Anh." }
+        { hanzi: "汉语比英语难一点。", pinyin: "Hànyǔ bǐ Yīngyǔ nán yìdiǎn.", meaning: "Tiếng Trung khó hơn tiếng Anh một chút." },
+        { hanzi: "他比我大三岁。", pinyin: "Tā bǐ wǒ dà sān suì.", meaning: "Anh ấy hơn tôi 3 tuổi." }
       ]
     },
     {
       id: "g2-2",
-      title: "Trợ từ thì 了 (le) - hành động đã hoàn thành",
-      structure: "Động từ + 了 / Câu + 了",
-      explanation: "了 (le) sau động từ biểu thị hành động đã xảy ra/hoàn thành. 了 cuối câu biểu thị thay đổi tình huống.",
+      title: "So sánh phủ định: 没有 (méiyǒu) + Tính từ",
+      structure: "A + 没有 + B + (那么) + Tính từ",
+      explanation: "Để nói 'A không bằng B' (không = nhau), dùng 没有. Có thể thêm 那么 (nàme) - 'như thế', để nhấn mạnh.",
       examples: [
-        { hanzi: "我吃了。", pinyin: "Wǒ chī le.", meaning: "Tôi đã ăn rồi." },
-        { hanzi: "他来了。", pinyin: "Tā lái le.", meaning: "Anh ấy đã đến." },
-        { hanzi: "下雨了。", pinyin: "Xià yǔ le.", meaning: "Trời mưa rồi." }
+        { hanzi: "我没有他高。", pinyin: "Wǒ méiyǒu tā gāo.", meaning: "Tôi không cao bằng anh ấy." },
+        { hanzi: "今天没有昨天热。", pinyin: "Jīntiān méiyǒu zuótiān rè.", meaning: "Hôm nay không nóng bằng hôm qua." },
+        { hanzi: "汉语没有英语那么难。", pinyin: "Hànyǔ méiyǒu Yīngyǔ nàme nán.", meaning: "Tiếng Trung không khó như tiếng Anh." }
       ]
     },
     {
       id: "g2-3",
-      title: "Trợ động từ 会 (huì) và 能 (néng)",
-      structure: "Chủ ngữ + 会/能 + Động từ",
-      explanation: "会 (huì) chỉ khả năng học được. 能 (néng) chỉ khả năng vốn có hoặc điều kiện cho phép.",
+      title: "So sánh ngang bằng: A 跟 B 一样",
+      structure: "A + 跟 + B + 一样 + (Tính từ)",
+      explanation: "跟...一样 (gēn...yíyàng) biểu thị 'giống nhau, như nhau'. Phủ định: 跟...不一样.",
       examples: [
-        { hanzi: "我会说汉语。", pinyin: "Wǒ huì shuō Hànyǔ.", meaning: "Tôi biết nói tiếng Trung." },
-        { hanzi: "他能游泳。", pinyin: "Tā néng yóuyǒng.", meaning: "Anh ấy có thể bơi." },
-        { hanzi: "我不能去。", pinyin: "Wǒ bù néng qù.", meaning: "Tôi không thể đi." }
+        { hanzi: "我跟他一样高。", pinyin: "Wǒ gēn tā yíyàng gāo.", meaning: "Tôi cao bằng anh ấy." },
+        { hanzi: "这个跟那个一样。", pinyin: "Zhège gēn nàge yíyàng.", meaning: "Cái này giống cái kia." },
+        { hanzi: "我跟你不一样。", pinyin: "Wǒ gēn nǐ bù yíyàng.", meaning: "Tôi không giống bạn." }
       ]
     },
     {
       id: "g2-4",
-      title: "Cấu trúc 因为...所以... (vì...nên...)",
-      structure: "因为 + Lý do + 所以 + Kết quả",
-      explanation: "因为 (yīnwèi) dẫn ra nguyên nhân, 所以 (suǒyǐ) dẫn ra kết quả.",
+      title: "Trợ từ 了 sau động từ - Hành động đã hoàn thành",
+      structure: "Động từ + 了 + (Tân ngữ)",
+      explanation: "了 ngay SAU ĐỘNG TỪ biểu thị hành động đã xảy ra/hoàn thành. KHÁC với 了 cuối câu (thay đổi tình huống). Phủ định: 没(有) + Động từ (KHÔNG dùng 了).",
       examples: [
-        { hanzi: "因为下雨,所以我不去。", pinyin: "Yīnwèi xiàyǔ, suǒyǐ wǒ bú qù.", meaning: "Vì trời mưa nên tôi không đi." },
-        { hanzi: "因为很累,所以我休息。", pinyin: "Yīnwèi hěn lèi, suǒyǐ wǒ xiūxi.", meaning: "Vì rất mệt nên tôi nghỉ ngơi." }
+        { hanzi: "我吃了一个苹果。", pinyin: "Wǒ chī le yí ge píngguǒ.", meaning: "Tôi đã ăn một quả táo." },
+        { hanzi: "他买了三本书。", pinyin: "Tā mǎi le sān běn shū.", meaning: "Anh ấy đã mua ba quyển sách." },
+        { hanzi: "我没买书。", pinyin: "Wǒ méi mǎi shū.", meaning: "Tôi đã không mua sách." },
+        { hanzi: "你吃饭了吗?", pinyin: "Nǐ chī fàn le ma?", meaning: "Bạn đã ăn cơm chưa?" }
       ]
     },
     {
       id: "g2-5",
-      title: "Trợ từ 过 (guo) - đã từng",
-      structure: "Động từ + 过",
-      explanation: "过 (guo) sau động từ biểu thị hành động đã từng xảy ra trong quá khứ (kinh nghiệm).",
+      title: "Trợ từ kinh nghiệm 过 (guo) - Đã từng",
+      structure: "Động từ + 过 + (Tân ngữ)",
+      explanation: "过 (guo) sau động từ biểu thị KINH NGHIỆM đã từng làm gì đó (ít nhất một lần) trong quá khứ. Phủ định: 没(有) + Động từ + 过.",
       examples: [
-        { hanzi: "我去过北京。", pinyin: "Wǒ qùguo Běijīng.", meaning: "Tôi đã từng đi Bắc Kinh." },
-        { hanzi: "他吃过中国菜。", pinyin: "Tā chīguo Zhōngguó cài.", meaning: "Anh ấy đã từng ăn món Trung Quốc." }
+        { hanzi: "我去过北京。", pinyin: "Wǒ qù guo Běijīng.", meaning: "Tôi đã từng đi Bắc Kinh." },
+        { hanzi: "他吃过中国菜。", pinyin: "Tā chī guo Zhōngguó cài.", meaning: "Anh ấy đã từng ăn món Trung Quốc." },
+        { hanzi: "我没看过这个电影。", pinyin: "Wǒ méi kàn guo zhège diànyǐng.", meaning: "Tôi chưa từng xem phim này." },
+        { hanzi: "你学过汉语吗?", pinyin: "Nǐ xué guo Hànyǔ ma?", meaning: "Bạn đã từng học tiếng Trung chưa?" }
       ]
     },
     {
       id: "g2-6",
-      title: "正在 (zhèngzài) - đang làm",
-      structure: "正在 + Động từ + (呢)",
-      explanation: "正在 biểu thị hành động đang tiếp diễn. Có thể thêm 呢 (ne) ở cuối.",
+      title: "Cấu trúc 正在 (zhèngzài) - Đang làm",
+      structure: "(正)在 + Động từ + (呢)",
+      explanation: "正在 / 在 / 呢 đều biểu thị hành động ĐANG TIẾP DIỄN. Có thể kết hợp 正在...呢 để nhấn mạnh. Phủ định: 没(有) + 在 + Động từ.",
       examples: [
         { hanzi: "我正在吃饭。", pinyin: "Wǒ zhèngzài chīfàn.", meaning: "Tôi đang ăn cơm." },
-        { hanzi: "他正在看书呢。", pinyin: "Tā zhèngzài kànshū ne.", meaning: "Anh ấy đang đọc sách." }
+        { hanzi: "他在看书呢。", pinyin: "Tā zài kàn shū ne.", meaning: "Anh ấy đang đọc sách." },
+        { hanzi: "妈妈在做饭。", pinyin: "Māma zài zuò fàn.", meaning: "Mẹ đang nấu cơm." },
+        { hanzi: "我没在睡觉。", pinyin: "Wǒ méi zài shuìjiào.", meaning: "Tôi không phải đang ngủ." }
+      ]
+    },
+    {
+      id: "g2-7",
+      title: "Trợ từ 着 (zhe) - Trạng thái duy trì",
+      structure: "Động từ + 着",
+      explanation: "着 sau động từ biểu thị TRẠNG THÁI đang được duy trì (khác với 正在 là HÀNH ĐỘNG đang diễn ra). Thường dùng với động từ chỉ tư thế: 坐, 站, 躺, 拿, 穿...",
+      examples: [
+        { hanzi: "他坐着看书。", pinyin: "Tā zuò zhe kàn shū.", meaning: "Anh ấy ngồi đọc sách. (vừa ngồi vừa đọc)" },
+        { hanzi: "门开着。", pinyin: "Mén kāi zhe.", meaning: "Cửa đang mở." },
+        { hanzi: "她穿着红色的衣服。", pinyin: "Tā chuān zhe hóngsè de yīfu.", meaning: "Cô ấy mặc quần áo màu đỏ." }
+      ]
+    },
+    {
+      id: "g2-8",
+      title: "Liên từ 因为...所以... (vì...nên...)",
+      structure: "因为 + Lý do, 所以 + Kết quả",
+      explanation: "因为 (yīnwèi) dẫn ra nguyên nhân, 所以 (suǒyǐ) dẫn ra kết quả. Có thể dùng cả hai hoặc chỉ một trong hai. Khi dùng cả hai, dấu phẩy ngăn cách.",
+      examples: [
+        { hanzi: "因为下雨,所以我不去。", pinyin: "Yīnwèi xiàyǔ, suǒyǐ wǒ bú qù.", meaning: "Vì trời mưa nên tôi không đi." },
+        { hanzi: "因为很累,所以我休息。", pinyin: "Yīnwèi hěn lèi, suǒyǐ wǒ xiūxi.", meaning: "Vì rất mệt nên tôi nghỉ ngơi." },
+        { hanzi: "因为他生病了,所以没来上班。", pinyin: "Yīnwèi tā shēngbìng le, suǒyǐ méi lái shàngbān.", meaning: "Vì anh ấy bị bệnh nên đã không đi làm." }
+      ]
+    },
+    {
+      id: "g2-9",
+      title: "Liên từ 虽然...但是... (mặc dù...nhưng...)",
+      structure: "虽然 + Mệnh đề 1, 但是 + Mệnh đề 2",
+      explanation: "虽然 (suīrán) - 但是 (dànshì) biểu thị quan hệ tương phản. Có thể chỉ dùng 但是 mà không cần 虽然.",
+      examples: [
+        { hanzi: "虽然累,但是很开心。", pinyin: "Suīrán lèi, dànshì hěn kāixīn.", meaning: "Tuy mệt nhưng rất vui." },
+        { hanzi: "虽然下雨,但是我还是去。", pinyin: "Suīrán xiàyǔ, dànshì wǒ háishi qù.", meaning: "Mặc dù trời mưa nhưng tôi vẫn đi." },
+        { hanzi: "他虽然年轻,但是很聪明。", pinyin: "Tā suīrán niánqīng, dànshì hěn cōngming.", meaning: "Anh ấy tuy trẻ nhưng rất thông minh." }
+      ]
+    },
+    {
+      id: "g2-10",
+      title: "Câu hỏi chính phản: 是不是 / 有没有",
+      structure: "Khẳng định + 不/没 + Khẳng định ?",
+      explanation: "Một cách hỏi khác thay cho 吗. Cấu trúc V + 不 + V hoặc V + 没 + V tạo câu hỏi.",
+      examples: [
+        { hanzi: "你是不是中国人?", pinyin: "Nǐ shì bu shì Zhōngguó rén?", meaning: "Bạn có phải là người Trung Quốc không?" },
+        { hanzi: "你有没有时间?", pinyin: "Nǐ yǒu méiyǒu shíjiān?", meaning: "Bạn có thời gian không?" },
+        { hanzi: "你去不去?", pinyin: "Nǐ qù bu qù?", meaning: "Bạn đi hay không đi?" },
+        { hanzi: "好不好?", pinyin: "Hǎo bù hǎo?", meaning: "Được không?" }
+      ]
+    },
+    {
+      id: "g2-11",
+      title: "Cấu trúc 给 (gěi) - Cho/đưa",
+      structure: "Chủ ngữ + 给 + Người nhận + Động từ + Vật",
+      explanation: "给 có thể là động từ chính ('cho'), hoặc giới từ đặt trước người nhận.",
+      examples: [
+        { hanzi: "我给你一本书。", pinyin: "Wǒ gěi nǐ yì běn shū.", meaning: "Tôi cho bạn một quyển sách." },
+        { hanzi: "请给我水。", pinyin: "Qǐng gěi wǒ shuǐ.", meaning: "Xin cho tôi nước." },
+        { hanzi: "我给妈妈打电话。", pinyin: "Wǒ gěi māma dǎ diànhuà.", meaning: "Tôi gọi điện cho mẹ." },
+        { hanzi: "他给我写了一封信。", pinyin: "Tā gěi wǒ xiě le yì fēng xìn.", meaning: "Anh ấy đã viết cho tôi một lá thư." }
+      ]
+    },
+    {
+      id: "g2-12",
+      title: "Cấu trúc 离 (lí) - Cách",
+      structure: "A + 离 + B + 远/近 / Khoảng cách",
+      explanation: "离 (lí) biểu thị khoảng cách giữa hai địa điểm hoặc thời điểm. Khác với 从 (cóng - từ).",
+      examples: [
+        { hanzi: "我家离学校很近。", pinyin: "Wǒ jiā lí xuéxiào hěn jìn.", meaning: "Nhà tôi rất gần trường học." },
+        { hanzi: "北京离上海很远。", pinyin: "Běijīng lí Shànghǎi hěn yuǎn.", meaning: "Bắc Kinh rất xa Thượng Hải." },
+        { hanzi: "现在离九点还有十分钟。", pinyin: "Xiànzài lí jiǔ diǎn hái yǒu shí fēnzhōng.", meaning: "Bây giờ còn 10 phút nữa là 9 giờ." }
+      ]
+    },
+    {
+      id: "g2-13",
+      title: "Cấu trúc 从...到... (từ...đến...)",
+      structure: "从 + Điểm bắt đầu + 到 + Điểm kết thúc",
+      explanation: "从...到... biểu thị khoảng từ đâu đến đâu (thời gian hoặc địa điểm).",
+      examples: [
+        { hanzi: "我从家到学校走路。", pinyin: "Wǒ cóng jiā dào xuéxiào zǒulù.", meaning: "Tôi đi bộ từ nhà đến trường." },
+        { hanzi: "从早上八点到晚上六点。", pinyin: "Cóng zǎoshang bā diǎn dào wǎnshang liù diǎn.", meaning: "Từ 8 giờ sáng đến 6 giờ tối." },
+        { hanzi: "从北京到上海要多长时间?", pinyin: "Cóng Běijīng dào Shànghǎi yào duō cháng shíjiān?", meaning: "Từ Bắc Kinh đến Thượng Hải mất bao lâu?" }
+      ]
+    },
+    {
+      id: "g2-14",
+      title: "Bổ ngữ trạng thái với 得 (de)",
+      structure: "Động từ + 得 + Tính từ/Bổ ngữ",
+      explanation: "得 (de) nối động từ với mô tả về cách/mức độ thực hiện hành động đó. Nếu có tân ngữ: lặp lại động từ. VD: 他说汉语说得很好.",
+      examples: [
+        { hanzi: "他跑得很快。", pinyin: "Tā pǎo de hěn kuài.", meaning: "Anh ấy chạy rất nhanh." },
+        { hanzi: "你说得很好。", pinyin: "Nǐ shuō de hěn hǎo.", meaning: "Bạn nói rất hay." },
+        { hanzi: "她唱歌唱得不错。", pinyin: "Tā chànggē chàng de búcuò.", meaning: "Cô ấy hát khá hay." },
+        { hanzi: "我睡得不好。", pinyin: "Wǒ shuì de bù hǎo.", meaning: "Tôi ngủ không ngon." }
+      ]
+    },
+    {
+      id: "g2-15",
+      title: "Bổ ngữ kết quả: 完, 到, 见, 懂",
+      structure: "Động từ + Bổ ngữ kết quả",
+      explanation: "Một số động từ thường được thêm bổ ngữ kết quả để chỉ rõ kết quả hành động: 完 (xong), 到 (đạt được), 见 (cảm nhận được), 懂 (hiểu).",
+      examples: [
+        { hanzi: "我吃完了。", pinyin: "Wǒ chī wán le.", meaning: "Tôi đã ăn xong." },
+        { hanzi: "我看见他了。", pinyin: "Wǒ kàn jiàn tā le.", meaning: "Tôi đã nhìn thấy anh ấy." },
+        { hanzi: "我听懂了。", pinyin: "Wǒ tīng dǒng le.", meaning: "Tôi nghe hiểu rồi." },
+        { hanzi: "我没买到票。", pinyin: "Wǒ méi mǎi dào piào.", meaning: "Tôi đã không mua được vé." }
+      ]
+    },
+    {
+      id: "g2-16",
+      title: "一边...一边... (vừa...vừa...)",
+      structure: "一边 + Động từ 1 + 一边 + Động từ 2",
+      explanation: "一边...一边... (yìbiān...yìbiān...) biểu thị hai hành động xảy ra đồng thời.",
+      examples: [
+        { hanzi: "我一边吃饭一边看电视。", pinyin: "Wǒ yìbiān chīfàn yìbiān kàn diànshì.", meaning: "Tôi vừa ăn cơm vừa xem TV." },
+        { hanzi: "他一边走一边说话。", pinyin: "Tā yìbiān zǒu yìbiān shuōhuà.", meaning: "Anh ấy vừa đi vừa nói." },
+        { hanzi: "她一边唱歌一边跳舞。", pinyin: "Tā yìbiān chànggē yìbiān tiàowǔ.", meaning: "Cô ấy vừa hát vừa nhảy." }
+      ]
+    },
+    {
+      id: "g2-17",
+      title: "再 (zài) - Lại, lần nữa (tương lai)",
+      structure: "再 + Động từ",
+      explanation: "再 dùng cho việc lặp lại trong TƯƠNG LAI hoặc chưa xảy ra. (Khác 又 (yòu) - đã lặp lại trong quá khứ).",
+      examples: [
+        { hanzi: "请再说一遍。", pinyin: "Qǐng zài shuō yí biàn.", meaning: "Xin nói lại một lần nữa." },
+        { hanzi: "明天再来吧。", pinyin: "Míngtiān zài lái ba.", meaning: "Mai lại đến nhé." },
+        { hanzi: "我再吃一点。", pinyin: "Wǒ zài chī yìdiǎn.", meaning: "Tôi ăn thêm chút nữa." }
+      ]
+    },
+    {
+      id: "g2-18",
+      title: "就 (jiù) - Ngay, liền, là",
+      structure: "Chủ ngữ + 就 + Động từ",
+      explanation: "就 có nhiều nghĩa: 'ngay', 'liền', nhấn mạnh sự nhanh chóng hoặc chắc chắn của hành động.",
+      examples: [
+        { hanzi: "我马上就来。", pinyin: "Wǒ mǎshàng jiù lái.", meaning: "Tôi đến ngay đây." },
+        { hanzi: "我就是王老师。", pinyin: "Wǒ jiù shì Wáng lǎoshī.", meaning: "Tôi chính là cô Vương." },
+        { hanzi: "下课就走。", pinyin: "Xià kè jiù zǒu.", meaning: "Tan học là đi luôn." }
+      ]
+    },
+    {
+      id: "g2-19",
+      title: "已经...了 (yǐjīng...le) - Đã...rồi",
+      structure: "已经 + Động từ/Tính từ + 了",
+      explanation: "已经 (yǐjīng) nhấn mạnh hành động/trạng thái đã xảy ra, thường đi kèm 了 cuối câu.",
+      examples: [
+        { hanzi: "他已经走了。", pinyin: "Tā yǐjīng zǒu le.", meaning: "Anh ấy đã đi rồi." },
+        { hanzi: "我已经吃饭了。", pinyin: "Wǒ yǐjīng chīfàn le.", meaning: "Tôi đã ăn cơm rồi." },
+        { hanzi: "现在已经十点了。", pinyin: "Xiànzài yǐjīng shí diǎn le.", meaning: "Bây giờ đã 10 giờ rồi." }
+      ]
+    },
+    {
+      id: "g2-20",
+      title: "要 (yào) - Sẽ, cần, muốn",
+      structure: "Chủ ngữ + 要 + Động từ / Danh từ",
+      explanation: "要 (yào) có nhiều nghĩa: muốn (dứt khoát hơn 想), cần, sắp/sẽ (tương lai gần). Phủ định: 不要 (đừng) hoặc 不想 (không muốn).",
+      examples: [
+        { hanzi: "我要这个。", pinyin: "Wǒ yào zhège.", meaning: "Tôi muốn cái này." },
+        { hanzi: "我要去中国。", pinyin: "Wǒ yào qù Zhōngguó.", meaning: "Tôi sẽ đi Trung Quốc." },
+        { hanzi: "不要走!", pinyin: "Bú yào zǒu!", meaning: "Đừng đi!" },
+        { hanzi: "下雨了,要带伞。", pinyin: "Xià yǔ le, yào dài sǎn.", meaning: "Trời mưa rồi, cần mang ô." }
+      ]
+    },
+    {
+      id: "g2-21",
+      title: "可以 (kěyǐ) - Có thể (xin phép)",
+      structure: "Chủ ngữ + 可以 + Động từ",
+      explanation: "可以 (kěyǐ) chỉ sự cho phép, được phép. Khác 能 (khả năng) và 会 (kỹ năng).",
+      examples: [
+        { hanzi: "我可以进来吗?", pinyin: "Wǒ kěyǐ jìnlái ma?", meaning: "Tôi có thể vào không?" },
+        { hanzi: "你可以走了。", pinyin: "Nǐ kěyǐ zǒu le.", meaning: "Bạn có thể đi rồi." },
+        { hanzi: "这里不可以抽烟。", pinyin: "Zhèlǐ bù kěyǐ chōuyān.", meaning: "Ở đây không được hút thuốc." }
+      ]
+    },
+    {
+      id: "g2-22",
+      title: "为什么 (wèishénme) - Tại sao",
+      structure: "为什么 + Động từ?",
+      explanation: "为什么 hỏi lý do, nguyên nhân. Câu trả lời thường dùng 因为 (yīnwèi - bởi vì).",
+      examples: [
+        { hanzi: "你为什么不来?", pinyin: "Nǐ wèishénme bù lái?", meaning: "Tại sao bạn không đến?" },
+        { hanzi: "为什么这么贵?", pinyin: "Wèishénme zhème guì?", meaning: "Tại sao đắt thế?" },
+        { hanzi: "你为什么学汉语?", pinyin: "Nǐ wèishénme xué Hànyǔ?", meaning: "Tại sao bạn học tiếng Trung?" }
+      ]
+    },
+    {
+      id: "g2-23",
+      title: "怎么 (zěnme) - Thế nào, làm sao",
+      structure: "怎么 + Động từ?",
+      explanation: "怎么 hỏi cách thức, phương pháp. Khác với 怎么样 (zěnmeyàng) hỏi 'thế nào, ra sao' (đánh giá).",
+      examples: [
+        { hanzi: "怎么走?", pinyin: "Zěnme zǒu?", meaning: "Đi thế nào?" },
+        { hanzi: "这个汉字怎么写?", pinyin: "Zhège Hànzì zěnme xiě?", meaning: "Chữ Hán này viết thế nào?" },
+        { hanzi: "你怎么样?", pinyin: "Nǐ zěnmeyàng?", meaning: "Bạn thế nào? (hỏi tình hình)" }
+      ]
+    },
+    {
+      id: "g2-24",
+      title: "有点儿 (yǒudiǎnr) vs 一点儿 (yìdiǎnr)",
+      structure: "有点儿 + Tính từ (tiêu cực) / Tính từ + 一点儿",
+      explanation: "有点儿 đứng TRƯỚC tính từ, mang nghĩa than phiền, hơi không như ý. 一点儿 đứng SAU tính từ trong so sánh, hoặc làm 'một chút'.",
+      examples: [
+        { hanzi: "今天有点儿冷。", pinyin: "Jīntiān yǒudiǎnr lěng.", meaning: "Hôm nay hơi lạnh." },
+        { hanzi: "这个有点儿贵。", pinyin: "Zhège yǒudiǎnr guì.", meaning: "Cái này hơi đắt." },
+        { hanzi: "请便宜一点儿。", pinyin: "Qǐng piányi yìdiǎnr.", meaning: "Xin rẻ hơn một chút." },
+        { hanzi: "我比他高一点儿。", pinyin: "Wǒ bǐ tā gāo yìdiǎnr.", meaning: "Tôi cao hơn anh ấy một chút." }
+      ]
+    },
+    {
+      id: "g2-25",
+      title: "Lượng từ thường gặp HSK 2",
+      structure: "Số + Lượng từ + Danh từ",
+      explanation: "Mỗi danh từ có lượng từ riêng. Học thuộc các lượng từ phổ biến: 个 (chung), 本 (sách), 张 (giấy/bàn/vé), 件 (áo/việc), 杯 (cốc), 瓶 (chai), 只 (con vật), 辆 (xe), 双 (đôi).",
+      examples: [
+        { hanzi: "三本书", pinyin: "sān běn shū", meaning: "ba quyển sách" },
+        { hanzi: "一张票", pinyin: "yì zhāng piào", meaning: "một tấm vé" },
+        { hanzi: "两件衣服", pinyin: "liǎng jiàn yīfu", meaning: "hai chiếc áo" },
+        { hanzi: "一杯咖啡", pinyin: "yì bēi kāfēi", meaning: "một cốc cà phê" },
+        { hanzi: "一只猫", pinyin: "yì zhī māo", meaning: "một con mèo" }
+      ]
+    },
+    {
+      id: "g2-26",
+      title: "把 (bǎ) - Câu chữ Bả (cơ bản)",
+      structure: "Chủ ngữ + 把 + Tân ngữ + Động từ + Bổ ngữ",
+      explanation: "Câu chữ 把 nhấn mạnh tác động/kết quả lên tân ngữ. Tân ngữ phải XÁC ĐỊNH (cụ thể, biết rõ). Sau động từ thường có bổ ngữ (了, 完, ở đâu đó...).",
+      examples: [
+        { hanzi: "我把书放在桌子上。", pinyin: "Wǒ bǎ shū fàng zài zhuōzi shàng.", meaning: "Tôi đặt sách lên bàn." },
+        { hanzi: "请把门关上。", pinyin: "Qǐng bǎ mén guān shàng.", meaning: "Xin hãy đóng cửa lại." },
+        { hanzi: "我把作业做完了。", pinyin: "Wǒ bǎ zuòyè zuò wán le.", meaning: "Tôi đã làm xong bài tập." }
       ]
     }
   ],
   hsk3: [
     {
       id: "g3-1",
-      title: "Cấu trúc 把 (bǎ) - đem/lấy",
+      title: "Cấu trúc 把 (bǎ) - Mở rộng",
       structure: "Chủ ngữ + 把 + Tân ngữ + Động từ + Bổ ngữ",
-      explanation: "Câu chữ 把 nhấn mạnh kết quả/tác động lên tân ngữ. Tân ngữ phải xác định.",
+      explanation: "Câu chữ 把 nâng cao với nhiều bổ ngữ phức tạp.",
       examples: [
         { hanzi: "我把书放在桌子上。", pinyin: "Wǒ bǎ shū fàng zài zhuōzi shàng.", meaning: "Tôi đặt sách lên bàn." },
         { hanzi: "请把门关上。", pinyin: "Qǐng bǎ mén guān shàng.", meaning: "Xin hãy đóng cửa lại." }
@@ -657,29 +1129,19 @@ const grammar = {
     },
     {
       id: "g3-2",
-      title: "Bổ ngữ trạng thái với 得 (de)",
-      structure: "Động từ + 得 + Bổ ngữ trạng thái",
-      explanation: "得 (de) dùng để nối động từ và bổ ngữ mô tả mức độ/trạng thái của hành động.",
-      examples: [
-        { hanzi: "他跑得很快。", pinyin: "Tā pǎo de hěn kuài.", meaning: "Anh ấy chạy rất nhanh." },
-        { hanzi: "你说得很好。", pinyin: "Nǐ shuō de hěn hǎo.", meaning: "Bạn nói rất hay." }
-      ]
-    },
-    {
-      id: "g3-3",
       title: "Câu bị động với 被 (bèi)",
-      structure: "Chủ ngữ + 被 + (Tác nhân) + Động từ",
-      explanation: "被 (bèi) tạo câu bị động, tương đương 'bị/được' trong tiếng Việt.",
+      structure: "Chủ ngữ + 被 + (Tác nhân) + Động từ + Bổ ngữ",
+      explanation: "被 (bèi) tạo câu bị động, tương đương 'bị/được' trong tiếng Việt. Tác nhân có thể được lược bỏ.",
       examples: [
         { hanzi: "杯子被他打破了。", pinyin: "Bēizi bèi tā dǎpò le.", meaning: "Cái cốc bị anh ấy làm vỡ." },
-        { hanzi: "蛋糕被吃完了。", pinyin: "Dàngāo bèi chīwán le.", meaning: "Bánh đã bị ăn hết." }
+        { hanzi: "蛋糕被吃完了。", pinyin: "Dàngāo bèi chī wán le.", meaning: "Bánh đã bị ăn hết." }
       ]
     }
   ],
   hsk4: [
     {
       id: "g4-1",
-      title: "Cấu trúc 越来越 (yuè lái yuè) - càng ngày càng",
+      title: "Cấu trúc 越来越 (yuè lái yuè) - Càng ngày càng",
       structure: "Chủ ngữ + 越来越 + Tính từ/Động từ",
       explanation: "Biểu thị mức độ tăng dần theo thời gian.",
       examples: [
@@ -780,30 +1242,30 @@ const Header = ({ view, setView, darkMode, toggleDark }) => {
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView('home')}>
           <div className="relative">
-            <div className="w-10 h-10 flex items-center justify-center rounded-sm" style={{ background:'var(--accent)', color:'white' }}>
-              <span style={{ fontFamily:'var(--font-display)', fontSize:'24px' }}>汉</span>
+            <div className="w-11 h-11 flex items-center justify-center rounded-2xl soft-shadow" style={{ background:'linear-gradient(135deg, var(--accent), var(--accent-2))', color:'white' }}>
+              <span className="hanzi-text" style={{ fontSize:'22px', fontWeight: 500 }}>汉</span>
             </div>
             <div className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full" style={{ background:'var(--accent-2)' }} />
           </div>
           <div>
-            <div style={{ fontFamily:'var(--font-display)', fontSize:'20px', fontWeight:700, color:'var(--ink)' }}>HSK 学习</div>
+            <div style={{ fontFamily:'var(--font-display)', fontSize:'20px', fontWeight:600, color:'var(--ink)', letterSpacing: '0.02em' }}>HSK <span className="hanzi-text">学习</span></div>
             <div className="text-xs" style={{ color:'var(--muted)', letterSpacing:'0.1em' }}>HỌC TIẾNG TRUNG</div>
           </div>
         </div>
         <nav className="hidden md:flex items-center gap-1">
           {navItems.map(item => (
-            <button key={item.id} onClick={() => setView(item.id)} className="px-4 py-2 rounded-sm transition-all"
+            <button key={item.id} onClick={() => setView(item.id)} className="px-4 py-2 rounded-2xl transition-all"
               style={{ background: view === item.id ? 'var(--accent)' : 'transparent', color: view === item.id ? 'white' : 'var(--ink)' }}>
               <span className="text-sm font-medium" style={{ fontFamily:'var(--font-display)' }}>{item.label}</span>
               <span className="text-xs ml-2" style={{ opacity:0.7 }}>{item.viLabel}</span>
             </button>
           ))}
         </nav>
-        <button onClick={toggleDark} className="p-2 rounded-sm" style={{ background:'var(--surface)', color:'var(--ink)' }}>{darkMode ? '☀' : '☾'}</button>
+        <button onClick={toggleDark} className="p-2 rounded-2xl" style={{ background:'var(--surface)', color:'var(--ink)' }}>{darkMode ? '☀' : '☾'}</button>
       </div>
       <nav className="md:hidden flex items-center gap-1 px-4 pb-3 overflow-x-auto">
         {navItems.map(item => (
-          <button key={item.id} onClick={() => setView(item.id)} className="px-3 py-1.5 rounded-sm whitespace-nowrap text-sm flex-shrink-0"
+          <button key={item.id} onClick={() => setView(item.id)} className="px-3 py-1.5 rounded-2xl whitespace-nowrap text-sm flex-shrink-0"
             style={{ background: view === item.id ? 'var(--accent)' : 'var(--surface)', color: view === item.id ? 'white' : 'var(--ink)' }}>
             {item.viLabel}
           </button>
@@ -833,7 +1295,7 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount }) => {
         <div className="absolute -top-4 -left-4 text-[180px] opacity-[0.04] leading-none select-none pointer-events-none" style={{ fontFamily:'var(--font-display)' }}>學</div>
         <div className="relative">
           <div className="text-xs tracking-[0.3em] mb-4" style={{ color:'var(--accent)' }}>欢迎 · CHÀO MỪNG</div>
-          <h1 className="text-5xl md:text-7xl mb-6 leading-tight" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>
+          <h1 className="text-5xl md:text-7xl mb-6 leading-tight" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>
             Học tiếng Trung<br />
             <span style={{ color:'var(--accent)' }}>thông minh hơn</span>
           </h1>
@@ -843,7 +1305,7 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount }) => {
         </div>
       </div>
 
-      <div className="mb-16 p-8 rounded-sm" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+      <div className="mb-16 p-8 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
         <div className="flex justify-between items-baseline mb-3 flex-wrap gap-2">
           <div>
             <div className="text-xs tracking-widest mb-1" style={{ color:'var(--muted)' }}>TỔNG TIẾN ĐỘ</div>
@@ -854,14 +1316,14 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount }) => {
           <div className="text-4xl" style={{ fontFamily:'var(--font-display)', color:'var(--accent)', fontWeight:700 }}>{percent}%</div>
         </div>
         <div className="h-2 rounded-full overflow-hidden" style={{ background:'var(--bg)' }}>
-          <div className="h-full transition-all duration-700" style={{ width:`${percent}%`, background:'linear-gradient(90deg, var(--accent), var(--accent-2))' }} />
+          <div className="h-full transition-all duration-700" style={{ width:`${percent}%`, background:'linear-gradient(90deg, var(--accent), var(--accent-soft))' }} />
         </div>
       </div>
 
       <div className="mb-16">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-1 h-8" style={{ background:'var(--accent)' }} />
-          <h2 className="text-2xl" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Chọn cấp độ HSK</h2>
+          <h2 className="text-2xl" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Chọn cấp độ HSK</h2>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {[1,2,3,4,5,6].map(level => {
@@ -870,10 +1332,10 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount }) => {
             const pct = total > 0 ? Math.round((learned / total) * 100) : 0;
             return (
               <button key={level} onClick={() => { setSelectedHSK(level); setView('vocab'); }}
-                className="group relative p-6 rounded-sm transition-all hover:scale-105 text-left"
+                className="group relative p-6 rounded-3xl transition-all hover:scale-105 hover:-translate-y-1 text-left soft-shadow"
                 style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
                 <div className="text-xs tracking-widest mb-2" style={{ color:'var(--muted)' }}>CẤP {level}</div>
-                <div className="text-4xl mb-3" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--accent)' }}>HSK{level}</div>
+                <div className="text-4xl mb-3" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--accent)' }}>HSK{level}</div>
                 <div className="text-sm mb-3" style={{ color:'var(--muted)' }}>{total} từ</div>
                 <div className="h-1 rounded-full overflow-hidden" style={{ background:'var(--bg)' }}>
                   <div className="h-full transition-all" style={{ width:`${pct}%`, background:'var(--accent)' }} />
@@ -888,16 +1350,16 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount }) => {
       <div>
         <div className="flex items-center gap-3 mb-6">
           <div className="w-1 h-8" style={{ background:'var(--accent)' }} />
-          <h2 className="text-2xl" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Tính năng học tập</h2>
+          <h2 className="text-2xl" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Tính năng học tập</h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {features.map((f, i) => (
             <button key={i} onClick={() => setView(f.view)}
-              className="group p-6 rounded-sm transition-all hover:translate-y-[-4px] text-left"
+              className="group p-6 rounded-3xl transition-all hover:translate-y-[-4px] text-left soft-shadow"
               style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-              <div className="w-12 h-12 mb-4 flex items-center justify-center rounded-sm transition-all group-hover:scale-110"
-                style={{ background:'var(--accent)', color:'white', fontFamily:'var(--font-display)', fontSize:'24px' }}>{f.icon}</div>
-              <div className="text-lg mb-2" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>{f.title}</div>
+              <div className="w-12 h-12 mb-4 flex items-center justify-center rounded-2xl transition-all group-hover:scale-110 hanzi-text"
+                style={{ background:'linear-gradient(135deg, var(--accent), var(--accent-2))', color:'white', fontSize:'22px', fontWeight: 500 }}>{f.icon}</div>
+              <div className="text-lg mb-2" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>{f.title}</div>
               <div className="text-sm leading-relaxed" style={{ color:'var(--muted)' }}>{f.desc}</div>
             </button>
           ))}
@@ -927,12 +1389,12 @@ const VocabView = ({ selectedHSK, setSelectedHSK, learned, toggleLearned, starre
     <div className="max-w-7xl mx-auto px-6 py-8">
       <div className="mb-8">
         <div className="text-xs tracking-[0.3em] mb-2" style={{ color:'var(--accent)' }}>词汇 · TỪ VỰNG</div>
-        <h1 className="text-4xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>
+        <h1 className="text-4xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>
           Từ vựng HSK <span style={{ color:'var(--accent)' }}>{selectedHSK}</span>
         </h1>
         <div className="flex gap-2 flex-wrap mb-6">
           {[1,2,3,4,5,6].map(level => (
-            <button key={level} onClick={() => setSelectedHSK(level)} className="px-4 py-2 rounded-sm transition-all"
+            <button key={level} onClick={() => setSelectedHSK(level)} className="px-4 py-2 rounded-2xl transition-all"
               style={{ background: selectedHSK === level ? 'var(--accent)' : 'var(--surface)', color: selectedHSK === level ? 'white' : 'var(--ink)', border:'1px solid var(--border)', fontFamily:'var(--font-display)', fontWeight:600 }}>
               HSK {level}
             </button>
@@ -940,7 +1402,7 @@ const VocabView = ({ selectedHSK, setSelectedHSK, learned, toggleLearned, starre
         </div>
         <div className="flex flex-col md:flex-row gap-3">
           <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm theo chữ Hán, pinyin hoặc nghĩa..."
-            className="flex-1 px-4 py-3 rounded-sm outline-none"
+            className="flex-1 px-4 py-3 rounded-2xl outline-none"
             style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)' }} />
           <div className="flex gap-2 flex-wrap">
             {[
@@ -949,7 +1411,7 @@ const VocabView = ({ selectedHSK, setSelectedHSK, learned, toggleLearned, starre
               {id:'learned', label:'Đã thuộc'},
               {id:'starred', label:'★ Đánh dấu'},
             ].map(f => (
-              <button key={f.id} onClick={() => setFilter(f.id)} className="px-3 py-2 rounded-sm text-sm"
+              <button key={f.id} onClick={() => setFilter(f.id)} className="px-3 py-2 rounded-2xl text-sm"
                 style={{ background: filter === f.id ? 'var(--accent)' : 'var(--surface)', color: filter === f.id ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>
                 {f.label}
               </button>
@@ -966,13 +1428,13 @@ const VocabView = ({ selectedHSK, setSelectedHSK, learned, toggleLearned, starre
           const isLearned = learned.includes(w.id);
           const isStarred = starred.includes(w.id);
           return (
-            <div key={w.id} className="p-5 rounded-sm transition-all"
-              style={{ background:'var(--surface)', border:`1px solid ${isLearned ? 'var(--accent-2)' : 'var(--border)'}`, opacity: isLearned ? 0.9 : 1 }}>
+            <div key={w.id} className="p-5 rounded-3xl transition-all soft-shadow hover:soft-shadow-lg hover:-translate-y-0.5"
+              style={{ background:'var(--surface)', border:`1px solid ${isLearned ? 'var(--accent-2)' : 'var(--border)'}`, opacity: isLearned ? 0.92 : 1 }}>
               <div className="flex justify-between items-start mb-3">
-                <span className="text-xs px-2 py-1 rounded-sm" style={{ background:'var(--bg)', color:'var(--muted)' }}>{w.type}</span>
+                <span className="text-xs px-2 py-1 rounded-2xl" style={{ background:'var(--bg)', color:'var(--muted)' }}>{w.type}</span>
                 <div className="flex gap-1">
-                  <button onClick={() => toggleStar(w.id)} className="w-8 h-8 flex items-center justify-center rounded-sm" style={{ color: isStarred ? '#f59e0b' : 'var(--muted)' }}>{isStarred ? '★' : '☆'}</button>
-                  <button onClick={() => toggleLearned(w.id)} className="w-8 h-8 flex items-center justify-center rounded-sm" style={{ background: isLearned ? 'var(--accent-2)' : 'transparent', color: isLearned ? 'white' : 'var(--muted)', border:'1px solid var(--border)' }}>{isLearned ? '✓' : '○'}</button>
+                  <button onClick={() => toggleStar(w.id)} className="w-8 h-8 flex items-center justify-center rounded-2xl" style={{ color: isStarred ? '#f59e0b' : 'var(--muted)' }}>{isStarred ? '★' : '☆'}</button>
+                  <button onClick={() => toggleLearned(w.id)} className="w-8 h-8 flex items-center justify-center rounded-2xl" style={{ background: isLearned ? 'var(--accent-2)' : 'transparent', color: isLearned ? 'white' : 'var(--muted)', border:'1px solid var(--border)' }}>{isLearned ? '✓' : '○'}</button>
                 </div>
               </div>
               <div className="flex items-baseline gap-3 mb-2">
@@ -982,7 +1444,7 @@ const VocabView = ({ selectedHSK, setSelectedHSK, learned, toggleLearned, starre
               <ColoredPinyin pinyin={w.pinyin} size="lg" />
               <div className="mt-2 mb-3 text-base" style={{ color:'var(--ink)' }}>{w.meaning}</div>
               <div className="pt-3 mt-3" style={{ borderTop:'1px dashed var(--border)' }}>
-                <button onClick={() => speak(w.example)} className="text-lg mb-1 hover:underline text-left block" style={{ fontFamily:'var(--font-display)', color:'var(--ink)' }}>{w.example}</button>
+                <button onClick={() => speak(w.example)} className="text-lg mb-1 hover:underline text-left block hanzi-text" style={{ color:'var(--ink)' }}>{w.example}</button>
                 <div className="mb-1"><ColoredPinyin pinyin={w.examplePinyin} size="sm" /></div>
                 <div className="text-sm italic" style={{ color:'var(--muted)' }}>{w.exampleMeaning}</div>
               </div>
@@ -1008,10 +1470,10 @@ const GrammarView = () => {
     <div className="max-w-5xl mx-auto px-6 py-8">
       <div className="mb-8">
         <div className="text-xs tracking-[0.3em] mb-2" style={{ color:'var(--accent)' }}>语法 · NGỮ PHÁP</div>
-        <h1 className="text-4xl mb-6" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Cấu trúc ngữ pháp HSK</h1>
+        <h1 className="text-4xl mb-6" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Cấu trúc ngữ pháp HSK</h1>
         <div className="flex gap-2 flex-wrap">
           {[1,2,3,4,5,6].map(level => (
-            <button key={level} onClick={() => setSelectedLevel(`hsk${level}`)} className="px-4 py-2 rounded-sm"
+            <button key={level} onClick={() => setSelectedLevel(`hsk${level}`)} className="px-4 py-2 rounded-2xl"
               style={{ background: selectedLevel === `hsk${level}` ? 'var(--accent)' : 'var(--surface)', color: selectedLevel === `hsk${level}` ? 'white' : 'var(--ink)', border:'1px solid var(--border)', fontFamily:'var(--font-display)', fontWeight:600 }}>
               HSK {level}
             </button>
@@ -1020,23 +1482,23 @@ const GrammarView = () => {
       </div>
       <div className="space-y-6">
         {items.map((g, idx) => (
-          <div key={g.id} className="p-6 rounded-sm relative overflow-hidden" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+          <div key={g.id} className="p-6 rounded-3xl relative overflow-hidden soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
             <div className="absolute top-0 left-0 w-1 h-full" style={{ background:'var(--accent)' }} />
             <div className="flex items-baseline gap-3 mb-3">
               <span className="text-xs tracking-widest" style={{ color:'var(--accent)' }}>{String(idx + 1).padStart(2, '0')}</span>
-              <h3 className="text-xl" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>{g.title}</h3>
+              <h3 className="text-xl" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>{g.title}</h3>
             </div>
-            <div className="mb-4 p-4 rounded-sm" style={{ background:'var(--bg)' }}>
+            <div className="mb-4 p-4 rounded-2xl" style={{ background:'var(--bg)' }}>
               <div className="text-xs tracking-widest mb-1" style={{ color:'var(--muted)' }}>CẤU TRÚC</div>
-              <div className="text-lg" style={{ fontFamily:'var(--font-display)', color:'var(--ink)', fontWeight:600 }}>{g.structure}</div>
+              <div className="text-lg hanzi-text" style={{ color:'var(--ink)', fontWeight:500 }}>{g.structure}</div>
             </div>
             <p className="mb-4 leading-relaxed" style={{ color:'var(--ink)' }}>{g.explanation}</p>
             <div>
               <div className="text-xs tracking-widest mb-2" style={{ color:'var(--muted)' }}>VÍ DỤ</div>
               <div className="space-y-2">
                 {g.examples.map((ex, i) => (
-                  <div key={i} className="p-3 rounded-sm flex flex-col gap-1" style={{ background:'var(--bg)' }}>
-                    <button onClick={() => speak(ex.hanzi)} className="text-left text-lg hover:underline" style={{ fontFamily:'var(--font-display)', color:'var(--ink)' }}>{ex.hanzi} 🔊</button>
+                  <div key={i} className="p-3 rounded-2xl flex flex-col gap-1" style={{ background:'var(--bg)' }}>
+                    <button onClick={() => speak(ex.hanzi)} className="text-left text-lg hover:underline hanzi-text" style={{ color:'var(--ink)' }}>{ex.hanzi} 🔊</button>
                     <ColoredPinyin pinyin={ex.pinyin} size="sm" />
                     <div className="text-sm italic" style={{ color:'var(--muted)' }}>{ex.meaning}</div>
                   </div>
@@ -1101,10 +1563,10 @@ const FlashcardView = ({ srsData, updateSRS }) => {
     <div className="max-w-3xl mx-auto px-6 py-8">
       <div className="mb-6">
         <div className="text-xs tracking-[0.3em] mb-2" style={{ color:'var(--accent)' }}>卡片 · FLASHCARD</div>
-        <h1 className="text-3xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Ôn tập với SRS</h1>
+        <h1 className="text-3xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Ôn tập với SRS</h1>
         <div className="flex gap-2 flex-wrap mb-3">
           {[1,2,3,4,5,6].map(l => (
-            <button key={l} onClick={() => { setHskLevel(l); setCurrentIdx(0); setFlipped(false); }} className="px-3 py-1.5 rounded-sm text-sm"
+            <button key={l} onClick={() => { setHskLevel(l); setCurrentIdx(0); setFlipped(false); }} className="px-3 py-1.5 rounded-2xl text-sm"
               style={{ background: hskLevel === l ? 'var(--accent)' : 'var(--surface)', color: hskLevel === l ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>HSK {l}</button>
           ))}
         </div>
@@ -1114,20 +1576,20 @@ const FlashcardView = ({ srsData, updateSRS }) => {
       <div onClick={() => setFlipped(!flipped)} className="relative cursor-pointer mb-6 mx-auto" style={{ perspective:'1500px', maxWidth:'500px' }}>
         <div className="relative w-full transition-transform duration-700"
           style={{ transformStyle:'preserve-3d', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)', minHeight:'400px' }}>
-          <div className="absolute inset-0 p-10 rounded-sm flex flex-col items-center justify-center text-center"
-            style={{ background:'var(--surface)', border:'2px solid var(--border)', backfaceVisibility:'hidden' }}>
+          <div className="absolute inset-0 p-10 rounded-2xl flex flex-col items-center justify-center text-center"
+            className="soft-shadow-lg" style={{ background:'var(--surface)', border:'2px solid var(--border)', backfaceVisibility:'hidden' }}>
             <div className="text-xs tracking-widest mb-4" style={{ color:'var(--muted)' }}>NHẤN ĐỂ XEM NGHĨA</div>
             <div className="text-8xl mb-6" style={{ fontFamily:'var(--font-display)', color:'var(--ink)', fontWeight:700 }}>{currentWord.hanzi}</div>
-            <button onClick={(e) => { e.stopPropagation(); speak(currentWord.hanzi); }} className="px-4 py-2 rounded-sm text-sm" style={{ background:'var(--accent)', color:'white' }}>🔊 Phát âm</button>
+            <button onClick={(e) => { e.stopPropagation(); speak(currentWord.hanzi); }} className="px-4 py-2 rounded-2xl text-sm" style={{ background:'var(--accent)', color:'white' }}>🔊 Phát âm</button>
           </div>
-          <div className="absolute inset-0 p-8 rounded-sm flex flex-col justify-center"
+          <div className="absolute inset-0 p-8 rounded-2xl flex flex-col justify-center"
             style={{ background:'var(--surface)', border:'2px solid var(--accent)', backfaceVisibility:'hidden', transform:'rotateY(180deg)' }}>
             <div className="text-3xl mb-2 text-center" style={{ fontFamily:'var(--font-display)', color:'var(--ink)', fontWeight:700 }}>{currentWord.hanzi}</div>
             <div className="text-center mb-3"><ColoredPinyin pinyin={currentWord.pinyin} size="xl" /></div>
             <div className="text-center text-xl mb-4" style={{ color:'var(--ink)' }}>{currentWord.meaning}</div>
             <div className="pt-4" style={{ borderTop:'1px dashed var(--border)' }}>
               <div className="text-xs tracking-widest mb-2 text-center" style={{ color:'var(--muted)' }}>VÍ DỤ</div>
-              <div className="text-lg text-center mb-1" style={{ fontFamily:'var(--font-display)', color:'var(--ink)' }}>{currentWord.example}</div>
+              <div className="text-lg text-center mb-1 hanzi-text" style={{ color:'var(--ink)' }}>{currentWord.example}</div>
               <div className="text-center mb-1"><ColoredPinyin pinyin={currentWord.examplePinyin} size="sm" /></div>
               <div className="text-sm text-center italic" style={{ color:'var(--muted)' }}>{currentWord.exampleMeaning}</div>
             </div>
@@ -1137,16 +1599,16 @@ const FlashcardView = ({ srsData, updateSRS }) => {
 
       {flipped ? (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 max-w-xl mx-auto">
-          <button onClick={() => handleRate(1)} className="py-3 rounded-sm text-sm font-medium" style={{ background:'#dc2626', color:'white' }}>
+          <button onClick={() => handleRate(1)} className="py-3 rounded-2xl text-sm font-medium" style={{ background:'#dc2626', color:'white' }}>
             <div>Quên</div><div className="text-xs opacity-75">1 ngày</div>
           </button>
-          <button onClick={() => handleRate(3)} className="py-3 rounded-sm text-sm font-medium" style={{ background:'#f59e0b', color:'white' }}>
+          <button onClick={() => handleRate(3)} className="py-3 rounded-2xl text-sm font-medium" style={{ background:'#f59e0b', color:'white' }}>
             <div>Khó</div><div className="text-xs opacity-75">~3 ngày</div>
           </button>
-          <button onClick={() => handleRate(4)} className="py-3 rounded-sm text-sm font-medium" style={{ background:'#10b981', color:'white' }}>
+          <button onClick={() => handleRate(4)} className="py-3 rounded-2xl text-sm font-medium" style={{ background:'#10b981', color:'white' }}>
             <div>Tốt</div><div className="text-xs opacity-75">~6 ngày</div>
           </button>
-          <button onClick={() => handleRate(5)} className="py-3 rounded-sm text-sm font-medium" style={{ background:'#3b82f6', color:'white' }}>
+          <button onClick={() => handleRate(5)} className="py-3 rounded-2xl text-sm font-medium" style={{ background:'#3b82f6', color:'white' }}>
             <div>Dễ</div><div className="text-xs opacity-75">~14+ ngày</div>
           </button>
         </div>
@@ -1211,12 +1673,12 @@ const QuizView = ({ toggleLearned, learned, addQuizScore }) => {
     return (
       <div className="max-w-2xl mx-auto px-6 py-12 text-center">
         <div className="text-7xl mb-4" style={{ fontFamily:'var(--font-display)', color:'var(--accent)' }}>{pct >= 80 ? '优' : pct >= 60 ? '良' : '加'}</div>
-        <div className="text-3xl mb-2" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Kết quả</div>
-        <div className="text-6xl mb-6" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--accent)' }}>{score}/{questions.length}</div>
+        <div className="text-3xl mb-2" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Kết quả</div>
+        <div className="text-6xl mb-6" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--accent)' }}>{score}/{questions.length}</div>
         <div className="mb-8" style={{ color:'var(--muted)' }}>
           {pct >= 80 ? 'Xuất sắc! 太棒了!' : pct >= 60 ? 'Tốt lắm! Tiếp tục cố gắng nhé.' : 'Hãy ôn tập thêm và thử lại.'}
         </div>
-        <button onClick={() => startQuiz(hskLevel)} className="px-6 py-3 rounded-sm" style={{ background:'var(--accent)', color:'white' }}>Làm lại</button>
+        <button onClick={() => startQuiz(hskLevel)} className="px-6 py-3 rounded-2xl" style={{ background:'var(--accent)', color:'white' }}>Làm lại</button>
       </div>
     );
   }
@@ -1228,10 +1690,10 @@ const QuizView = ({ toggleLearned, learned, addQuizScore }) => {
     <div className="max-w-2xl mx-auto px-6 py-8">
       <div className="mb-6">
         <div className="text-xs tracking-[0.3em] mb-2" style={{ color:'var(--accent)' }}>测验 · QUIZ</div>
-        <h1 className="text-3xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Trắc nghiệm</h1>
+        <h1 className="text-3xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Trắc nghiệm</h1>
         <div className="flex gap-2 flex-wrap mb-4">
           {[1,2,3,4,5,6].map(l => (
-            <button key={l} onClick={() => startQuiz(l)} className="px-3 py-1.5 rounded-sm text-sm"
+            <button key={l} onClick={() => startQuiz(l)} className="px-3 py-1.5 rounded-2xl text-sm"
               style={{ background: hskLevel === l ? 'var(--accent)' : 'var(--surface)', color: hskLevel === l ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>HSK {l}</button>
           ))}
         </div>
@@ -1244,7 +1706,7 @@ const QuizView = ({ toggleLearned, learned, addQuizScore }) => {
         </div>
       </div>
 
-      <div className="p-8 rounded-sm mb-6 text-center" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+      <div className="p-8 rounded-2xl mb-6 text-center" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
         <div className="text-xs tracking-widest mb-3" style={{ color:'var(--muted)' }}>NGHĨA CỦA TỪ NÀY LÀ?</div>
         <button onClick={() => speak(q.word.hanzi)} className="text-7xl mb-3" style={{ fontFamily:'var(--font-display)', color:'var(--ink)', fontWeight:700 }}>{q.word.hanzi}</button>
         <div className="mb-2"><ColoredPinyin pinyin={q.word.pinyin} size="xl" /></div>
@@ -1262,7 +1724,7 @@ const QuizView = ({ toggleLearned, learned, addQuizScore }) => {
           }
           return (
             <button key={i} onClick={() => handleAnswer(opt)} disabled={showResult}
-              className="p-4 rounded-sm text-left transition-all"
+              className="p-4 rounded-2xl text-left transition-all"
               style={{ background: bg, color: col, border:`1px solid ${bd}` }}>
               <span className="text-xs mr-3 opacity-60">{String.fromCharCode(65 + i)}.</span>{opt}
             </button>
@@ -1271,7 +1733,7 @@ const QuizView = ({ toggleLearned, learned, addQuizScore }) => {
       </div>
 
       {showResult && (
-        <button onClick={next} className="w-full py-3 rounded-sm" style={{ background:'var(--accent)', color:'white', fontFamily:'var(--font-display)', fontWeight:600 }}>
+        <button onClick={next} className="w-full py-3 rounded-2xl" style={{ background:'var(--accent)', color:'white', fontFamily:'var(--font-display)', fontWeight:600 }}>
           {currentQ + 1 >= questions.length ? 'Xem kết quả' : 'Câu tiếp theo →'}
         </button>
       )}
@@ -1370,10 +1832,10 @@ const WritingView = () => {
     <div className="max-w-4xl mx-auto px-6 py-8">
       <div className="mb-6">
         <div className="text-xs tracking-[0.3em] mb-2" style={{ color:'var(--accent)' }}>书写 · LUYỆN VIẾT</div>
-        <h1 className="text-3xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Tập viết chữ Hán</h1>
+        <h1 className="text-3xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Tập viết chữ Hán</h1>
         <div className="flex gap-2 flex-wrap mb-3">
           {[1,2,3,4,5,6].map(l => (
-            <button key={l} onClick={() => { setHskLevel(l); setCurrentIdx(0); }} className="px-3 py-1.5 rounded-sm text-sm"
+            <button key={l} onClick={() => { setHskLevel(l); setCurrentIdx(0); }} className="px-3 py-1.5 rounded-2xl text-sm"
               style={{ background: hskLevel === l ? 'var(--accent)' : 'var(--surface)', color: hskLevel === l ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>HSK {l}</button>
           ))}
         </div>
@@ -1381,40 +1843,40 @@ const WritingView = () => {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Char info */}
-        <div className="p-6 rounded-sm" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+        <div className="p-6 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
           <div className="text-xs tracking-widest mb-2" style={{ color:'var(--muted)' }}>CHỮ MẪU ({currentIdx + 1}/{words.length})</div>
           <div className="relative mb-4 mx-auto" style={{ width:'200px', height:'200px' }}>
-            <div className="absolute inset-0 border-2 rounded-sm" style={{ borderColor:'var(--accent)', borderStyle:'dashed' }} />
+            <div className="absolute inset-0 border-2 rounded-2xl" style={{ borderColor:'var(--accent)', borderStyle:'dashed' }} />
             <div className="absolute inset-0 flex items-center justify-center">
-              {showHint && <div className="text-[140px] leading-none opacity-40" style={{ fontFamily:'var(--font-display)', color:'var(--accent)' }}>{currentWord.hanzi[0]}</div>}
+              {showHint && <div className="text-[140px] leading-none opacity-40 hanzi-text" style={{ color:'var(--accent)', fontWeight:400 }}>{currentWord.hanzi[0]}</div>}
             </div>
           </div>
           <div className="text-center"><ColoredPinyin pinyin={currentWord.pinyin} size="xl" /></div>
           <div className="text-center mt-2 mb-3" style={{ color:'var(--ink)' }}>{currentWord.meaning}</div>
-          <button onClick={() => speak(currentWord.hanzi)} className="w-full py-2 rounded-sm text-sm" style={{ background:'var(--accent)', color:'white' }}>🔊 Phát âm</button>
+          <button onClick={() => speak(currentWord.hanzi)} className="w-full py-2 rounded-2xl text-sm" style={{ background:'var(--accent)', color:'white' }}>🔊 Phát âm</button>
           <div className="flex gap-2 mt-3">
-            <button onClick={() => setShowHint(!showHint)} className="flex-1 py-2 rounded-sm text-sm" style={{ background:'var(--bg)', color:'var(--ink)', border:'1px solid var(--border)' }}>{showHint ? 'Ẩn gợi ý' : 'Hiện gợi ý'}</button>
+            <button onClick={() => setShowHint(!showHint)} className="flex-1 py-2 rounded-2xl text-sm" style={{ background:'var(--bg)', color:'var(--ink)', border:'1px solid var(--border)' }}>{showHint ? 'Ẩn gợi ý' : 'Hiện gợi ý'}</button>
           </div>
         </div>
 
         {/* Canvas */}
-        <div className="p-6 rounded-sm" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+        <div className="p-6 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
           <div className="text-xs tracking-widest mb-2" style={{ color:'var(--muted)' }}>VIẾT THỬ</div>
           <canvas ref={canvasRef}
             onMouseDown={startDraw} onMouseMove={draw} onMouseUp={stopDraw} onMouseLeave={stopDraw}
             onTouchStart={startDraw} onTouchMove={draw} onTouchEnd={stopDraw}
             style={{ width:'100%', height:'200px', background:'#fff', cursor:'crosshair', borderRadius:'2px', display:'block' }} />
           <div className="flex gap-2 mt-3">
-            <button onClick={clearCanvas} className="flex-1 py-2 rounded-sm text-sm" style={{ background:'var(--bg)', color:'var(--ink)', border:'1px solid var(--border)' }}>Xóa</button>
+            <button onClick={clearCanvas} className="flex-1 py-2 rounded-2xl text-sm" style={{ background:'var(--bg)', color:'var(--ink)', border:'1px solid var(--border)' }}>Xóa</button>
           </div>
         </div>
       </div>
 
       <div className="flex gap-3 mt-6 justify-center">
         <button onClick={() => { setCurrentIdx(i => Math.max(0, i - 1)); clearCanvas(); }} disabled={currentIdx === 0}
-          className="px-6 py-2 rounded-sm" style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)', opacity: currentIdx === 0 ? 0.5 : 1 }}>← Trước</button>
+          className="px-6 py-2 rounded-2xl" style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)', opacity: currentIdx === 0 ? 0.5 : 1 }}>← Trước</button>
         <button onClick={() => { setCurrentIdx(i => Math.min(words.length - 1, i + 1)); clearCanvas(); }} disabled={currentIdx >= words.length - 1}
-          className="px-6 py-2 rounded-sm" style={{ background:'var(--accent)', color:'white', opacity: currentIdx >= words.length - 1 ? 0.5 : 1 }}>Sau →</button>
+          className="px-6 py-2 rounded-2xl" style={{ background:'var(--accent)', color:'white', opacity: currentIdx >= words.length - 1 ? 0.5 : 1 }}>Sau →</button>
       </div>
     </div>
   );
@@ -1443,7 +1905,7 @@ const ProgressView = ({ learned, starred, srsData, quizScores }) => {
     <div className="max-w-5xl mx-auto px-6 py-8">
       <div className="mb-8">
         <div className="text-xs tracking-[0.3em] mb-2" style={{ color:'var(--accent)' }}>进度 · TIẾN ĐỘ</div>
-        <h1 className="text-4xl mb-2" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Theo dõi học tập</h1>
+        <h1 className="text-4xl mb-2" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Theo dõi học tập</h1>
         <p style={{ color:'var(--muted)' }}>Tất cả thống kê được lưu lại giữa các phiên học</p>
       </div>
 
@@ -1455,17 +1917,17 @@ const ProgressView = ({ learned, starred, srsData, quizScores }) => {
           { label:'Đang ôn (SRS)', value: srsCount, sub:'thẻ' },
           { label:'Cần ôn hôm nay', value: dueCount, sub:'thẻ' },
         ].map((s, i) => (
-          <div key={i} className="p-5 rounded-sm" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+          <div key={i} className="p-5 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
             <div className="text-xs tracking-widest mb-1" style={{ color:'var(--muted)' }}>{s.label.toUpperCase()}</div>
-            <div className="text-3xl" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--accent)' }}>{s.value}</div>
+            <div className="text-3xl" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--accent)' }}>{s.value}</div>
             <div className="text-sm" style={{ color:'var(--muted)' }}>{s.sub}</div>
           </div>
         ))}
       </div>
 
       {/* HSK levels progress */}
-      <div className="p-6 rounded-sm mb-8" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-        <h2 className="text-xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Tiến độ theo cấp HSK</h2>
+      <div className="p-6 rounded-2xl mb-8" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+        <h2 className="text-xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Tiến độ theo cấp HSK</h2>
         <div className="space-y-4">
           {[1,2,3,4,5,6].map(l => {
             const s = stats[l];
@@ -1486,13 +1948,13 @@ const ProgressView = ({ learned, starred, srsData, quizScores }) => {
 
       {/* Quiz history */}
       {quizScores.length > 0 && (
-        <div className="p-6 rounded-sm" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-          <h2 className="text-xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Lịch sử Quiz</h2>
+        <div className="p-6 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+          <h2 className="text-xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Lịch sử Quiz</h2>
           <div className="space-y-2">
             {quizScores.slice(-10).reverse().map((q, i) => {
               const pct = Math.round((q.score / q.total) * 100);
               return (
-                <div key={i} className="flex justify-between items-center p-3 rounded-sm" style={{ background:'var(--bg)' }}>
+                <div key={i} className="flex justify-between items-center p-3 rounded-2xl" style={{ background:'var(--bg)' }}>
                   <div>
                     <div style={{ fontFamily:'var(--font-display)', color:'var(--ink)' }}>HSK {q.level}</div>
                     <div className="text-xs" style={{ color:'var(--muted)' }}>{new Date(q.date).toLocaleDateString('vi-VN')} {new Date(q.date).toLocaleTimeString('vi-VN', {hour:'2-digit',minute:'2-digit'})}</div>
@@ -1594,31 +2056,35 @@ function App() {
 
   // CSS variables based on theme
   const themeStyles = darkMode ? {
-    '--bg': '#0f0e0d',
-    '--bg-header': 'rgba(15, 14, 13, 0.85)',
-    '--surface': '#1a1817',
-    '--ink': '#f5f1ea',
-    '--muted': '#8a8378',
-    '--border': '#2a2724',
-    '--accent': '#e63946',
-    '--accent-2': '#d4af37',
-    '--tone-1': '#60a5fa',
-    '--tone-2': '#34d399',
-    '--tone-3': '#fbbf24',
-    '--tone-4': '#f87171',
+    '--bg': '#0f1a2e',
+    '--bg-header': 'rgba(15, 26, 46, 0.85)',
+    '--surface': '#1a2842',
+    '--surface-soft': '#243352',
+    '--ink': '#e8f1fc',
+    '--muted': '#8da9c9',
+    '--border': '#2d3e5c',
+    '--accent': '#7eb4dc',
+    '--accent-soft': '#5b9bd5',
+    '--accent-2': '#a8c8e8',
+    '--tone-1': '#93c5fd',
+    '--tone-2': '#6ee7b7',
+    '--tone-3': '#fcd34d',
+    '--tone-4': '#fca5a5',
   } : {
-    '--bg': '#faf6ef',
-    '--bg-header': 'rgba(250, 246, 239, 0.85)',
-    '--surface': '#fffaf2',
-    '--ink': '#1a1817',
-    '--muted': '#7a6f60',
-    '--border': '#e8dfd0',
-    '--accent': '#c41e3a',
-    '--accent-2': '#b8860b',
+    '--bg': '#f0f7ff',
+    '--bg-header': 'rgba(240, 247, 255, 0.85)',
+    '--surface': '#ffffff',
+    '--surface-soft': '#e8f1fc',
+    '--ink': '#1e3a5f',
+    '--muted': '#6b8caf',
+    '--border': '#d6e4f0',
+    '--accent': '#5b9bd5',
+    '--accent-soft': '#a8c8e8',
+    '--accent-2': '#7eb4dc',
     '--tone-1': '#2563eb',
-    '--tone-2': '#059669',
-    '--tone-3': '#d97706',
-    '--tone-4': '#dc2626',
+    '--tone-2': '#10b981',
+    '--tone-3': '#f59e0b',
+    '--tone-4': '#ef4444',
   };
 
   return (
@@ -1628,23 +2094,30 @@ function App() {
       background: 'var(--bg)',
       color: 'var(--ink)',
       minHeight: '100vh',
+      backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(168, 200, 232, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(126, 180, 220, 0.1) 0%, transparent 50%)',
     }}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Cormorant+Garamond:wght@400;500;700&family=Manrope:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap');
         :root {
-          --font-display: 'Noto Serif SC', 'Cormorant Garamond', serif;
-          --font-body: 'Manrope', system-ui, sans-serif;
-          --font-pinyin: 'Cormorant Garamond', serif;
+          --font-display: 'Quicksand', 'Noto Sans SC', sans-serif;
+          --font-body: 'Nunito', 'Noto Sans SC', sans-serif;
+          --font-pinyin: 'Quicksand', sans-serif;
+          --font-hanzi: 'Noto Sans SC', sans-serif;
         }
-        * { box-sizing: border-box; }
-        body { margin: 0; }
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        body { margin: 0; letter-spacing: 0.01em; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        button { cursor: pointer; border: none; font-family: inherit; transition: all 0.2s ease; }
-        button:hover { filter: brightness(1.05); }
-        input { font-family: inherit; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+        button { cursor: pointer; border: none; font-family: inherit; transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1); }
+        button:hover { filter: brightness(1.03); }
+        input, textarea { font-family: inherit; }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent-soft); }
+        .hanzi-text { font-family: var(--font-hanzi); font-weight: 500; }
+        .soft-shadow { box-shadow: 0 4px 24px rgba(91, 155, 213, 0.08); }
+        .soft-shadow-lg { box-shadow: 0 8px 32px rgba(91, 155, 213, 0.12); }
       `}</style>
 
       <Header view={view} setView={setView} darkMode={darkMode} toggleDark={toggleDark} />
@@ -1671,7 +2144,14 @@ function App() {
 // ================== RENDER ==================
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
-document.getElementById('loading').style.display = 'none';
+setTimeout(() => {
+  const loading = document.getElementById('loading');
+  if (loading) {
+    loading.style.transition = 'opacity 0.5s';
+    loading.style.opacity = '0';
+    setTimeout(() => loading.style.display = 'none', 500);
+  }
+}, 100);
 </script>
 </body>
 </html>
