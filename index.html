@@ -19,7 +19,6 @@
     font-family: 'Nunito', 'Noto Sans SC', system-ui, -apple-system, sans-serif;
     letter-spacing: 0.01em;
   }
-  /* Loading screen - pastel blue */
   .loading-screen {
     position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
     flex-direction: column; gap: 24px;
@@ -35,9 +34,7 @@
   .loading-text {
     font-size: 13px; color: #6b8caf; letter-spacing: 0.4em; font-family: 'Quicksand', sans-serif; font-weight: 500;
   }
-  .loading-dots {
-    display: flex; gap: 8px; margin-top: 8px;
-  }
+  .loading-dots { display: flex; gap: 8px; margin-top: 8px; }
   .loading-dot {
     width: 8px; height: 8px; border-radius: 50%; background: #a8c8e8;
     animation: bounce 1.4s ease-in-out infinite;
@@ -379,45 +376,305 @@ const hsk2 = [
 
 const hsk3 = [
   { id: "3-1", hanzi: "阿姨", pinyin: "āyí", meaning: "cô, dì", type: "danh từ", example: "李阿姨很好。", examplePinyin: "Lǐ āyí hěn hǎo.", exampleMeaning: "Cô Lý rất tốt." },
-  { id: "3-2", hanzi: "啊", pinyin: "a", meaning: "à, ừ", type: "thán từ", example: "好啊!", examplePinyin: "Hǎo a!", exampleMeaning: "Được đấy!" },
+  { id: "3-2", hanzi: "啊", pinyin: "a", meaning: "à, ừ (trợ từ)", type: "thán từ", example: "好啊!", examplePinyin: "Hǎo a!", exampleMeaning: "Được đấy!" },
   { id: "3-3", hanzi: "矮", pinyin: "ǎi", meaning: "thấp, lùn", type: "tính từ", example: "他个子矮。", examplePinyin: "Tā gèzi ǎi.", exampleMeaning: "Anh ấy thấp." },
   { id: "3-4", hanzi: "爱好", pinyin: "àihào", meaning: "sở thích", type: "danh từ", example: "我的爱好是读书。", examplePinyin: "Wǒ de àihào shì dúshū.", exampleMeaning: "Sở thích của tôi là đọc sách." },
   { id: "3-5", hanzi: "安静", pinyin: "ānjìng", meaning: "yên tĩnh", type: "tính từ", example: "请安静!", examplePinyin: "Qǐng ānjìng!", exampleMeaning: "Xin im lặng!" },
   { id: "3-6", hanzi: "把", pinyin: "bǎ", meaning: "đem, lấy (giới từ)", type: "giới từ", example: "把书给我。", examplePinyin: "Bǎ shū gěi wǒ.", exampleMeaning: "Đưa sách cho tôi." },
-  { id: "3-7", hanzi: "班", pinyin: "bān", meaning: "lớp", type: "danh từ", example: "我们班", examplePinyin: "wǒmen bān", exampleMeaning: "lớp chúng tôi" },
-  { id: "3-8", hanzi: "搬", pinyin: "bān", meaning: "chuyển, dọn", type: "động từ", example: "搬家", examplePinyin: "bān jiā", exampleMeaning: "chuyển nhà" },
-  { id: "3-9", hanzi: "办法", pinyin: "bànfǎ", meaning: "cách, biện pháp", type: "danh từ", example: "想办法", examplePinyin: "xiǎng bànfǎ", exampleMeaning: "nghĩ cách" },
-  { id: "3-10", hanzi: "办公室", pinyin: "bàngōngshì", meaning: "văn phòng", type: "danh từ", example: "在办公室", examplePinyin: "zài bàngōngshì", exampleMeaning: "ở văn phòng" },
-  { id: "3-11", hanzi: "半", pinyin: "bàn", meaning: "nửa", type: "số từ", example: "一半", examplePinyin: "yíbàn", exampleMeaning: "một nửa" },
-  { id: "3-12", hanzi: "帮忙", pinyin: "bāngmáng", meaning: "giúp đỡ", type: "động từ", example: "帮个忙。", examplePinyin: "Bāng ge máng.", exampleMeaning: "Giúp một tay." },
-  { id: "3-13", hanzi: "包", pinyin: "bāo", meaning: "túi, bao", type: "danh từ", example: "我的包", examplePinyin: "wǒ de bāo", exampleMeaning: "túi của tôi" },
+  { id: "3-7", hanzi: "班", pinyin: "bān", meaning: "lớp", type: "danh từ", example: "我们班有三十个人。", examplePinyin: "Wǒmen bān yǒu sānshí ge rén.", exampleMeaning: "Lớp chúng tôi có 30 người." },
+  { id: "3-8", hanzi: "搬", pinyin: "bān", meaning: "chuyển, dọn", type: "động từ", example: "我们要搬家。", examplePinyin: "Wǒmen yào bān jiā.", exampleMeaning: "Chúng tôi sắp chuyển nhà." },
+  { id: "3-9", hanzi: "办法", pinyin: "bànfǎ", meaning: "cách, biện pháp", type: "danh từ", example: "想个办法。", examplePinyin: "Xiǎng ge bànfǎ.", exampleMeaning: "Nghĩ một cách." },
+  { id: "3-10", hanzi: "办公室", pinyin: "bàngōngshì", meaning: "văn phòng", type: "danh từ", example: "他在办公室。", examplePinyin: "Tā zài bàngōngshì.", exampleMeaning: "Anh ấy ở văn phòng." },
+  { id: "3-11", hanzi: "半", pinyin: "bàn", meaning: "nửa, rưỡi", type: "số từ", example: "一半的人。", examplePinyin: "Yíbàn de rén.", exampleMeaning: "Một nửa số người." },
+  { id: "3-12", hanzi: "帮忙", pinyin: "bāngmáng", meaning: "giúp đỡ", type: "động từ", example: "请帮个忙。", examplePinyin: "Qǐng bāng ge máng.", exampleMeaning: "Xin giúp một tay." },
+  { id: "3-13", hanzi: "包", pinyin: "bāo", meaning: "túi, bao, gói", type: "danh từ", example: "我的包很大。", examplePinyin: "Wǒ de bāo hěn dà.", exampleMeaning: "Túi của tôi rất to." },
   { id: "3-14", hanzi: "饱", pinyin: "bǎo", meaning: "no", type: "tính từ", example: "我吃饱了。", examplePinyin: "Wǒ chī bǎo le.", exampleMeaning: "Tôi ăn no rồi." },
-  { id: "3-15", hanzi: "北方", pinyin: "běifāng", meaning: "phương Bắc", type: "danh từ", example: "北方人", examplePinyin: "běifāng rén", exampleMeaning: "người miền Bắc" },
-  { id: "3-16", hanzi: "被", pinyin: "bèi", meaning: "bị, được (bị động)", type: "giới từ", example: "被打了", examplePinyin: "bèi dǎ le", exampleMeaning: "bị đánh" },
-  { id: "3-17", hanzi: "鼻子", pinyin: "bízi", meaning: "mũi", type: "danh từ", example: "高鼻子", examplePinyin: "gāo bízi", exampleMeaning: "mũi cao" },
-  { id: "3-18", hanzi: "比较", pinyin: "bǐjiào", meaning: "tương đối, so sánh", type: "phó từ", example: "比较好", examplePinyin: "bǐjiào hǎo", exampleMeaning: "tương đối tốt" },
-  { id: "3-19", hanzi: "比赛", pinyin: "bǐsài", meaning: "thi đấu", type: "danh từ", example: "足球比赛", examplePinyin: "zúqiú bǐsài", exampleMeaning: "trận đấu bóng đá" },
+  { id: "3-15", hanzi: "北方", pinyin: "běifāng", meaning: "phương Bắc", type: "danh từ", example: "我是北方人。", examplePinyin: "Wǒ shì běifāng rén.", exampleMeaning: "Tôi là người miền Bắc." },
+  { id: "3-16", hanzi: "被", pinyin: "bèi", meaning: "bị, được (bị động)", type: "giới từ", example: "杯子被打破了。", examplePinyin: "Bēizi bèi dǎpò le.", exampleMeaning: "Cốc bị vỡ." },
+  { id: "3-17", hanzi: "鼻子", pinyin: "bízi", meaning: "mũi", type: "danh từ", example: "他的鼻子很高。", examplePinyin: "Tā de bízi hěn gāo.", exampleMeaning: "Mũi anh ấy rất cao." },
+  { id: "3-18", hanzi: "比较", pinyin: "bǐjiào", meaning: "tương đối, so sánh", type: "phó từ", example: "今天比较冷。", examplePinyin: "Jīntiān bǐjiào lěng.", exampleMeaning: "Hôm nay tương đối lạnh." },
+  { id: "3-19", hanzi: "比赛", pinyin: "bǐsài", meaning: "thi đấu", type: "danh từ", example: "看足球比赛。", examplePinyin: "Kàn zúqiú bǐsài.", exampleMeaning: "Xem trận đấu bóng đá." },
   { id: "3-20", hanzi: "必须", pinyin: "bìxū", meaning: "phải, bắt buộc", type: "phó từ", example: "你必须去。", examplePinyin: "Nǐ bìxū qù.", exampleMeaning: "Bạn phải đi." },
-  { id: "3-21", hanzi: "变化", pinyin: "biànhuà", meaning: "thay đổi, biến hóa", type: "danh/động từ", example: "天气变化", examplePinyin: "tiānqì biànhuà", exampleMeaning: "thời tiết thay đổi" },
-  { id: "3-22", hanzi: "表示", pinyin: "biǎoshì", meaning: "biểu thị, thể hiện", type: "động từ", example: "表示同意", examplePinyin: "biǎoshì tóngyì", exampleMeaning: "biểu thị đồng ý" },
-  { id: "3-23", hanzi: "别人", pinyin: "biérén", meaning: "người khác", type: "đại từ", example: "别人说", examplePinyin: "biérén shuō", exampleMeaning: "người khác nói" },
-  { id: "3-24", hanzi: "宾馆", pinyin: "bīnguǎn", meaning: "khách sạn", type: "danh từ", example: "住在宾馆", examplePinyin: "zhù zài bīnguǎn", exampleMeaning: "ở khách sạn" },
-  { id: "3-25", hanzi: "冰箱", pinyin: "bīngxiāng", meaning: "tủ lạnh", type: "danh từ", example: "新冰箱", examplePinyin: "xīn bīngxiāng", exampleMeaning: "tủ lạnh mới" },
-  { id: "3-26", hanzi: "才", pinyin: "cái", meaning: "mới, vừa", type: "phó từ", example: "他才来。", examplePinyin: "Tā cái lái.", exampleMeaning: "Anh ấy vừa đến." },
-  { id: "3-27", hanzi: "菜单", pinyin: "càidān", meaning: "thực đơn", type: "danh từ", example: "看菜单", examplePinyin: "kàn càidān", exampleMeaning: "xem thực đơn" },
-  { id: "3-28", hanzi: "参加", pinyin: "cānjiā", meaning: "tham gia", type: "động từ", example: "参加比赛", examplePinyin: "cānjiā bǐsài", exampleMeaning: "tham gia thi đấu" },
-  { id: "3-29", hanzi: "草", pinyin: "cǎo", meaning: "cỏ", type: "danh từ", example: "绿色的草", examplePinyin: "lǜsè de cǎo", exampleMeaning: "cỏ màu xanh" },
-  { id: "3-30", hanzi: "层", pinyin: "céng", meaning: "tầng", type: "lượng từ", example: "三层楼", examplePinyin: "sān céng lóu", exampleMeaning: "ba tầng lầu" },
-  { id: "3-31", hanzi: "差", pinyin: "chà", meaning: "kém, thiếu", type: "tính từ", example: "差五分", examplePinyin: "chà wǔ fēn", exampleMeaning: "kém năm phút" },
-  { id: "3-32", hanzi: "超市", pinyin: "chāoshì", meaning: "siêu thị", type: "danh từ", example: "去超市", examplePinyin: "qù chāoshì", exampleMeaning: "đi siêu thị" },
-  { id: "3-33", hanzi: "衬衫", pinyin: "chènshān", meaning: "áo sơ mi", type: "danh từ", example: "白衬衫", examplePinyin: "bái chènshān", exampleMeaning: "áo sơ mi trắng" },
-  { id: "3-34", hanzi: "成绩", pinyin: "chéngjì", meaning: "thành tích, kết quả", type: "danh từ", example: "成绩很好。", examplePinyin: "Chéngjì hěn hǎo.", exampleMeaning: "Thành tích rất tốt." },
-  { id: "3-35", hanzi: "城市", pinyin: "chéngshì", meaning: "thành phố", type: "danh từ", example: "大城市", examplePinyin: "dà chéngshì", exampleMeaning: "thành phố lớn" },
-  { id: "3-36", hanzi: "迟到", pinyin: "chídào", meaning: "đến muộn", type: "động từ", example: "我迟到了。", examplePinyin: "Wǒ chídào le.", exampleMeaning: "Tôi đến muộn rồi." },
-  { id: "3-37", hanzi: "船", pinyin: "chuán", meaning: "thuyền", type: "danh từ", example: "坐船", examplePinyin: "zuò chuán", exampleMeaning: "đi thuyền" },
-  { id: "3-38", hanzi: "春", pinyin: "chūn", meaning: "mùa xuân", type: "danh từ", example: "春天", examplePinyin: "chūntiān", exampleMeaning: "mùa xuân" },
-  { id: "3-39", hanzi: "词典", pinyin: "cídiǎn", meaning: "từ điển", type: "danh từ", example: "查词典", examplePinyin: "chá cídiǎn", exampleMeaning: "tra từ điển" },
-  { id: "3-40", hanzi: "聪明", pinyin: "cōngming", meaning: "thông minh", type: "tính từ", example: "他很聪明。", examplePinyin: "Tā hěn cōngming.", exampleMeaning: "Anh ấy rất thông minh." }
+  { id: "3-21", hanzi: "变化", pinyin: "biànhuà", meaning: "thay đổi, biến hóa", type: "danh từ", example: "天气变化很大。", examplePinyin: "Tiānqì biànhuà hěn dà.", exampleMeaning: "Thời tiết thay đổi nhiều." },
+  { id: "3-22", hanzi: "表示", pinyin: "biǎoshì", meaning: "biểu thị, thể hiện", type: "động từ", example: "表示同意。", examplePinyin: "Biǎoshì tóngyì.", exampleMeaning: "Biểu thị đồng ý." },
+  { id: "3-23", hanzi: "表演", pinyin: "biǎoyǎn", meaning: "biểu diễn", type: "động từ", example: "她在表演。", examplePinyin: "Tā zài biǎoyǎn.", exampleMeaning: "Cô ấy đang biểu diễn." },
+  { id: "3-24", hanzi: "别人", pinyin: "biérén", meaning: "người khác", type: "đại từ", example: "别人怎么说?", examplePinyin: "Biérén zěnme shuō?", exampleMeaning: "Người khác nói thế nào?" },
+  { id: "3-25", hanzi: "宾馆", pinyin: "bīnguǎn", meaning: "khách sạn", type: "danh từ", example: "住在宾馆。", examplePinyin: "Zhù zài bīnguǎn.", exampleMeaning: "Ở khách sạn." },
+  { id: "3-26", hanzi: "冰箱", pinyin: "bīngxiāng", meaning: "tủ lạnh", type: "danh từ", example: "冰箱里有水果。", examplePinyin: "Bīngxiāng lǐ yǒu shuǐguǒ.", exampleMeaning: "Trong tủ lạnh có trái cây." },
+  { id: "3-27", hanzi: "才", pinyin: "cái", meaning: "mới, vừa", type: "phó từ", example: "他才来。", examplePinyin: "Tā cái lái.", exampleMeaning: "Anh ấy vừa đến." },
+  { id: "3-28", hanzi: "菜单", pinyin: "càidān", meaning: "thực đơn", type: "danh từ", example: "请给我菜单。", examplePinyin: "Qǐng gěi wǒ càidān.", exampleMeaning: "Xin cho tôi thực đơn." },
+  { id: "3-29", hanzi: "参加", pinyin: "cānjiā", meaning: "tham gia", type: "động từ", example: "参加比赛。", examplePinyin: "Cānjiā bǐsài.", exampleMeaning: "Tham gia thi đấu." },
+  { id: "3-30", hanzi: "草", pinyin: "cǎo", meaning: "cỏ", type: "danh từ", example: "公园的草很绿。", examplePinyin: "Gōngyuán de cǎo hěn lǜ.", exampleMeaning: "Cỏ ở công viên rất xanh." },
+  { id: "3-31", hanzi: "层", pinyin: "céng", meaning: "tầng", type: "lượng từ", example: "我住三层。", examplePinyin: "Wǒ zhù sān céng.", exampleMeaning: "Tôi ở tầng ba." },
+  { id: "3-32", hanzi: "差", pinyin: "chà", meaning: "kém, thiếu", type: "tính từ", example: "差五分钟。", examplePinyin: "Chà wǔ fēnzhōng.", exampleMeaning: "Còn thiếu năm phút." },
+  { id: "3-33", hanzi: "超市", pinyin: "chāoshì", meaning: "siêu thị", type: "danh từ", example: "去超市买东西。", examplePinyin: "Qù chāoshì mǎi dōngxi.", exampleMeaning: "Đi siêu thị mua đồ." },
+  { id: "3-34", hanzi: "衬衫", pinyin: "chènshān", meaning: "áo sơ mi", type: "danh từ", example: "白衬衫很好看。", examplePinyin: "Bái chènshān hěn hǎokàn.", exampleMeaning: "Áo sơ mi trắng đẹp." },
+  { id: "3-35", hanzi: "成绩", pinyin: "chéngjì", meaning: "thành tích, kết quả", type: "danh từ", example: "他的成绩很好。", examplePinyin: "Tā de chéngjì hěn hǎo.", exampleMeaning: "Thành tích của anh ấy rất tốt." },
+  { id: "3-36", hanzi: "城市", pinyin: "chéngshì", meaning: "thành phố", type: "danh từ", example: "我喜欢这个城市。", examplePinyin: "Wǒ xǐhuan zhège chéngshì.", exampleMeaning: "Tôi thích thành phố này." },
+  { id: "3-37", hanzi: "迟到", pinyin: "chídào", meaning: "đến muộn", type: "động từ", example: "对不起,我迟到了。", examplePinyin: "Duìbuqǐ, wǒ chídào le.", exampleMeaning: "Xin lỗi, tôi đến muộn." },
+  { id: "3-38", hanzi: "船", pinyin: "chuán", meaning: "thuyền, tàu", type: "danh từ", example: "坐船去。", examplePinyin: "Zuò chuán qù.", exampleMeaning: "Đi bằng thuyền." },
+  { id: "3-39", hanzi: "春", pinyin: "chūn", meaning: "mùa xuân", type: "danh từ", example: "春天来了。", examplePinyin: "Chūntiān lái le.", exampleMeaning: "Mùa xuân đến rồi." },
+  { id: "3-40", hanzi: "词典", pinyin: "cídiǎn", meaning: "từ điển", type: "danh từ", example: "查词典。", examplePinyin: "Chá cídiǎn.", exampleMeaning: "Tra từ điển." },
+  { id: "3-41", hanzi: "聪明", pinyin: "cōngming", meaning: "thông minh", type: "tính từ", example: "她很聪明。", examplePinyin: "Tā hěn cōngming.", exampleMeaning: "Cô ấy rất thông minh." },
+  { id: "3-42", hanzi: "打扫", pinyin: "dǎsǎo", meaning: "quét dọn, lau dọn", type: "động từ", example: "打扫房间。", examplePinyin: "Dǎsǎo fángjiān.", exampleMeaning: "Quét dọn phòng." },
+  { id: "3-43", hanzi: "打算", pinyin: "dǎsuàn", meaning: "dự định, kế hoạch", type: "động từ", example: "你有什么打算?", examplePinyin: "Nǐ yǒu shénme dǎsuàn?", exampleMeaning: "Bạn có dự định gì?" },
+  { id: "3-44", hanzi: "带", pinyin: "dài", meaning: "mang, dẫn, đeo", type: "động từ", example: "带伞。", examplePinyin: "Dài sǎn.", exampleMeaning: "Mang ô." },
+  { id: "3-45", hanzi: "担心", pinyin: "dānxīn", meaning: "lo lắng", type: "động từ", example: "别担心。", examplePinyin: "Bié dānxīn.", exampleMeaning: "Đừng lo lắng." },
+  { id: "3-46", hanzi: "蛋糕", pinyin: "dàngāo", meaning: "bánh kem", type: "danh từ", example: "生日蛋糕。", examplePinyin: "Shēngrì dàngāo.", exampleMeaning: "Bánh sinh nhật." },
+  { id: "3-47", hanzi: "当然", pinyin: "dāngrán", meaning: "đương nhiên, tất nhiên", type: "phó từ", example: "当然可以!", examplePinyin: "Dāngrán kěyǐ!", exampleMeaning: "Đương nhiên được!" },
+  { id: "3-48", hanzi: "地", pinyin: "de", meaning: "(trợ từ trạng ngữ)", type: "trợ từ", example: "慢慢地走。", examplePinyin: "Mànman de zǒu.", exampleMeaning: "Đi từ từ." },
+  { id: "3-49", hanzi: "灯", pinyin: "dēng", meaning: "đèn", type: "danh từ", example: "开灯。", examplePinyin: "Kāi dēng.", exampleMeaning: "Bật đèn." },
+  { id: "3-50", hanzi: "地方", pinyin: "dìfang", meaning: "địa điểm, nơi", type: "danh từ", example: "这个地方很美。", examplePinyin: "Zhège dìfang hěn měi.", exampleMeaning: "Nơi này rất đẹp." },
+  { id: "3-51", hanzi: "地铁", pinyin: "dìtiě", meaning: "tàu điện ngầm", type: "danh từ", example: "坐地铁去。", examplePinyin: "Zuò dìtiě qù.", exampleMeaning: "Đi tàu điện ngầm." },
+  { id: "3-52", hanzi: "地图", pinyin: "dìtú", meaning: "bản đồ", type: "danh từ", example: "看地图。", examplePinyin: "Kàn dìtú.", exampleMeaning: "Xem bản đồ." },
+  { id: "3-53", hanzi: "电梯", pinyin: "diàntī", meaning: "thang máy", type: "danh từ", example: "坐电梯上楼。", examplePinyin: "Zuò diàntī shàng lóu.", exampleMeaning: "Đi thang máy lên lầu." },
+  { id: "3-54", hanzi: "电子邮件", pinyin: "diànzǐ yóujiàn", meaning: "email", type: "danh từ", example: "发电子邮件。", examplePinyin: "Fā diànzǐ yóujiàn.", exampleMeaning: "Gửi email." },
+  { id: "3-55", hanzi: "东", pinyin: "dōng", meaning: "phía Đông", type: "danh từ", example: "东边。", examplePinyin: "Dōngbiān.", exampleMeaning: "Phía đông." },
+  { id: "3-56", hanzi: "冬", pinyin: "dōng", meaning: "mùa đông", type: "danh từ", example: "冬天很冷。", examplePinyin: "Dōngtiān hěn lěng.", exampleMeaning: "Mùa đông rất lạnh." },
+  { id: "3-57", hanzi: "动物", pinyin: "dòngwù", meaning: "động vật", type: "danh từ", example: "我喜欢小动物。", examplePinyin: "Wǒ xǐhuan xiǎo dòngwù.", exampleMeaning: "Tôi thích động vật nhỏ." },
+  { id: "3-58", hanzi: "短", pinyin: "duǎn", meaning: "ngắn", type: "tính từ", example: "短头发。", examplePinyin: "Duǎn tóufa.", exampleMeaning: "Tóc ngắn." },
+  { id: "3-59", hanzi: "段", pinyin: "duàn", meaning: "đoạn", type: "lượng từ", example: "一段时间。", examplePinyin: "Yí duàn shíjiān.", exampleMeaning: "Một đoạn thời gian." },
+  { id: "3-60", hanzi: "锻炼", pinyin: "duànliàn", meaning: "rèn luyện, tập thể dục", type: "động từ", example: "每天锻炼身体。", examplePinyin: "Měitiān duànliàn shēntǐ.", exampleMeaning: "Tập thể dục mỗi ngày." },
+  { id: "3-61", hanzi: "多么", pinyin: "duōme", meaning: "biết bao, đến mức nào", type: "phó từ", example: "多么漂亮!", examplePinyin: "Duōme piàoliang!", exampleMeaning: "Đẹp biết bao!" },
+  { id: "3-62", hanzi: "饿", pinyin: "è", meaning: "đói", type: "tính từ", example: "我饿了。", examplePinyin: "Wǒ è le.", exampleMeaning: "Tôi đói rồi." },
+  { id: "3-63", hanzi: "耳朵", pinyin: "ěrduo", meaning: "tai", type: "danh từ", example: "他的耳朵很大。", examplePinyin: "Tā de ěrduo hěn dà.", exampleMeaning: "Tai anh ấy rất to." },
+  { id: "3-64", hanzi: "而且", pinyin: "érqiě", meaning: "hơn nữa, vả lại", type: "liên từ", example: "好吃而且便宜。", examplePinyin: "Hǎochī érqiě piányi.", exampleMeaning: "Ngon mà còn rẻ." },
+  { id: "3-65", hanzi: "发", pinyin: "fā", meaning: "gửi, phát", type: "động từ", example: "发短信。", examplePinyin: "Fā duǎnxìn.", exampleMeaning: "Gửi tin nhắn." },
+  { id: "3-66", hanzi: "发烧", pinyin: "fāshāo", meaning: "sốt", type: "động từ", example: "我发烧了。", examplePinyin: "Wǒ fāshāo le.", exampleMeaning: "Tôi bị sốt." },
+  { id: "3-67", hanzi: "发现", pinyin: "fāxiàn", meaning: "phát hiện", type: "động từ", example: "我发现一个问题。", examplePinyin: "Wǒ fāxiàn yí ge wèntí.", exampleMeaning: "Tôi phát hiện một vấn đề." },
+  { id: "3-68", hanzi: "方便", pinyin: "fāngbiàn", meaning: "tiện lợi", type: "tính từ", example: "很方便。", examplePinyin: "Hěn fāngbiàn.", exampleMeaning: "Rất tiện lợi." },
+  { id: "3-69", hanzi: "放", pinyin: "fàng", meaning: "đặt, để, thả", type: "động từ", example: "把书放在桌子上。", examplePinyin: "Bǎ shū fàng zài zhuōzi shàng.", exampleMeaning: "Đặt sách lên bàn." },
+  { id: "3-70", hanzi: "放心", pinyin: "fàngxīn", meaning: "yên tâm", type: "động từ", example: "请放心。", examplePinyin: "Qǐng fàngxīn.", exampleMeaning: "Xin yên tâm." },
+  { id: "3-71", hanzi: "分", pinyin: "fēn", meaning: "phút, chia, điểm", type: "lượng từ", example: "三十分钟。", examplePinyin: "Sānshí fēnzhōng.", exampleMeaning: "Ba mươi phút." },
+  { id: "3-72", hanzi: "附近", pinyin: "fùjìn", meaning: "gần đó, lân cận", type: "danh từ", example: "附近有银行。", examplePinyin: "Fùjìn yǒu yínháng.", exampleMeaning: "Gần đó có ngân hàng." },
+  { id: "3-73", hanzi: "复习", pinyin: "fùxí", meaning: "ôn tập", type: "động từ", example: "复习汉语。", examplePinyin: "Fùxí Hànyǔ.", exampleMeaning: "Ôn tập tiếng Trung." },
+  { id: "3-74", hanzi: "干净", pinyin: "gānjìng", meaning: "sạch sẽ", type: "tính từ", example: "房间很干净。", examplePinyin: "Fángjiān hěn gānjìng.", exampleMeaning: "Phòng rất sạch." },
+  { id: "3-75", hanzi: "感冒", pinyin: "gǎnmào", meaning: "cảm cúm", type: "động từ", example: "我感冒了。", examplePinyin: "Wǒ gǎnmào le.", exampleMeaning: "Tôi bị cảm." },
+  { id: "3-76", hanzi: "感兴趣", pinyin: "gǎn xìngqù", meaning: "có hứng thú", type: "cụm động từ", example: "我对音乐感兴趣。", examplePinyin: "Wǒ duì yīnyuè gǎn xìngqù.", exampleMeaning: "Tôi hứng thú với âm nhạc." },
+  { id: "3-77", hanzi: "刚才", pinyin: "gāngcái", meaning: "vừa rồi, vừa nãy", type: "danh từ", example: "刚才你在哪儿?", examplePinyin: "Gāngcái nǐ zài nǎr?", exampleMeaning: "Vừa nãy bạn ở đâu?" },
+  { id: "3-78", hanzi: "个子", pinyin: "gèzi", meaning: "vóc dáng", type: "danh từ", example: "他个子很高。", examplePinyin: "Tā gèzi hěn gāo.", exampleMeaning: "Anh ấy vóc dáng rất cao." },
+  { id: "3-79", hanzi: "根据", pinyin: "gēnjù", meaning: "căn cứ, dựa vào", type: "giới từ", example: "根据情况。", examplePinyin: "Gēnjù qíngkuàng.", exampleMeaning: "Dựa vào tình hình." },
+  { id: "3-80", hanzi: "跟", pinyin: "gēn", meaning: "với, theo", type: "giới từ", example: "跟我来。", examplePinyin: "Gēn wǒ lái.", exampleMeaning: "Theo tôi nào." },
+  { id: "3-81", hanzi: "更", pinyin: "gèng", meaning: "càng, hơn", type: "phó từ", example: "今天更冷。", examplePinyin: "Jīntiān gèng lěng.", exampleMeaning: "Hôm nay càng lạnh." },
+  { id: "3-82", hanzi: "公斤", pinyin: "gōngjīn", meaning: "kg, ký", type: "lượng từ", example: "五公斤。", examplePinyin: "Wǔ gōngjīn.", exampleMeaning: "Năm ký." },
+  { id: "3-83", hanzi: "公园", pinyin: "gōngyuán", meaning: "công viên", type: "danh từ", example: "去公园散步。", examplePinyin: "Qù gōngyuán sànbù.", exampleMeaning: "Đi công viên dạo bộ." },
+  { id: "3-84", hanzi: "故事", pinyin: "gùshi", meaning: "câu chuyện", type: "danh từ", example: "讲故事。", examplePinyin: "Jiǎng gùshi.", exampleMeaning: "Kể chuyện." },
+  { id: "3-85", hanzi: "刮风", pinyin: "guāfēng", meaning: "có gió, thổi gió", type: "động từ", example: "今天刮风。", examplePinyin: "Jīntiān guāfēng.", exampleMeaning: "Hôm nay có gió." },
+  { id: "3-86", hanzi: "关", pinyin: "guān", meaning: "đóng, tắt", type: "động từ", example: "关门。", examplePinyin: "Guān mén.", exampleMeaning: "Đóng cửa." },
+  { id: "3-87", hanzi: "关系", pinyin: "guānxi", meaning: "quan hệ, mối quan hệ", type: "danh từ", example: "我们关系很好。", examplePinyin: "Wǒmen guānxi hěn hǎo.", exampleMeaning: "Quan hệ chúng tôi rất tốt." },
+  { id: "3-88", hanzi: "关心", pinyin: "guānxīn", meaning: "quan tâm", type: "động từ", example: "他很关心我。", examplePinyin: "Tā hěn guānxīn wǒ.", exampleMeaning: "Anh ấy rất quan tâm tôi." },
+  { id: "3-89", hanzi: "关于", pinyin: "guānyú", meaning: "về, liên quan đến", type: "giới từ", example: "关于这个问题。", examplePinyin: "Guānyú zhège wèntí.", exampleMeaning: "Về vấn đề này." },
+  { id: "3-90", hanzi: "国家", pinyin: "guójiā", meaning: "đất nước, quốc gia", type: "danh từ", example: "我爱我的国家。", examplePinyin: "Wǒ ài wǒ de guójiā.", exampleMeaning: "Tôi yêu đất nước tôi." },
+  { id: "3-91", hanzi: "过去", pinyin: "guòqù", meaning: "quá khứ, đi qua", type: "danh từ", example: "过去的事。", examplePinyin: "Guòqù de shì.", exampleMeaning: "Việc đã qua." },
+  { id: "3-92", hanzi: "还是", pinyin: "háishi", meaning: "hay là, vẫn", type: "liên từ", example: "你喝茶还是咖啡?", examplePinyin: "Nǐ hē chá háishi kāfēi?", exampleMeaning: "Bạn uống trà hay cà phê?" },
+  { id: "3-93", hanzi: "害怕", pinyin: "hàipà", meaning: "sợ hãi", type: "động từ", example: "我害怕狗。", examplePinyin: "Wǒ hàipà gǒu.", exampleMeaning: "Tôi sợ chó." },
+  { id: "3-94", hanzi: "黑板", pinyin: "hēibǎn", meaning: "bảng đen", type: "danh từ", example: "看黑板。", examplePinyin: "Kàn hēibǎn.", exampleMeaning: "Nhìn bảng." },
+  { id: "3-95", hanzi: "护照", pinyin: "hùzhào", meaning: "hộ chiếu", type: "danh từ", example: "请出示护照。", examplePinyin: "Qǐng chūshì hùzhào.", exampleMeaning: "Xin xuất trình hộ chiếu." },
+  { id: "3-96", hanzi: "花", pinyin: "huā", meaning: "hoa, tiêu (tiền)", type: "danh từ", example: "美丽的花。", examplePinyin: "Měilì de huā.", exampleMeaning: "Bông hoa đẹp." },
+  { id: "3-97", hanzi: "画", pinyin: "huà", meaning: "vẽ, bức tranh", type: "động từ", example: "画画儿。", examplePinyin: "Huà huàr.", exampleMeaning: "Vẽ tranh." },
+  { id: "3-98", hanzi: "坏", pinyin: "huài", meaning: "hư, xấu", type: "tính từ", example: "电脑坏了。", examplePinyin: "Diànnǎo huài le.", exampleMeaning: "Máy tính hỏng rồi." },
+  { id: "3-99", hanzi: "环境", pinyin: "huánjìng", meaning: "môi trường", type: "danh từ", example: "保护环境。", examplePinyin: "Bǎohù huánjìng.", exampleMeaning: "Bảo vệ môi trường." },
+  { id: "3-100", hanzi: "换", pinyin: "huàn", meaning: "đổi", type: "động từ", example: "换钱。", examplePinyin: "Huàn qián.", exampleMeaning: "Đổi tiền." },
+  { id: "3-101", hanzi: "黄河", pinyin: "Huánghé", meaning: "sông Hoàng Hà", type: "danh từ riêng", example: "黄河很长。", examplePinyin: "Huánghé hěn cháng.", exampleMeaning: "Hoàng Hà rất dài." },
+  { id: "3-102", hanzi: "回答", pinyin: "huídá", meaning: "trả lời, hồi đáp", type: "động từ", example: "回答问题。", examplePinyin: "Huídá wèntí.", exampleMeaning: "Trả lời câu hỏi." },
+  { id: "3-103", hanzi: "会议", pinyin: "huìyì", meaning: "cuộc họp, hội nghị", type: "danh từ", example: "参加会议。", examplePinyin: "Cānjiā huìyì.", exampleMeaning: "Tham gia cuộc họp." },
+  { id: "3-104", hanzi: "或者", pinyin: "huòzhě", meaning: "hoặc, hay", type: "liên từ", example: "今天或者明天。", examplePinyin: "Jīntiān huòzhě míngtiān.", exampleMeaning: "Hôm nay hoặc ngày mai." },
+  { id: "3-105", hanzi: "几乎", pinyin: "jīhū", meaning: "hầu như, gần như", type: "phó từ", example: "几乎每天。", examplePinyin: "Jīhū měitiān.", exampleMeaning: "Hầu như mỗi ngày." },
+  { id: "3-106", hanzi: "机会", pinyin: "jīhuì", meaning: "cơ hội", type: "danh từ", example: "好机会。", examplePinyin: "Hǎo jīhuì.", exampleMeaning: "Cơ hội tốt." },
+  { id: "3-107", hanzi: "极", pinyin: "jí", meaning: "cực kỳ", type: "phó từ", example: "好极了!", examplePinyin: "Hǎo jí le!", exampleMeaning: "Tuyệt cực!" },
+  { id: "3-108", hanzi: "记得", pinyin: "jìde", meaning: "nhớ", type: "động từ", example: "我记得你。", examplePinyin: "Wǒ jìde nǐ.", exampleMeaning: "Tôi nhớ bạn." },
+  { id: "3-109", hanzi: "季节", pinyin: "jìjié", meaning: "mùa, thời tiết", type: "danh từ", example: "四个季节。", examplePinyin: "Sì ge jìjié.", exampleMeaning: "Bốn mùa." },
+  { id: "3-110", hanzi: "检查", pinyin: "jiǎnchá", meaning: "kiểm tra", type: "động từ", example: "检查作业。", examplePinyin: "Jiǎnchá zuòyè.", exampleMeaning: "Kiểm tra bài tập." },
+  { id: "3-111", hanzi: "简单", pinyin: "jiǎndān", meaning: "đơn giản", type: "tính từ", example: "这很简单。", examplePinyin: "Zhè hěn jiǎndān.", exampleMeaning: "Cái này rất đơn giản." },
+  { id: "3-112", hanzi: "见面", pinyin: "jiànmiàn", meaning: "gặp mặt", type: "động từ", example: "我们明天见面。", examplePinyin: "Wǒmen míngtiān jiànmiàn.", exampleMeaning: "Ngày mai chúng ta gặp nhau." },
+  { id: "3-113", hanzi: "健康", pinyin: "jiànkāng", meaning: "sức khỏe, khỏe mạnh", type: "tính từ", example: "身体健康。", examplePinyin: "Shēntǐ jiànkāng.", exampleMeaning: "Sức khỏe tốt." },
+  { id: "3-114", hanzi: "讲", pinyin: "jiǎng", meaning: "kể, nói, giảng", type: "động từ", example: "讲故事。", examplePinyin: "Jiǎng gùshi.", exampleMeaning: "Kể chuyện." },
+  { id: "3-115", hanzi: "教", pinyin: "jiāo", meaning: "dạy", type: "động từ", example: "老师教我们汉语。", examplePinyin: "Lǎoshī jiāo wǒmen Hànyǔ.", exampleMeaning: "Cô giáo dạy chúng tôi tiếng Trung." },
+  { id: "3-116", hanzi: "角", pinyin: "jiǎo", meaning: "góc, hào", type: "danh từ", example: "教室的角。", examplePinyin: "Jiàoshì de jiǎo.", exampleMeaning: "Góc phòng học." },
+  { id: "3-117", hanzi: "脚", pinyin: "jiǎo", meaning: "chân (bộ phận)", type: "danh từ", example: "我的脚很疼。", examplePinyin: "Wǒ de jiǎo hěn téng.", exampleMeaning: "Chân tôi rất đau." },
+  { id: "3-118", hanzi: "接", pinyin: "jiē", meaning: "đón, nhận, nối", type: "động từ", example: "去机场接朋友。", examplePinyin: "Qù jīchǎng jiē péngyou.", exampleMeaning: "Đi sân bay đón bạn." },
+  { id: "3-119", hanzi: "街道", pinyin: "jiēdào", meaning: "đường phố", type: "danh từ", example: "街道很热闹。", examplePinyin: "Jiēdào hěn rènào.", exampleMeaning: "Đường phố rất nhộn nhịp." },
+  { id: "3-120", hanzi: "结婚", pinyin: "jiéhūn", meaning: "kết hôn", type: "động từ", example: "他们结婚了。", examplePinyin: "Tāmen jiéhūn le.", exampleMeaning: "Họ kết hôn rồi." },
+  { id: "3-121", hanzi: "结束", pinyin: "jiéshù", meaning: "kết thúc", type: "động từ", example: "会议结束了。", examplePinyin: "Huìyì jiéshù le.", exampleMeaning: "Cuộc họp kết thúc rồi." },
+  { id: "3-122", hanzi: "节目", pinyin: "jiémù", meaning: "chương trình", type: "danh từ", example: "电视节目。", examplePinyin: "Diànshì jiémù.", exampleMeaning: "Chương trình TV." },
+  { id: "3-123", hanzi: "节日", pinyin: "jiérì", meaning: "ngày lễ, ngày hội", type: "danh từ", example: "中国节日。", examplePinyin: "Zhōngguó jiérì.", exampleMeaning: "Ngày lễ Trung Quốc." },
+  { id: "3-124", hanzi: "解决", pinyin: "jiějué", meaning: "giải quyết", type: "động từ", example: "解决问题。", examplePinyin: "Jiějué wèntí.", exampleMeaning: "Giải quyết vấn đề." },
+  { id: "3-125", hanzi: "借", pinyin: "jiè", meaning: "mượn, cho mượn", type: "động từ", example: "借书。", examplePinyin: "Jiè shū.", exampleMeaning: "Mượn sách." },
+  { id: "3-126", hanzi: "经过", pinyin: "jīngguò", meaning: "đi qua, trải qua", type: "động từ", example: "经过努力。", examplePinyin: "Jīngguò nǔlì.", exampleMeaning: "Qua nỗ lực." },
+  { id: "3-127", hanzi: "经理", pinyin: "jīnglǐ", meaning: "giám đốc", type: "danh từ", example: "他是经理。", examplePinyin: "Tā shì jīnglǐ.", exampleMeaning: "Anh ấy là giám đốc." },
+  { id: "3-128", hanzi: "久", pinyin: "jiǔ", meaning: "lâu", type: "tính từ", example: "好久不见。", examplePinyin: "Hǎo jiǔ bú jiàn.", exampleMeaning: "Lâu rồi không gặp." },
+  { id: "3-129", hanzi: "旧", pinyin: "jiù", meaning: "cũ", type: "tính từ", example: "旧衣服。", examplePinyin: "Jiù yīfu.", exampleMeaning: "Quần áo cũ." },
+  { id: "3-130", hanzi: "句子", pinyin: "jùzi", meaning: "câu", type: "danh từ", example: "这个句子。", examplePinyin: "Zhège jùzi.", exampleMeaning: "Câu này." },
+  { id: "3-131", hanzi: "决定", pinyin: "juédìng", meaning: "quyết định", type: "động từ", example: "我决定了。", examplePinyin: "Wǒ juédìng le.", exampleMeaning: "Tôi đã quyết định." },
+  { id: "3-132", hanzi: "可爱", pinyin: "kě'ài", meaning: "đáng yêu", type: "tính từ", example: "孩子很可爱。", examplePinyin: "Háizi hěn kě'ài.", exampleMeaning: "Đứa trẻ rất đáng yêu." },
+  { id: "3-133", hanzi: "渴", pinyin: "kě", meaning: "khát", type: "tính từ", example: "我渴了。", examplePinyin: "Wǒ kě le.", exampleMeaning: "Tôi khát rồi." },
+  { id: "3-134", hanzi: "刻", pinyin: "kè", meaning: "khắc (15 phút)", type: "lượng từ", example: "差一刻三点。", examplePinyin: "Chà yí kè sān diǎn.", exampleMeaning: "Còn 15 phút nữa là 3 giờ." },
+  { id: "3-135", hanzi: "客人", pinyin: "kèrén", meaning: "khách", type: "danh từ", example: "家里有客人。", examplePinyin: "Jiā lǐ yǒu kèrén.", exampleMeaning: "Nhà có khách." },
+  { id: "3-136", hanzi: "空调", pinyin: "kōngtiáo", meaning: "máy lạnh", type: "danh từ", example: "开空调。", examplePinyin: "Kāi kōngtiáo.", exampleMeaning: "Bật máy lạnh." },
+  { id: "3-137", hanzi: "口", pinyin: "kǒu", meaning: "miệng, người (lượng từ)", type: "danh từ", example: "我家有四口人。", examplePinyin: "Wǒ jiā yǒu sì kǒu rén.", exampleMeaning: "Nhà tôi có 4 người." },
+  { id: "3-138", hanzi: "哭", pinyin: "kū", meaning: "khóc", type: "động từ", example: "孩子哭了。", examplePinyin: "Háizi kū le.", exampleMeaning: "Đứa trẻ khóc rồi." },
+  { id: "3-139", hanzi: "裤子", pinyin: "kùzi", meaning: "quần", type: "danh từ", example: "黑色的裤子。", examplePinyin: "Hēisè de kùzi.", exampleMeaning: "Quần màu đen." },
+  { id: "3-140", hanzi: "筷子", pinyin: "kuàizi", meaning: "đũa", type: "danh từ", example: "用筷子吃饭。", examplePinyin: "Yòng kuàizi chīfàn.", exampleMeaning: "Dùng đũa ăn cơm." },
+  { id: "3-141", hanzi: "蓝", pinyin: "lán", meaning: "xanh dương", type: "tính từ", example: "蓝色的天空。", examplePinyin: "Lánsè de tiānkōng.", exampleMeaning: "Bầu trời xanh." },
+  { id: "3-142", hanzi: "老", pinyin: "lǎo", meaning: "già, cũ", type: "tính từ", example: "老朋友。", examplePinyin: "Lǎo péngyou.", exampleMeaning: "Bạn cũ." },
+  { id: "3-143", hanzi: "离开", pinyin: "líkāi", meaning: "rời đi", type: "động từ", example: "他离开了。", examplePinyin: "Tā líkāi le.", exampleMeaning: "Anh ấy đã rời đi." },
+  { id: "3-144", hanzi: "礼物", pinyin: "lǐwù", meaning: "quà tặng", type: "danh từ", example: "送礼物。", examplePinyin: "Sòng lǐwù.", exampleMeaning: "Tặng quà." },
+  { id: "3-145", hanzi: "历史", pinyin: "lìshǐ", meaning: "lịch sử", type: "danh từ", example: "中国历史。", examplePinyin: "Zhōngguó lìshǐ.", exampleMeaning: "Lịch sử Trung Quốc." },
+  { id: "3-146", hanzi: "脸", pinyin: "liǎn", meaning: "mặt", type: "danh từ", example: "洗脸。", examplePinyin: "Xǐ liǎn.", exampleMeaning: "Rửa mặt." },
+  { id: "3-147", hanzi: "练习", pinyin: "liànxí", meaning: "luyện tập", type: "động từ", example: "练习汉语。", examplePinyin: "Liànxí Hànyǔ.", exampleMeaning: "Luyện tập tiếng Trung." },
+  { id: "3-148", hanzi: "辆", pinyin: "liàng", meaning: "chiếc (xe)", type: "lượng từ", example: "一辆车。", examplePinyin: "Yí liàng chē.", exampleMeaning: "Một chiếc xe." },
+  { id: "3-149", hanzi: "聊天", pinyin: "liáotiān", meaning: "trò chuyện", type: "động từ", example: "我们聊天。", examplePinyin: "Wǒmen liáotiān.", exampleMeaning: "Chúng tôi trò chuyện." },
+  { id: "3-150", hanzi: "了解", pinyin: "liǎojiě", meaning: "hiểu rõ, biết về", type: "động từ", example: "我了解他。", examplePinyin: "Wǒ liǎojiě tā.", exampleMeaning: "Tôi hiểu rõ anh ấy." },
+  { id: "3-151", hanzi: "邻居", pinyin: "línjū", meaning: "hàng xóm", type: "danh từ", example: "好邻居。", examplePinyin: "Hǎo línjū.", exampleMeaning: "Hàng xóm tốt." },
+  { id: "3-152", hanzi: "留学", pinyin: "liúxué", meaning: "du học", type: "động từ", example: "去中国留学。", examplePinyin: "Qù Zhōngguó liúxué.", exampleMeaning: "Đi Trung Quốc du học." },
+  { id: "3-153", hanzi: "楼", pinyin: "lóu", meaning: "lầu, tòa nhà", type: "danh từ", example: "高楼。", examplePinyin: "Gāo lóu.", exampleMeaning: "Tòa nhà cao." },
+  { id: "3-154", hanzi: "绿", pinyin: "lǜ", meaning: "xanh lá", type: "tính từ", example: "绿色的树。", examplePinyin: "Lǜsè de shù.", exampleMeaning: "Cây xanh." },
+  { id: "3-155", hanzi: "马", pinyin: "mǎ", meaning: "ngựa", type: "danh từ", example: "白马。", examplePinyin: "Bái mǎ.", exampleMeaning: "Con ngựa trắng." },
+  { id: "3-156", hanzi: "马上", pinyin: "mǎshàng", meaning: "ngay lập tức", type: "phó từ", example: "我马上来。", examplePinyin: "Wǒ mǎshàng lái.", exampleMeaning: "Tôi đến ngay." },
+  { id: "3-157", hanzi: "满意", pinyin: "mǎnyì", meaning: "hài lòng", type: "tính từ", example: "我很满意。", examplePinyin: "Wǒ hěn mǎnyì.", exampleMeaning: "Tôi rất hài lòng." },
+  { id: "3-158", hanzi: "帽子", pinyin: "màozi", meaning: "mũ, nón", type: "danh từ", example: "戴帽子。", examplePinyin: "Dài màozi.", exampleMeaning: "Đội mũ." },
+  { id: "3-159", hanzi: "米", pinyin: "mǐ", meaning: "mét, gạo", type: "lượng từ", example: "一百米。", examplePinyin: "Yìbǎi mǐ.", exampleMeaning: "Một trăm mét." },
+  { id: "3-160", hanzi: "面包", pinyin: "miànbāo", meaning: "bánh mì", type: "danh từ", example: "吃面包。", examplePinyin: "Chī miànbāo.", exampleMeaning: "Ăn bánh mì." },
+  { id: "3-161", hanzi: "面条", pinyin: "miàntiáo", meaning: "mì sợi", type: "danh từ", example: "吃面条。", examplePinyin: "Chī miàntiáo.", exampleMeaning: "Ăn mì." },
+  { id: "3-162", hanzi: "明白", pinyin: "míngbai", meaning: "hiểu", type: "động từ", example: "我明白了。", examplePinyin: "Wǒ míngbai le.", exampleMeaning: "Tôi hiểu rồi." },
+  { id: "3-163", hanzi: "拿", pinyin: "ná", meaning: "cầm, lấy", type: "động từ", example: "拿一本书。", examplePinyin: "Ná yì běn shū.", exampleMeaning: "Lấy một quyển sách." },
+  { id: "3-164", hanzi: "奶奶", pinyin: "nǎinai", meaning: "bà nội", type: "danh từ", example: "我的奶奶。", examplePinyin: "Wǒ de nǎinai.", exampleMeaning: "Bà nội của tôi." },
+  { id: "3-165", hanzi: "南", pinyin: "nán", meaning: "phía Nam", type: "danh từ", example: "南方。", examplePinyin: "Nánfāng.", exampleMeaning: "Phương Nam." },
+  { id: "3-166", hanzi: "难", pinyin: "nán", meaning: "khó", type: "tính từ", example: "汉语很难。", examplePinyin: "Hànyǔ hěn nán.", exampleMeaning: "Tiếng Trung rất khó." },
+  { id: "3-167", hanzi: "难过", pinyin: "nánguò", meaning: "buồn, đau khổ", type: "tính từ", example: "我很难过。", examplePinyin: "Wǒ hěn nánguò.", exampleMeaning: "Tôi rất buồn." },
+  { id: "3-168", hanzi: "年级", pinyin: "niánjí", meaning: "khối lớp, năm học", type: "danh từ", example: "三年级。", examplePinyin: "Sān niánjí.", exampleMeaning: "Lớp 3 / Năm thứ 3." },
+  { id: "3-169", hanzi: "年轻", pinyin: "niánqīng", meaning: "trẻ tuổi", type: "tính từ", example: "他很年轻。", examplePinyin: "Tā hěn niánqīng.", exampleMeaning: "Anh ấy rất trẻ." },
+  { id: "3-170", hanzi: "鸟", pinyin: "niǎo", meaning: "chim", type: "danh từ", example: "小鸟。", examplePinyin: "Xiǎo niǎo.", exampleMeaning: "Chim nhỏ." },
+  { id: "3-171", hanzi: "努力", pinyin: "nǔlì", meaning: "nỗ lực, cố gắng", type: "động từ", example: "努力学习。", examplePinyin: "Nǔlì xuéxí.", exampleMeaning: "Cố gắng học tập." },
+  { id: "3-172", hanzi: "爬山", pinyin: "páshān", meaning: "leo núi", type: "động từ", example: "去爬山。", examplePinyin: "Qù páshān.", exampleMeaning: "Đi leo núi." },
+  { id: "3-173", hanzi: "盘子", pinyin: "pánzi", meaning: "đĩa", type: "danh từ", example: "一个盘子。", examplePinyin: "Yí ge pánzi.", exampleMeaning: "Một cái đĩa." },
+  { id: "3-174", hanzi: "胖", pinyin: "pàng", meaning: "béo, mập", type: "tính từ", example: "他有点儿胖。", examplePinyin: "Tā yǒudiǎnr pàng.", exampleMeaning: "Anh ấy hơi mập." },
+  { id: "3-175", hanzi: "皮鞋", pinyin: "píxié", meaning: "giày da", type: "danh từ", example: "黑色皮鞋。", examplePinyin: "Hēisè píxié.", exampleMeaning: "Giày da đen." },
+  { id: "3-176", hanzi: "啤酒", pinyin: "píjiǔ", meaning: "bia", type: "danh từ", example: "喝啤酒。", examplePinyin: "Hē píjiǔ.", exampleMeaning: "Uống bia." },
+  { id: "3-177", hanzi: "瓶子", pinyin: "píngzi", meaning: "chai, bình", type: "danh từ", example: "一个瓶子。", examplePinyin: "Yí ge píngzi.", exampleMeaning: "Một cái chai." },
+  { id: "3-178", hanzi: "其实", pinyin: "qíshí", meaning: "thực ra, kỳ thực", type: "phó từ", example: "其实我不知道。", examplePinyin: "Qíshí wǒ bù zhīdào.", exampleMeaning: "Thực ra tôi không biết." },
+  { id: "3-179", hanzi: "其他", pinyin: "qítā", meaning: "khác, những cái khác", type: "đại từ", example: "其他的人。", examplePinyin: "Qítā de rén.", exampleMeaning: "Những người khác." },
+  { id: "3-180", hanzi: "奇怪", pinyin: "qíguài", meaning: "kỳ lạ, lạ", type: "tính từ", example: "很奇怪。", examplePinyin: "Hěn qíguài.", exampleMeaning: "Rất kỳ lạ." },
+  { id: "3-181", hanzi: "骑", pinyin: "qí", meaning: "cưỡi, đi (xe đạp/ngựa)", type: "động từ", example: "骑自行车。", examplePinyin: "Qí zìxíngchē.", exampleMeaning: "Đi xe đạp." },
+  { id: "3-182", hanzi: "起飞", pinyin: "qǐfēi", meaning: "cất cánh", type: "động từ", example: "飞机起飞了。", examplePinyin: "Fēijī qǐfēi le.", exampleMeaning: "Máy bay đã cất cánh." },
+  { id: "3-183", hanzi: "起来", pinyin: "qǐlái", meaning: "đứng dậy, lên", type: "động từ", example: "站起来。", examplePinyin: "Zhàn qǐlái.", exampleMeaning: "Đứng dậy." },
+  { id: "3-184", hanzi: "清楚", pinyin: "qīngchu", meaning: "rõ ràng", type: "tính từ", example: "听清楚了。", examplePinyin: "Tīng qīngchu le.", exampleMeaning: "Đã nghe rõ rồi." },
+  { id: "3-185", hanzi: "请假", pinyin: "qǐngjià", meaning: "xin nghỉ phép", type: "động từ", example: "我要请假。", examplePinyin: "Wǒ yào qǐngjià.", exampleMeaning: "Tôi muốn xin nghỉ phép." },
+  { id: "3-186", hanzi: "秋", pinyin: "qiū", meaning: "mùa thu", type: "danh từ", example: "秋天。", examplePinyin: "Qiūtiān.", exampleMeaning: "Mùa thu." },
+  { id: "3-187", hanzi: "裙子", pinyin: "qúnzi", meaning: "váy", type: "danh từ", example: "漂亮的裙子。", examplePinyin: "Piàoliang de qúnzi.", exampleMeaning: "Chiếc váy đẹp." },
+  { id: "3-188", hanzi: "然后", pinyin: "ránhòu", meaning: "sau đó", type: "liên từ", example: "先吃饭,然后做作业。", examplePinyin: "Xiān chīfàn, ránhòu zuò zuòyè.", exampleMeaning: "Ăn cơm trước, sau đó làm bài tập." },
+  { id: "3-189", hanzi: "热情", pinyin: "rèqíng", meaning: "nhiệt tình", type: "tính từ", example: "他很热情。", examplePinyin: "Tā hěn rèqíng.", exampleMeaning: "Anh ấy rất nhiệt tình." },
+  { id: "3-190", hanzi: "认为", pinyin: "rènwéi", meaning: "cho rằng, nghĩ rằng", type: "động từ", example: "我认为对。", examplePinyin: "Wǒ rènwéi duì.", exampleMeaning: "Tôi cho là đúng." },
+  { id: "3-191", hanzi: "认真", pinyin: "rènzhēn", meaning: "nghiêm túc, chăm chú", type: "tính từ", example: "认真学习。", examplePinyin: "Rènzhēn xuéxí.", exampleMeaning: "Học tập nghiêm túc." },
+  { id: "3-192", hanzi: "容易", pinyin: "róngyì", meaning: "dễ", type: "tính từ", example: "这很容易。", examplePinyin: "Zhè hěn róngyì.", exampleMeaning: "Cái này rất dễ." },
+  { id: "3-193", hanzi: "如果", pinyin: "rúguǒ", meaning: "nếu", type: "liên từ", example: "如果下雨,就不去。", examplePinyin: "Rúguǒ xiàyǔ, jiù bú qù.", exampleMeaning: "Nếu trời mưa thì không đi." },
+  { id: "3-194", hanzi: "伞", pinyin: "sǎn", meaning: "ô, dù", type: "danh từ", example: "带伞。", examplePinyin: "Dài sǎn.", exampleMeaning: "Mang ô." },
+  { id: "3-195", hanzi: "上网", pinyin: "shàngwǎng", meaning: "lên mạng", type: "động từ", example: "我喜欢上网。", examplePinyin: "Wǒ xǐhuan shàngwǎng.", exampleMeaning: "Tôi thích lên mạng." },
+  { id: "3-196", hanzi: "生气", pinyin: "shēngqì", meaning: "tức giận", type: "động từ", example: "他生气了。", examplePinyin: "Tā shēngqì le.", exampleMeaning: "Anh ấy tức giận rồi." },
+  { id: "3-197", hanzi: "声音", pinyin: "shēngyīn", meaning: "âm thanh, tiếng", type: "danh từ", example: "声音很大。", examplePinyin: "Shēngyīn hěn dà.", exampleMeaning: "Tiếng rất to." },
+  { id: "3-198", hanzi: "世界", pinyin: "shìjiè", meaning: "thế giới", type: "danh từ", example: "世界很大。", examplePinyin: "Shìjiè hěn dà.", exampleMeaning: "Thế giới rất rộng." },
+  { id: "3-199", hanzi: "试", pinyin: "shì", meaning: "thử", type: "động từ", example: "试一下。", examplePinyin: "Shì yíxià.", exampleMeaning: "Thử một chút." },
+  { id: "3-200", hanzi: "瘦", pinyin: "shòu", meaning: "gầy", type: "tính từ", example: "她很瘦。", examplePinyin: "Tā hěn shòu.", exampleMeaning: "Cô ấy rất gầy." },
+  { id: "3-201", hanzi: "叔叔", pinyin: "shūshu", meaning: "chú", type: "danh từ", example: "王叔叔。", examplePinyin: "Wáng shūshu.", exampleMeaning: "Chú Vương." },
+  { id: "3-202", hanzi: "舒服", pinyin: "shūfu", meaning: "thoải mái, dễ chịu", type: "tính từ", example: "很舒服。", examplePinyin: "Hěn shūfu.", exampleMeaning: "Rất thoải mái." },
+  { id: "3-203", hanzi: "树", pinyin: "shù", meaning: "cây", type: "danh từ", example: "大树。", examplePinyin: "Dà shù.", exampleMeaning: "Cây lớn." },
+  { id: "3-204", hanzi: "数学", pinyin: "shùxué", meaning: "toán học", type: "danh từ", example: "我喜欢数学。", examplePinyin: "Wǒ xǐhuan shùxué.", exampleMeaning: "Tôi thích toán." },
+  { id: "3-205", hanzi: "刷牙", pinyin: "shuāyá", meaning: "đánh răng", type: "động từ", example: "早上刷牙。", examplePinyin: "Zǎoshang shuāyá.", exampleMeaning: "Đánh răng buổi sáng." },
+  { id: "3-206", hanzi: "双", pinyin: "shuāng", meaning: "đôi", type: "lượng từ", example: "一双鞋。", examplePinyin: "Yì shuāng xié.", exampleMeaning: "Một đôi giày." },
+  { id: "3-207", hanzi: "水平", pinyin: "shuǐpíng", meaning: "trình độ", type: "danh từ", example: "汉语水平。", examplePinyin: "Hànyǔ shuǐpíng.", exampleMeaning: "Trình độ tiếng Trung." },
+  { id: "3-208", hanzi: "司机", pinyin: "sījī", meaning: "tài xế, lái xe", type: "danh từ", example: "出租车司机。", examplePinyin: "Chūzūchē sījī.", exampleMeaning: "Tài xế taxi." },
+  { id: "3-209", hanzi: "太阳", pinyin: "tàiyáng", meaning: "mặt trời", type: "danh từ", example: "太阳很亮。", examplePinyin: "Tàiyáng hěn liàng.", exampleMeaning: "Mặt trời rất sáng." },
+  { id: "3-210", hanzi: "糖", pinyin: "táng", meaning: "đường, kẹo", type: "danh từ", example: "加糖。", examplePinyin: "Jiā táng.", exampleMeaning: "Thêm đường." },
+  { id: "3-211", hanzi: "特别", pinyin: "tèbié", meaning: "đặc biệt", type: "phó từ", example: "特别好吃。", examplePinyin: "Tèbié hǎochī.", exampleMeaning: "Đặc biệt ngon." },
+  { id: "3-212", hanzi: "疼", pinyin: "téng", meaning: "đau", type: "tính từ", example: "头疼。", examplePinyin: "Tóu téng.", exampleMeaning: "Đau đầu." },
+  { id: "3-213", hanzi: "提高", pinyin: "tígāo", meaning: "nâng cao", type: "động từ", example: "提高水平。", examplePinyin: "Tígāo shuǐpíng.", exampleMeaning: "Nâng cao trình độ." },
+  { id: "3-214", hanzi: "体育", pinyin: "tǐyù", meaning: "thể dục, thể thao", type: "danh từ", example: "体育课。", examplePinyin: "Tǐyù kè.", exampleMeaning: "Tiết thể dục." },
+  { id: "3-215", hanzi: "甜", pinyin: "tián", meaning: "ngọt", type: "tính từ", example: "蛋糕很甜。", examplePinyin: "Dàngāo hěn tián.", exampleMeaning: "Bánh rất ngọt." },
+  { id: "3-216", hanzi: "条", pinyin: "tiáo", meaning: "con (cá), sợi", type: "lượng từ", example: "一条鱼。", examplePinyin: "Yì tiáo yú.", exampleMeaning: "Một con cá." },
+  { id: "3-217", hanzi: "同事", pinyin: "tóngshì", meaning: "đồng nghiệp", type: "danh từ", example: "我的同事。", examplePinyin: "Wǒ de tóngshì.", exampleMeaning: "Đồng nghiệp của tôi." },
+  { id: "3-218", hanzi: "同意", pinyin: "tóngyì", meaning: "đồng ý", type: "động từ", example: "我同意。", examplePinyin: "Wǒ tóngyì.", exampleMeaning: "Tôi đồng ý." },
+  { id: "3-219", hanzi: "头发", pinyin: "tóufa", meaning: "tóc", type: "danh từ", example: "长头发。", examplePinyin: "Cháng tóufa.", exampleMeaning: "Tóc dài." },
+  { id: "3-220", hanzi: "突然", pinyin: "tūrán", meaning: "đột nhiên", type: "phó từ", example: "突然下雨了。", examplePinyin: "Tūrán xiàyǔ le.", exampleMeaning: "Đột nhiên trời mưa." },
+  { id: "3-221", hanzi: "图书馆", pinyin: "túshūguǎn", meaning: "thư viện", type: "danh từ", example: "去图书馆学习。", examplePinyin: "Qù túshūguǎn xuéxí.", exampleMeaning: "Đi thư viện học." },
+  { id: "3-222", hanzi: "腿", pinyin: "tuǐ", meaning: "chân (đùi)", type: "danh từ", example: "腿疼。", examplePinyin: "Tuǐ téng.", exampleMeaning: "Đau chân." },
+  { id: "3-223", hanzi: "完成", pinyin: "wánchéng", meaning: "hoàn thành", type: "động từ", example: "完成作业。", examplePinyin: "Wánchéng zuòyè.", exampleMeaning: "Hoàn thành bài tập." },
+  { id: "3-224", hanzi: "碗", pinyin: "wǎn", meaning: "bát, chén", type: "danh từ", example: "一碗饭。", examplePinyin: "Yì wǎn fàn.", exampleMeaning: "Một bát cơm." },
+  { id: "3-225", hanzi: "万", pinyin: "wàn", meaning: "vạn, mười nghìn", type: "số từ", example: "一万。", examplePinyin: "Yí wàn.", exampleMeaning: "Một vạn." },
+  { id: "3-226", hanzi: "忘记", pinyin: "wàngjì", meaning: "quên", type: "động từ", example: "我忘记了。", examplePinyin: "Wǒ wàngjì le.", exampleMeaning: "Tôi quên mất rồi." },
+  { id: "3-227", hanzi: "为", pinyin: "wèi", meaning: "vì, cho", type: "giới từ", example: "为你高兴。", examplePinyin: "Wèi nǐ gāoxìng.", exampleMeaning: "Vui cho bạn." },
+  { id: "3-228", hanzi: "为了", pinyin: "wèile", meaning: "vì, để", type: "giới từ", example: "为了你。", examplePinyin: "Wèile nǐ.", exampleMeaning: "Vì bạn." },
+  { id: "3-229", hanzi: "位", pinyin: "wèi", meaning: "vị (lượng từ kính trọng)", type: "lượng từ", example: "三位老师。", examplePinyin: "Sān wèi lǎoshī.", exampleMeaning: "Ba vị giáo viên." },
+  { id: "3-230", hanzi: "文化", pinyin: "wénhuà", meaning: "văn hóa", type: "danh từ", example: "中国文化。", examplePinyin: "Zhōngguó wénhuà.", exampleMeaning: "Văn hóa Trung Quốc." },
+  { id: "3-231", hanzi: "西", pinyin: "xī", meaning: "phía Tây", type: "danh từ", example: "西方。", examplePinyin: "Xīfāng.", exampleMeaning: "Phương Tây." },
+  { id: "3-232", hanzi: "习惯", pinyin: "xíguàn", meaning: "thói quen, quen", type: "danh từ", example: "好习惯。", examplePinyin: "Hǎo xíguàn.", exampleMeaning: "Thói quen tốt." },
+  { id: "3-233", hanzi: "洗手间", pinyin: "xǐshǒujiān", meaning: "nhà vệ sinh", type: "danh từ", example: "洗手间在哪儿?", examplePinyin: "Xǐshǒujiān zài nǎr?", exampleMeaning: "Nhà vệ sinh ở đâu?" },
+  { id: "3-234", hanzi: "洗澡", pinyin: "xǐzǎo", meaning: "tắm", type: "động từ", example: "去洗澡。", examplePinyin: "Qù xǐzǎo.", exampleMeaning: "Đi tắm." },
+  { id: "3-235", hanzi: "夏", pinyin: "xià", meaning: "mùa hè", type: "danh từ", example: "夏天很热。", examplePinyin: "Xiàtiān hěn rè.", exampleMeaning: "Mùa hè rất nóng." },
+  { id: "3-236", hanzi: "先", pinyin: "xiān", meaning: "trước, đầu tiên", type: "phó từ", example: "我先走。", examplePinyin: "Wǒ xiān zǒu.", exampleMeaning: "Tôi đi trước." },
+  { id: "3-237", hanzi: "相信", pinyin: "xiāngxìn", meaning: "tin tưởng", type: "động từ", example: "我相信你。", examplePinyin: "Wǒ xiāngxìn nǐ.", exampleMeaning: "Tôi tin bạn." },
+  { id: "3-238", hanzi: "香蕉", pinyin: "xiāngjiāo", meaning: "chuối", type: "danh từ", example: "一根香蕉。", examplePinyin: "Yì gēn xiāngjiāo.", exampleMeaning: "Một quả chuối." },
+  { id: "3-239", hanzi: "像", pinyin: "xiàng", meaning: "giống như", type: "động từ", example: "你像妈妈。", examplePinyin: "Nǐ xiàng māma.", exampleMeaning: "Bạn giống mẹ." },
+  { id: "3-240", hanzi: "校长", pinyin: "xiàozhǎng", meaning: "hiệu trưởng", type: "danh từ", example: "新校长。", examplePinyin: "Xīn xiàozhǎng.", exampleMeaning: "Hiệu trưởng mới." },
+  { id: "3-241", hanzi: "小心", pinyin: "xiǎoxīn", meaning: "cẩn thận", type: "tính từ", example: "小心点!", examplePinyin: "Xiǎoxīn diǎn!", exampleMeaning: "Cẩn thận đấy!" },
+  { id: "3-242", hanzi: "新闻", pinyin: "xīnwén", meaning: "tin tức", type: "danh từ", example: "看新闻。", examplePinyin: "Kàn xīnwén.", exampleMeaning: "Xem tin tức." },
+  { id: "3-243", hanzi: "新鲜", pinyin: "xīnxiān", meaning: "tươi, mới mẻ", type: "tính từ", example: "新鲜水果。", examplePinyin: "Xīnxiān shuǐguǒ.", exampleMeaning: "Trái cây tươi." },
+  { id: "3-244", hanzi: "信用卡", pinyin: "xìnyòngkǎ", meaning: "thẻ tín dụng", type: "danh từ", example: "用信用卡。", examplePinyin: "Yòng xìnyòngkǎ.", exampleMeaning: "Dùng thẻ tín dụng." },
+  { id: "3-245", hanzi: "行李箱", pinyin: "xínglǐxiāng", meaning: "vali, hành lý", type: "danh từ", example: "我的行李箱。", examplePinyin: "Wǒ de xínglǐxiāng.", exampleMeaning: "Vali của tôi." },
+  { id: "3-246", hanzi: "熊猫", pinyin: "xióngmāo", meaning: "gấu trúc", type: "danh từ", example: "可爱的熊猫。", examplePinyin: "Kě'ài de xióngmāo.", exampleMeaning: "Gấu trúc đáng yêu." },
+  { id: "3-247", hanzi: "需要", pinyin: "xūyào", meaning: "cần, cần thiết", type: "động từ", example: "我需要帮助。", examplePinyin: "Wǒ xūyào bāngzhù.", exampleMeaning: "Tôi cần giúp đỡ." },
+  { id: "3-248", hanzi: "选择", pinyin: "xuǎnzé", meaning: "lựa chọn", type: "động từ", example: "做选择。", examplePinyin: "Zuò xuǎnzé.", exampleMeaning: "Đưa ra lựa chọn." },
+  { id: "3-249", hanzi: "要求", pinyin: "yāoqiú", meaning: "yêu cầu", type: "động từ", example: "他的要求。", examplePinyin: "Tā de yāoqiú.", exampleMeaning: "Yêu cầu của anh ấy." },
+  { id: "3-250", hanzi: "爷爷", pinyin: "yéye", meaning: "ông nội", type: "danh từ", example: "我的爷爷。", examplePinyin: "Wǒ de yéye.", exampleMeaning: "Ông nội của tôi." },
+  { id: "3-251", hanzi: "一般", pinyin: "yìbān", meaning: "bình thường, thông thường", type: "tính từ", example: "一般来说。", examplePinyin: "Yìbān láishuō.", exampleMeaning: "Nói chung." },
+  { id: "3-252", hanzi: "一边", pinyin: "yìbiān", meaning: "vừa, một bên", type: "phó từ", example: "一边吃一边看。", examplePinyin: "Yìbiān chī yìbiān kàn.", exampleMeaning: "Vừa ăn vừa xem." },
+  { id: "3-253", hanzi: "一定", pinyin: "yídìng", meaning: "nhất định, chắc chắn", type: "phó từ", example: "我一定来。", examplePinyin: "Wǒ yídìng lái.", exampleMeaning: "Tôi nhất định sẽ đến." },
+  { id: "3-254", hanzi: "一共", pinyin: "yígòng", meaning: "tổng cộng", type: "phó từ", example: "一共多少钱?", examplePinyin: "Yígòng duōshao qián?", exampleMeaning: "Tổng cộng bao nhiêu tiền?" },
+  { id: "3-255", hanzi: "一会儿", pinyin: "yíhuìr", meaning: "một lát, chốc nữa", type: "danh từ", example: "等一会儿。", examplePinyin: "Děng yíhuìr.", exampleMeaning: "Đợi một lát." },
+  { id: "3-256", hanzi: "一样", pinyin: "yíyàng", meaning: "giống nhau", type: "tính từ", example: "我们一样。", examplePinyin: "Wǒmen yíyàng.", exampleMeaning: "Chúng tôi giống nhau." },
+  { id: "3-257", hanzi: "一直", pinyin: "yìzhí", meaning: "luôn, một mạch", type: "phó từ", example: "一直走。", examplePinyin: "Yìzhí zǒu.", exampleMeaning: "Đi thẳng." },
+  { id: "3-258", hanzi: "以前", pinyin: "yǐqián", meaning: "trước đây, ngày xưa", type: "danh từ", example: "以前我不会。", examplePinyin: "Yǐqián wǒ bú huì.", exampleMeaning: "Trước đây tôi không biết." },
+  { id: "3-259", hanzi: "以后", pinyin: "yǐhòu", meaning: "sau này, về sau", type: "danh từ", example: "以后再说。", examplePinyin: "Yǐhòu zài shuō.", exampleMeaning: "Để sau hãy nói." },
+  { id: "3-260", hanzi: "以为", pinyin: "yǐwéi", meaning: "tưởng (sai)", type: "động từ", example: "我以为你不来。", examplePinyin: "Wǒ yǐwéi nǐ bù lái.", exampleMeaning: "Tôi tưởng bạn không đến." },
+  { id: "3-261", hanzi: "音乐", pinyin: "yīnyuè", meaning: "âm nhạc", type: "danh từ", example: "听音乐。", examplePinyin: "Tīng yīnyuè.", exampleMeaning: "Nghe nhạc." },
+  { id: "3-262", hanzi: "银行", pinyin: "yínháng", meaning: "ngân hàng", type: "danh từ", example: "去银行。", examplePinyin: "Qù yínháng.", exampleMeaning: "Đi ngân hàng." },
+  { id: "3-263", hanzi: "饮料", pinyin: "yǐnliào", meaning: "đồ uống", type: "danh từ", example: "买饮料。", examplePinyin: "Mǎi yǐnliào.", exampleMeaning: "Mua đồ uống." },
+  { id: "3-264", hanzi: "应该", pinyin: "yīnggāi", meaning: "nên, phải", type: "động từ", example: "你应该去。", examplePinyin: "Nǐ yīnggāi qù.", exampleMeaning: "Bạn nên đi." },
+  { id: "3-265", hanzi: "影响", pinyin: "yǐngxiǎng", meaning: "ảnh hưởng", type: "động từ", example: "影响很大。", examplePinyin: "Yǐngxiǎng hěn dà.", exampleMeaning: "Ảnh hưởng rất lớn." },
+  { id: "3-266", hanzi: "用", pinyin: "yòng", meaning: "dùng", type: "động từ", example: "用筷子。", examplePinyin: "Yòng kuàizi.", exampleMeaning: "Dùng đũa." },
+  { id: "3-267", hanzi: "游戏", pinyin: "yóuxì", meaning: "trò chơi, game", type: "danh từ", example: "玩游戏。", examplePinyin: "Wán yóuxì.", exampleMeaning: "Chơi game." },
+  { id: "3-268", hanzi: "有名", pinyin: "yǒumíng", meaning: "nổi tiếng", type: "tính từ", example: "他很有名。", examplePinyin: "Tā hěn yǒumíng.", exampleMeaning: "Anh ấy rất nổi tiếng." },
+  { id: "3-269", hanzi: "又", pinyin: "yòu", meaning: "lại, vừa", type: "phó từ", example: "他又来了。", examplePinyin: "Tā yòu lái le.", exampleMeaning: "Anh ấy lại đến rồi." },
+  { id: "3-270", hanzi: "遇到", pinyin: "yùdào", meaning: "gặp phải", type: "động từ", example: "遇到困难。", examplePinyin: "Yùdào kùnnan.", exampleMeaning: "Gặp khó khăn." },
+  { id: "3-271", hanzi: "元", pinyin: "yuán", meaning: "đồng (tiền)", type: "lượng từ", example: "一百元。", examplePinyin: "Yìbǎi yuán.", exampleMeaning: "Một trăm đồng." },
+  { id: "3-272", hanzi: "愿意", pinyin: "yuànyì", meaning: "sẵn lòng, muốn", type: "động từ", example: "我愿意。", examplePinyin: "Wǒ yuànyì.", exampleMeaning: "Tôi sẵn lòng." },
+  { id: "3-273", hanzi: "月亮", pinyin: "yuèliang", meaning: "mặt trăng", type: "danh từ", example: "月亮很亮。", examplePinyin: "Yuèliang hěn liàng.", exampleMeaning: "Mặt trăng rất sáng." },
+  { id: "3-274", hanzi: "越", pinyin: "yuè", meaning: "càng", type: "phó từ", example: "越来越好。", examplePinyin: "Yuè lái yuè hǎo.", exampleMeaning: "Càng ngày càng tốt." },
+  { id: "3-275", hanzi: "云", pinyin: "yún", meaning: "mây", type: "danh từ", example: "白云。", examplePinyin: "Bái yún.", exampleMeaning: "Mây trắng." },
+  { id: "3-276", hanzi: "运动", pinyin: "yùndòng", meaning: "vận động, thể thao", type: "động từ", example: "做运动。", examplePinyin: "Zuò yùndòng.", exampleMeaning: "Vận động." },
+  { id: "3-277", hanzi: "杂志", pinyin: "zázhì", meaning: "tạp chí", type: "danh từ", example: "看杂志。", examplePinyin: "Kàn zázhì.", exampleMeaning: "Xem tạp chí." },
+  { id: "3-278", hanzi: "再", pinyin: "zài", meaning: "lại, lần nữa", type: "phó từ", example: "再来一次。", examplePinyin: "Zài lái yí cì.", exampleMeaning: "Lại một lần nữa." },
+  { id: "3-279", hanzi: "脏", pinyin: "zāng", meaning: "bẩn", type: "tính từ", example: "衣服脏了。", examplePinyin: "Yīfu zāng le.", exampleMeaning: "Quần áo bẩn rồi." },
+  { id: "3-280", hanzi: "怎么办", pinyin: "zěnme bàn", meaning: "làm sao, làm thế nào", type: "cụm từ", example: "现在怎么办?", examplePinyin: "Xiànzài zěnme bàn?", exampleMeaning: "Bây giờ làm sao?" },
+  { id: "3-281", hanzi: "站", pinyin: "zhàn", meaning: "đứng, ga, trạm", type: "động từ", example: "站起来。", examplePinyin: "Zhàn qǐlái.", exampleMeaning: "Đứng dậy." },
+  { id: "3-282", hanzi: "张", pinyin: "zhāng", meaning: "tờ, tấm (lượng từ)", type: "lượng từ", example: "一张纸。", examplePinyin: "Yì zhāng zhǐ.", exampleMeaning: "Một tờ giấy." },
+  { id: "3-283", hanzi: "长", pinyin: "zhǎng", meaning: "lớn lên, dài", type: "động từ", example: "她长得很高。", examplePinyin: "Tā zhǎng de hěn gāo.", exampleMeaning: "Cô ấy lớn lên rất cao." },
+  { id: "3-284", hanzi: "着急", pinyin: "zháojí", meaning: "lo lắng, sốt ruột", type: "động từ", example: "别着急。", examplePinyin: "Bié zháojí.", exampleMeaning: "Đừng sốt ruột." },
+  { id: "3-285", hanzi: "照顾", pinyin: "zhàogù", meaning: "chăm sóc", type: "động từ", example: "照顾孩子。", examplePinyin: "Zhàogù háizi.", exampleMeaning: "Chăm sóc trẻ con." },
+  { id: "3-286", hanzi: "照片", pinyin: "zhàopiàn", meaning: "tấm ảnh", type: "danh từ", example: "看照片。", examplePinyin: "Kàn zhàopiàn.", exampleMeaning: "Xem ảnh." },
+  { id: "3-287", hanzi: "照相机", pinyin: "zhàoxiàngjī", meaning: "máy ảnh", type: "danh từ", example: "新照相机。", examplePinyin: "Xīn zhàoxiàngjī.", exampleMeaning: "Máy ảnh mới." },
+  { id: "3-288", hanzi: "只", pinyin: "zhǐ", meaning: "chỉ", type: "phó từ", example: "我只有一个。", examplePinyin: "Wǒ zhǐ yǒu yí ge.", exampleMeaning: "Tôi chỉ có một cái." },
+  { id: "3-289", hanzi: "只有", pinyin: "zhǐyǒu", meaning: "chỉ có", type: "liên từ", example: "只有他知道。", examplePinyin: "Zhǐyǒu tā zhīdào.", exampleMeaning: "Chỉ có anh ấy biết." },
+  { id: "3-290", hanzi: "中间", pinyin: "zhōngjiān", meaning: "ở giữa", type: "danh từ", example: "在中间。", examplePinyin: "Zài zhōngjiān.", exampleMeaning: "Ở giữa." },
+  { id: "3-291", hanzi: "中文", pinyin: "Zhōngwén", meaning: "tiếng Trung", type: "danh từ", example: "学中文。", examplePinyin: "Xué Zhōngwén.", exampleMeaning: "Học tiếng Trung." },
+  { id: "3-292", hanzi: "终于", pinyin: "zhōngyú", meaning: "cuối cùng", type: "phó từ", example: "终于到了。", examplePinyin: "Zhōngyú dào le.", exampleMeaning: "Cuối cùng cũng đến." },
+  { id: "3-293", hanzi: "种", pinyin: "zhǒng", meaning: "loại, hạt giống", type: "lượng từ", example: "一种水果。", examplePinyin: "Yì zhǒng shuǐguǒ.", exampleMeaning: "Một loại trái cây." },
+  { id: "3-294", hanzi: "重要", pinyin: "zhòngyào", meaning: "quan trọng", type: "tính từ", example: "很重要。", examplePinyin: "Hěn zhòngyào.", exampleMeaning: "Rất quan trọng." },
+  { id: "3-295", hanzi: "周末", pinyin: "zhōumò", meaning: "cuối tuần", type: "danh từ", example: "周末快乐!", examplePinyin: "Zhōumò kuàilè!", exampleMeaning: "Cuối tuần vui vẻ!" },
+  { id: "3-296", hanzi: "主要", pinyin: "zhǔyào", meaning: "chủ yếu", type: "tính từ", example: "主要原因。", examplePinyin: "Zhǔyào yuányīn.", exampleMeaning: "Nguyên nhân chính." },
+  { id: "3-297", hanzi: "注意", pinyin: "zhùyì", meaning: "chú ý", type: "động từ", example: "注意安全。", examplePinyin: "Zhùyì ānquán.", exampleMeaning: "Chú ý an toàn." },
+  { id: "3-298", hanzi: "祝", pinyin: "zhù", meaning: "chúc", type: "động từ", example: "祝你生日快乐!", examplePinyin: "Zhù nǐ shēngrì kuàilè!", exampleMeaning: "Chúc bạn sinh nhật vui vẻ!" },
+  { id: "3-299", hanzi: "自己", pinyin: "zìjǐ", meaning: "tự mình, bản thân", type: "đại từ", example: "我自己做。", examplePinyin: "Wǒ zìjǐ zuò.", exampleMeaning: "Tôi tự mình làm." },
+  { id: "3-300", hanzi: "自行车", pinyin: "zìxíngchē", meaning: "xe đạp", type: "danh từ", example: "骑自行车。", examplePinyin: "Qí zìxíngchē.", exampleMeaning: "Đi xe đạp." }
 ];
 
 const hsk4 = [
@@ -1742,49 +1999,140 @@ const QuizView = ({ toggleLearned, learned, addQuizScore }) => {
 };
 
 // ============ WRITING VIEW ============
+// Helper: Load HanziWriter library lazily
+const loadHanziWriter = () => {
+  return new Promise((resolve, reject) => {
+    if (window.HanziWriter) return resolve(window.HanziWriter);
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/hanzi-writer@3.7/dist/hanzi-writer.min.js';
+    script.onload = () => resolve(window.HanziWriter);
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+};
+
 const WritingView = () => {
   const [hskLevel, setHskLevel] = useState(1);
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [showHint, setShowHint] = useState(true);
-  const canvasRef = useRef(null);
+  const [charIdx, setCharIdx] = useState(0); // index of character within word (for multi-char words)
+  const [mode, setMode] = useState('animate'); // 'animate' | 'quiz' | 'practice'
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [strokeCount, setStrokeCount] = useState(0);
+  const [currentStroke, setCurrentStroke] = useState(0);
+  const writerContainerRef = useRef(null);
+  const writerRef = useRef(null);
+
+  const practiceCanvasRef = useRef(null);
   const isDrawing = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
 
   const words = ALL_HSK[hskLevel] || [];
   const currentWord = words[currentIdx];
+  const currentChar = currentWord ? currentWord.hanzi[charIdx] : '';
 
-  const clearCanvas = () => {
-    const c = canvasRef.current;
-    if (!c) return;
-    const ctx = c.getContext('2d');
-    ctx.clearRect(0, 0, c.width, c.height);
-    drawGrid();
-  };
-
-  const drawGrid = () => {
-    const c = canvasRef.current;
-    if (!c) return;
-    const ctx = c.getContext('2d');
-    ctx.save();
-    const w = c.width, h = c.height;
-    ctx.strokeStyle = 'rgba(196, 30, 58, 0.15)';
-    ctx.lineWidth = 1;
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath();
-    ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h);
-    ctx.moveTo(0, h/2); ctx.lineTo(w, h/2);
-    ctx.moveTo(0, 0); ctx.lineTo(w, h);
-    ctx.moveTo(w, 0); ctx.lineTo(0, h);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.strokeStyle = 'rgba(196, 30, 58, 0.4)';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(0, 0, w, h);
-    ctx.restore();
-  };
-
+  // Reset character index when word changes
   useEffect(() => {
-    const c = canvasRef.current;
+    setCharIdx(0);
+  }, [currentIdx, hskLevel]);
+
+  // Initialize / re-initialize HanziWriter when char or mode changes
+  useEffect(() => {
+    if (!currentChar) return;
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    setCurrentStroke(0);
+
+    (async () => {
+      try {
+        const HanziWriter = await loadHanziWriter();
+        if (cancelled) return;
+
+        // Clean up previous writer
+        if (writerContainerRef.current) {
+          writerContainerRef.current.innerHTML = '';
+        }
+
+        // Create unique ID for this writer
+        const containerId = `hw-${Date.now()}`;
+        if (writerContainerRef.current) {
+          writerContainerRef.current.id = containerId;
+        }
+
+        const isDark = document.documentElement.style.getPropertyValue('--bg') === '#0f1a2e';
+        const accentColor = '#5b9bd5';
+        const accentSoft = '#a8c8e8';
+        const inkColor = isDark ? '#e8f1fc' : '#1e3a5f';
+
+        const writer = HanziWriter.create(containerId, currentChar, {
+          width: 280,
+          height: 280,
+          padding: 12,
+          showOutline: true,
+          showCharacter: mode === 'animate',
+          strokeColor: inkColor,
+          outlineColor: '#d6e4f0',
+          radicalColor: accentColor,
+          highlightColor: accentColor,
+          drawingColor: accentColor,
+          strokeAnimationSpeed: 1,
+          delayBetweenStrokes: 300,
+          drawingFadeDuration: 300,
+          showHintAfterMisses: 2,
+        });
+
+        writerRef.current = writer;
+
+        // Get stroke count
+        HanziWriter.loadCharacterData(currentChar).then(charData => {
+          if (cancelled) return;
+          setStrokeCount(charData.strokes.length);
+        }).catch(() => {});
+
+        // Auto-start based on mode
+        if (mode === 'animate') {
+          setTimeout(() => {
+            if (!cancelled && writerRef.current) {
+              writerRef.current.animateCharacter({
+                onComplete: () => {
+                  if (!cancelled) setCurrentStroke(0);
+                }
+              });
+            }
+          }, 400);
+        } else if (mode === 'quiz') {
+          setTimeout(() => {
+            if (!cancelled && writerRef.current) {
+              writerRef.current.quiz({
+                onCorrectStroke: ({ strokeNum }) => {
+                  if (!cancelled) setCurrentStroke(strokeNum + 1);
+                },
+                onComplete: () => {
+                  if (!cancelled) setCurrentStroke(strokeCount);
+                }
+              });
+            }
+          }, 400);
+        }
+
+        setLoading(false);
+      } catch (e) {
+        if (!cancelled) {
+          console.error('HanziWriter error:', e);
+          setError('Không thể tải dữ liệu chữ. Vui lòng kiểm tra kết nối mạng.');
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, [currentChar, mode]);
+
+  // Practice canvas (free drawing)
+  useEffect(() => {
+    if (mode !== 'practice') return;
+    const c = practiceCanvasRef.current;
     if (!c) return;
     const ratio = window.devicePixelRatio || 1;
     const rect = c.getBoundingClientRect();
@@ -1794,11 +2142,42 @@ const WritingView = () => {
     ctx.scale(ratio, ratio);
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    drawGrid();
-  }, [currentIdx, hskLevel]);
+    drawPracticeGrid();
+  }, [mode, currentIdx, charIdx, hskLevel]);
+
+  const drawPracticeGrid = () => {
+    const c = practiceCanvasRef.current;
+    if (!c) return;
+    const ctx = c.getContext('2d');
+    const ratio = window.devicePixelRatio || 1;
+    const w = c.width / ratio, h = c.height / ratio;
+    ctx.clearRect(0, 0, c.width, c.height);
+    ctx.save();
+    // Grid lines (米 pattern)
+    ctx.strokeStyle = 'rgba(91, 155, 213, 0.2)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h);
+    ctx.moveTo(0, h/2); ctx.lineTo(w, h/2);
+    ctx.moveTo(0, 0); ctx.lineTo(w, h);
+    ctx.moveTo(w, 0); ctx.lineTo(0, h);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.strokeStyle = 'rgba(91, 155, 213, 0.5)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(1, 1, w-2, h-2);
+    // Light hint character
+    ctx.fillStyle = 'rgba(168, 200, 232, 0.25)';
+    ctx.font = `${Math.min(w, h) * 0.78}px "Noto Sans SC", sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(currentChar, w/2, h/2 + 4);
+    ctx.restore();
+  };
 
   const getPos = (e) => {
-    const c = canvasRef.current;
+    const c = practiceCanvasRef.current;
     const rect = c.getBoundingClientRect();
     const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
     const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
@@ -1813,11 +2192,11 @@ const WritingView = () => {
   const draw = (e) => {
     if (!isDrawing.current) return;
     e.preventDefault();
-    const c = canvasRef.current;
+    const c = practiceCanvasRef.current;
     const ctx = c.getContext('2d');
     const pos = getPos(e);
-    ctx.strokeStyle = '#1a1a1a';
-    ctx.lineWidth = 6;
+    ctx.strokeStyle = '#1e3a5f';
+    ctx.lineWidth = 8;
     ctx.beginPath();
     ctx.moveTo(lastPos.current.x, lastPos.current.y);
     ctx.lineTo(pos.x, pos.y);
@@ -1826,57 +2205,183 @@ const WritingView = () => {
   };
   const stopDraw = () => { isDrawing.current = false; };
 
+  const handleAnimate = () => {
+    if (writerRef.current && !loading) {
+      writerRef.current.animateCharacter({
+        onComplete: () => setCurrentStroke(strokeCount)
+      });
+    }
+  };
+
+  const handleQuiz = () => {
+    setMode('quiz');
+  };
+
   if (!currentWord) return null;
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8">
+    <div className="max-w-5xl mx-auto px-6 py-8">
       <div className="mb-6">
         <div className="text-xs tracking-[0.3em] mb-2" style={{ color:'var(--accent)' }}>书写 · LUYỆN VIẾT</div>
         <h1 className="text-3xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Tập viết chữ Hán</h1>
         <div className="flex gap-2 flex-wrap mb-3">
           {[1,2,3,4,5,6].map(l => (
-            <button key={l} onClick={() => { setHskLevel(l); setCurrentIdx(0); }} className="px-3 py-1.5 rounded-2xl text-sm"
+            <button key={l} onClick={() => { setHskLevel(l); setCurrentIdx(0); }} className="px-3 py-1.5 rounded-2xl text-sm transition-all"
               style={{ background: hskLevel === l ? 'var(--accent)' : 'var(--surface)', color: hskLevel === l ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>HSK {l}</button>
           ))}
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Char info */}
-        <div className="p-6 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-          <div className="text-xs tracking-widest mb-2" style={{ color:'var(--muted)' }}>CHỮ MẪU ({currentIdx + 1}/{words.length})</div>
-          <div className="relative mb-4 mx-auto" style={{ width:'200px', height:'200px' }}>
-            <div className="absolute inset-0 border-2 rounded-2xl" style={{ borderColor:'var(--accent)', borderStyle:'dashed' }} />
-            <div className="absolute inset-0 flex items-center justify-center">
-              {showHint && <div className="text-[140px] leading-none opacity-40 hanzi-text" style={{ color:'var(--accent)', fontWeight:400 }}>{currentWord.hanzi[0]}</div>}
+      {/* Word info bar */}
+      <div className="p-5 rounded-3xl mb-5 soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <div className="text-xs tracking-widest mb-1" style={{ color:'var(--muted)' }}>TỪ {currentIdx + 1} / {words.length}</div>
+            <div className="flex items-baseline gap-3 flex-wrap">
+              <button onClick={() => speak(currentWord.hanzi)} className="text-3xl hover:opacity-70 transition hanzi-text" style={{ color:'var(--ink)', fontWeight:500 }}>{currentWord.hanzi}</button>
+              <ColoredPinyin pinyin={currentWord.pinyin} size="lg" />
+              <span style={{ color:'var(--muted)' }}>—</span>
+              <span style={{ color:'var(--ink)' }}>{currentWord.meaning}</span>
             </div>
           </div>
-          <div className="text-center"><ColoredPinyin pinyin={currentWord.pinyin} size="xl" /></div>
-          <div className="text-center mt-2 mb-3" style={{ color:'var(--ink)' }}>{currentWord.meaning}</div>
-          <button onClick={() => speak(currentWord.hanzi)} className="w-full py-2 rounded-2xl text-sm" style={{ background:'var(--accent)', color:'white' }}>🔊 Phát âm</button>
-          <div className="flex gap-2 mt-3">
-            <button onClick={() => setShowHint(!showHint)} className="flex-1 py-2 rounded-2xl text-sm" style={{ background:'var(--bg)', color:'var(--ink)', border:'1px solid var(--border)' }}>{showHint ? 'Ẩn gợi ý' : 'Hiện gợi ý'}</button>
-          </div>
-        </div>
-
-        {/* Canvas */}
-        <div className="p-6 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-          <div className="text-xs tracking-widest mb-2" style={{ color:'var(--muted)' }}>VIẾT THỬ</div>
-          <canvas ref={canvasRef}
-            onMouseDown={startDraw} onMouseMove={draw} onMouseUp={stopDraw} onMouseLeave={stopDraw}
-            onTouchStart={startDraw} onTouchMove={draw} onTouchEnd={stopDraw}
-            style={{ width:'100%', height:'200px', background:'#fff', cursor:'crosshair', borderRadius:'2px', display:'block' }} />
-          <div className="flex gap-2 mt-3">
-            <button onClick={clearCanvas} className="flex-1 py-2 rounded-2xl text-sm" style={{ background:'var(--bg)', color:'var(--ink)', border:'1px solid var(--border)' }}>Xóa</button>
-          </div>
+          {/* Character selector for multi-char words */}
+          {currentWord.hanzi.length > 1 && (
+            <div className="flex gap-2 items-center">
+              <span className="text-xs" style={{ color:'var(--muted)' }}>Chọn chữ:</span>
+              {currentWord.hanzi.split('').map((ch, i) => (
+                <button key={i} onClick={() => setCharIdx(i)}
+                  className="w-10 h-10 rounded-2xl hanzi-text transition-all"
+                  style={{
+                    background: charIdx === i ? 'var(--accent)' : 'var(--bg)',
+                    color: charIdx === i ? 'white' : 'var(--ink)',
+                    border: '1px solid var(--border)',
+                    fontSize: '20px', fontWeight: 500
+                  }}>{ch}</button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="flex gap-3 mt-6 justify-center">
-        <button onClick={() => { setCurrentIdx(i => Math.max(0, i - 1)); clearCanvas(); }} disabled={currentIdx === 0}
-          className="px-6 py-2 rounded-2xl" style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)', opacity: currentIdx === 0 ? 0.5 : 1 }}>← Trước</button>
-        <button onClick={() => { setCurrentIdx(i => Math.min(words.length - 1, i + 1)); clearCanvas(); }} disabled={currentIdx >= words.length - 1}
-          className="px-6 py-2 rounded-2xl" style={{ background:'var(--accent)', color:'white', opacity: currentIdx >= words.length - 1 ? 0.5 : 1 }}>Sau →</button>
+      <div className="grid md:grid-cols-2 gap-5">
+        {/* HanziWriter Display */}
+        <div className="p-6 rounded-3xl soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+          <div className="flex justify-between items-center mb-3">
+            <div className="text-xs tracking-widest" style={{ color:'var(--muted)' }}>
+              {mode === 'animate' && 'XEM THỨ TỰ NÉT BÚT'}
+              {mode === 'quiz' && 'KIỂM TRA: HÃY VIẾT THEO THỨ TỰ'}
+              {mode === 'practice' && 'XEM CHỮ MẪU'}
+            </div>
+            {strokeCount > 0 && (
+              <div className="text-xs px-3 py-1 rounded-full" style={{ background:'var(--bg)', color:'var(--accent)', fontWeight:600 }}>
+                {strokeCount} nét
+              </div>
+            )}
+          </div>
+
+          <div className="relative flex items-center justify-center mb-4" style={{ minHeight:'300px' }}>
+            {loading && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="hanzi-text mb-2" style={{ color:'var(--accent)', fontSize:'48px', animation:'pulse 1.5s infinite' }}>笔</div>
+                  <div className="text-sm" style={{ color:'var(--muted)' }}>Đang tải dữ liệu nét bút...</div>
+                </div>
+              </div>
+            )}
+            {error && (
+              <div className="text-center p-4">
+                <div className="text-4xl mb-2">⚠️</div>
+                <div className="text-sm" style={{ color:'var(--muted)' }}>{error}</div>
+              </div>
+            )}
+            <div ref={writerContainerRef} style={{ display: loading || error ? 'none' : 'block' }} />
+          </div>
+
+          {/* Mode buttons */}
+          <div className="grid grid-cols-3 gap-2">
+            <button onClick={() => setMode('animate')}
+              className="py-2.5 rounded-2xl text-sm transition-all"
+              style={{ background: mode === 'animate' ? 'var(--accent)' : 'var(--bg)', color: mode === 'animate' ? 'white' : 'var(--ink)', border:'1px solid var(--border)', fontWeight:500 }}>
+              ▶ Xem mẫu
+            </button>
+            <button onClick={handleQuiz}
+              className="py-2.5 rounded-2xl text-sm transition-all"
+              style={{ background: mode === 'quiz' ? 'var(--accent)' : 'var(--bg)', color: mode === 'quiz' ? 'white' : 'var(--ink)', border:'1px solid var(--border)', fontWeight:500 }}>
+              ✍️ Kiểm tra
+            </button>
+            <button onClick={() => setMode('practice')}
+              className="py-2.5 rounded-2xl text-sm transition-all"
+              style={{ background: mode === 'practice' ? 'var(--accent)' : 'var(--bg)', color: mode === 'practice' ? 'white' : 'var(--ink)', border:'1px solid var(--border)', fontWeight:500 }}>
+              🖊 Viết tự do
+            </button>
+          </div>
+          {mode === 'animate' && !loading && !error && (
+            <button onClick={handleAnimate} className="w-full mt-2 py-2 rounded-2xl text-sm" style={{ background:'var(--accent-soft)', color:'var(--ink)', fontWeight:500 }}>
+              🔄 Xem lại
+            </button>
+          )}
+        </div>
+
+        {/* Practice / Info Panel */}
+        <div className="p-6 rounded-3xl soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+          <div className="text-xs tracking-widest mb-3" style={{ color:'var(--muted)' }}>
+            {mode === 'practice' ? 'VIẾT THỬ TRÊN GIẤY' : 'HƯỚNG DẪN VIẾT'}
+          </div>
+
+          {mode === 'practice' ? (
+            <>
+              <div className="mb-3 mx-auto" style={{ width:'280px', height:'280px', maxWidth:'100%' }}>
+                <canvas ref={practiceCanvasRef}
+                  onMouseDown={startDraw} onMouseMove={draw} onMouseUp={stopDraw} onMouseLeave={stopDraw}
+                  onTouchStart={startDraw} onTouchMove={draw} onTouchEnd={stopDraw}
+                  style={{ width:'100%', height:'100%', background:'#fff', cursor:'crosshair', borderRadius:'12px', display:'block', touchAction:'none' }} />
+              </div>
+              <button onClick={drawPracticeGrid} className="w-full py-2.5 rounded-2xl text-sm" style={{ background:'var(--bg)', color:'var(--ink)', border:'1px solid var(--border)', fontWeight:500 }}>
+                🗑 Xóa và viết lại
+              </button>
+            </>
+          ) : (
+            <div className="space-y-3">
+              <div className="p-4 rounded-2xl" style={{ background:'var(--bg)' }}>
+                <div className="text-xs mb-2" style={{ color:'var(--muted)' }}>📌 NGUYÊN TẮC VIẾT CƠ BẢN</div>
+                <ul className="text-sm space-y-1.5" style={{ color:'var(--ink)' }}>
+                  <li>• Trên trước, dưới sau (上 → 下)</li>
+                  <li>• Trái trước, phải sau (左 → 右)</li>
+                  <li>• Ngang trước, dọc sau (横 → 竖)</li>
+                  <li>• Ngoài trước, trong sau (外 → 内)</li>
+                  <li>• Đóng khung sau cùng (口 đóng cuối)</li>
+                </ul>
+              </div>
+              <div className="p-4 rounded-2xl" style={{ background:'var(--bg)' }}>
+                <div className="text-xs mb-2" style={{ color:'var(--muted)' }}>💡 MẸO HỌC TỐT</div>
+                <ul className="text-sm space-y-1.5" style={{ color:'var(--ink)' }}>
+                  <li>• Nhấn <strong>"Xem mẫu"</strong> để xem animation thứ tự nét</li>
+                  <li>• Nhấn <strong>"Kiểm tra"</strong> để tự viết theo, hệ thống sẽ chấm</li>
+                  <li>• Nhấn <strong>"Viết tự do"</strong> để luyện viết bằng chuột/cảm ứng</li>
+                  <li>• Viết sai 2 lần sẽ tự động hiện gợi ý</li>
+                </ul>
+              </div>
+              <button onClick={() => speak(currentChar)} className="w-full py-2.5 rounded-2xl text-sm" style={{ background:'var(--accent)', color:'white', fontWeight:500 }}>
+                🔊 Phát âm chữ này
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Navigation */}
+      <div className="flex gap-3 mt-6 justify-center items-center">
+        <button onClick={() => setCurrentIdx(i => Math.max(0, i - 1))} disabled={currentIdx === 0}
+          className="px-6 py-2.5 rounded-2xl transition-all"
+          style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)', opacity: currentIdx === 0 ? 0.4 : 1, fontWeight:500 }}>
+          ← Từ trước
+        </button>
+        <span className="text-sm" style={{ color:'var(--muted)' }}>{currentIdx + 1} / {words.length}</span>
+        <button onClick={() => setCurrentIdx(i => Math.min(words.length - 1, i + 1))} disabled={currentIdx >= words.length - 1}
+          className="px-6 py-2.5 rounded-2xl transition-all"
+          style={{ background:'var(--accent)', color:'white', opacity: currentIdx >= words.length - 1 ? 0.4 : 1, fontWeight:500 }}>
+          Từ sau →
+        </button>
       </div>
     </div>
   );
