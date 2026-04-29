@@ -3490,21 +3490,284 @@ const grammar = {
   hsk4: [
     {
       id: "g4-1",
-      title: "Cấu trúc 越来越 (yuè lái yuè) - Càng ngày càng",
-      structure: "Chủ ngữ + 越来越 + Tính từ/Động từ",
-      explanation: "Biểu thị mức độ tăng dần theo thời gian.",
+      title: "不但...而且... (không những...mà còn...)",
+      structure: "不但 + Mệnh đề 1, 而且 + Mệnh đề 2",
+      explanation: "Cấu trúc liên kết tăng tiến, biểu thị vế sau bổ sung và nâng cao thêm so với vế trước. Khi hai vế CÙNG chủ ngữ, 不但 đặt SAU chủ ngữ. Khi KHÁC chủ ngữ, 不但 đặt TRƯỚC chủ ngữ. Có thể thay 而且 bằng 也, 还, 并且. Lưu ý: nếu là phủ định kép thì dùng 不但不/不但没有 ở vế đầu để tạo nghĩa mạnh hơn.",
       examples: [
-        { hanzi: "天气越来越冷。", pinyin: "Tiānqì yuè lái yuè lěng.", meaning: "Thời tiết ngày càng lạnh." },
-        { hanzi: "他汉语越来越好。", pinyin: "Tā Hànyǔ yuè lái yuè hǎo.", meaning: "Tiếng Trung của anh ấy ngày càng tốt." }
+        { hanzi: "她不但漂亮,而且聪明。", pinyin: "Tā búdàn piàoliang, érqiě cōngming.", meaning: "Cô ấy không những đẹp mà còn thông minh." },
+        { hanzi: "这个菜不但好吃,而且便宜。", pinyin: "Zhège cài búdàn hǎochī, érqiě piányi.", meaning: "Món này không những ngon mà còn rẻ." },
+        { hanzi: "不但我会去,我妹妹也会去。", pinyin: "Búdàn wǒ huì qù, wǒ mèimei yě huì qù.", meaning: "Không những tôi đi, em gái tôi cũng đi." },
+        { hanzi: "他不但没有道歉,反而生气了。", pinyin: "Tā búdàn méiyǒu dàoqiàn, fǎn'ér shēngqì le.", meaning: "Anh ấy không những không xin lỗi mà còn tức giận." }
       ]
     },
     {
       id: "g4-2",
-      title: "Cấu trúc 不但...而且... (không những...mà còn...)",
-      structure: "不但 + Mệnh đề 1 + 而且 + Mệnh đề 2",
-      explanation: "Liên kết hai vế có quan hệ tăng tiến.",
+      title: "既...又... (vừa...vừa...)",
+      structure: "Chủ ngữ + 既 + Tính từ/Động từ A + 又 + Tính từ/Động từ B",
+      explanation: "Biểu thị một chủ thể có HAI ĐẶC ĐIỂM/HÀNH ĐỘNG cùng tồn tại. Khác với 一边...一边... (hai hành động đồng thời), 既...又... thường dùng cho TÍNH CHẤT hoặc TRẠNG THÁI tĩnh. Hai vế phải có TÍNH CHẤT TƯƠNG ĐƯƠNG (cùng tích cực hoặc cùng tiêu cực).",
       examples: [
-        { hanzi: "她不但漂亮,而且聪明。", pinyin: "Tā búdàn piàoliang, érqiě cōngming.", meaning: "Cô ấy không những đẹp mà còn thông minh." }
+        { hanzi: "这个房子既漂亮又便宜。", pinyin: "Zhège fángzi jì piàoliang yòu piányi.", meaning: "Căn nhà này vừa đẹp vừa rẻ." },
+        { hanzi: "她既会唱歌,又会跳舞。", pinyin: "Tā jì huì chànggē, yòu huì tiàowǔ.", meaning: "Cô ấy vừa biết hát vừa biết múa." },
+        { hanzi: "学习汉语既有意思又有用。", pinyin: "Xuéxí Hànyǔ jì yǒu yìsi yòu yǒuyòng.", meaning: "Học tiếng Trung vừa thú vị vừa hữu ích." }
+      ]
+    },
+    {
+      id: "g4-3",
+      title: "无论...都... (dù...cũng...)",
+      structure: "无论 + Câu hỏi/Lựa chọn, (Chủ ngữ) + 都/也 + Động từ",
+      explanation: "Cấu trúc nhượng bộ tuyệt đối: bất kể tình huống thế nào, kết quả vẫn không thay đổi. Sau 无论 phải là CÂU HỎI (有谁/什么/哪) hoặc cụm LỰA CHỌN (是A还是B). KHÔNG dùng câu khẳng định sau 无论. Có thể thay 无论 bằng 不管 (thông tục hơn).",
+      examples: [
+        { hanzi: "无论多忙,他都坚持锻炼。", pinyin: "Wúlùn duō máng, tā dōu jiānchí duànliàn.", meaning: "Dù bận thế nào, anh ấy vẫn kiên trì tập luyện." },
+        { hanzi: "无论是谁,都要遵守规则。", pinyin: "Wúlùn shì shéi, dōu yào zūnshǒu guīzé.", meaning: "Dù là ai cũng phải tuân thủ quy tắc." },
+        { hanzi: "不管下不下雨,我都要去。", pinyin: "Bùguǎn xià bú xiàyǔ, wǒ dōu yào qù.", meaning: "Dù mưa hay không tôi cũng sẽ đi." }
+      ]
+    },
+    {
+      id: "g4-4",
+      title: "尽管...但是/可是... (mặc dù...nhưng...)",
+      structure: "尽管 + Mệnh đề 1, 但是/可是/还是 + Mệnh đề 2",
+      explanation: "Biểu thị quan hệ nhượng bộ - chuyển ý. Khác với 虽然...但是... (giống nghĩa), 尽管 mang sắc thái VĂN VIẾT HƠN và nhấn mạnh sự thật của vế đầu. Sau 尽管 thường là sự việc KHÁCH QUAN, có thật.",
+      examples: [
+        { hanzi: "尽管下大雨,他还是来了。", pinyin: "Jǐnguǎn xià dàyǔ, tā háishi lái le.", meaning: "Mặc dù mưa to, anh ấy vẫn đến." },
+        { hanzi: "尽管很累,但是我很高兴。", pinyin: "Jǐnguǎn hěn lèi, dànshì wǒ hěn gāoxìng.", meaning: "Dù mệt nhưng tôi rất vui." },
+        { hanzi: "尽管时间很短,我们还是完成了任务。", pinyin: "Jǐnguǎn shíjiān hěn duǎn, wǒmen háishi wánchéng le rènwu.", meaning: "Mặc dù thời gian ngắn, chúng tôi vẫn hoàn thành nhiệm vụ." }
+      ]
+    },
+    {
+      id: "g4-5",
+      title: "即使...也... (cho dù...cũng...)",
+      structure: "即使 + Giả thiết, (Chủ ngữ) + 也 + Hành động",
+      explanation: "Biểu thị giả thiết-nhượng bộ về sự việc CHƯA xảy ra (hoặc khó xảy ra). Khác với 虽然 (sự việc đã có thật), 即使 nói về điều giả định trong tương lai. Có thể thay bằng 就算 trong văn nói.",
+      examples: [
+        { hanzi: "即使下雨,我也要去。", pinyin: "Jíshǐ xiàyǔ, wǒ yě yào qù.", meaning: "Cho dù trời mưa, tôi cũng sẽ đi." },
+        { hanzi: "即使你不告诉我,我也会知道。", pinyin: "Jíshǐ nǐ bú gàosu wǒ, wǒ yě huì zhīdào.", meaning: "Cho dù em không nói, tôi cũng sẽ biết." },
+        { hanzi: "就算很贵,我也要买。", pinyin: "Jiùsuàn hěn guì, wǒ yě yào mǎi.", meaning: "Cho dù đắt, tôi cũng sẽ mua." }
+      ]
+    },
+    {
+      id: "g4-6",
+      title: "由于 (yóuyú) - Do, vì",
+      structure: "由于 + Nguyên nhân, (所以) + Kết quả",
+      explanation: "Liên từ chỉ NGUYÊN NHÂN, mang sắc thái TRANG TRỌNG/VĂN VIẾT hơn 因为. Đặt ở ĐẦU CÂU. Vế sau có thể có 所以, 因此, 因而. Lưu ý: 由于 KHÔNG dùng được ở vế sau (khác với 因为 có thể dùng cả 因为...的关系).",
+      examples: [
+        { hanzi: "由于天气不好,飞机晚点了。", pinyin: "Yóuyú tiānqì bù hǎo, fēijī wǎndiǎn le.", meaning: "Do thời tiết xấu, máy bay bị trễ." },
+        { hanzi: "由于工作太忙,他没来。", pinyin: "Yóuyú gōngzuò tài máng, tā méi lái.", meaning: "Do công việc quá bận, anh ấy không đến." },
+        { hanzi: "由于努力学习,他考上了大学。", pinyin: "Yóuyú nǔlì xuéxí, tā kǎoshàng le dàxué.", meaning: "Nhờ chăm chỉ học tập, anh ấy đã thi đỗ đại học." }
+      ]
+    },
+    {
+      id: "g4-7",
+      title: "因此 / 因而 (do đó, vì thế)",
+      structure: "Câu nguyên nhân, 因此/因而 + Câu kết quả",
+      explanation: "Liên từ chỉ KẾT QUẢ. 因此 phổ biến hơn, dùng cả văn nói lẫn văn viết. 因而 chỉ dùng văn viết, kết quả mang tính LOGIC chặt chẽ. Đứng đầu vế thứ hai. Khác với 所以 (thông dụng), 因此/因而 trang trọng hơn.",
+      examples: [
+        { hanzi: "他生病了,因此没来上课。", pinyin: "Tā shēngbìng le, yīncǐ méi lái shàngkè.", meaning: "Anh ấy bị ốm, do đó không đến lớp." },
+        { hanzi: "雨下得很大,因此比赛取消了。", pinyin: "Yǔ xià de hěn dà, yīncǐ bǐsài qǔxiāo le.", meaning: "Mưa to, vì thế trận đấu bị hủy." }
+      ]
+    },
+    {
+      id: "g4-8",
+      title: "只有...才... (chỉ có...mới...)",
+      structure: "只有 + Điều kiện duy nhất + 才 + Kết quả",
+      explanation: "Biểu thị ĐIỀU KIỆN CẦN THIẾT DUY NHẤT - không có điều kiện này thì không có kết quả. Khác với 只要...就... (điều kiện đủ tối thiểu), 只有...才... nhấn mạnh tính DUY NHẤT của điều kiện.",
+      examples: [
+        { hanzi: "只有努力,才能成功。", pinyin: "Zhǐyǒu nǔlì, cáinéng chénggōng.", meaning: "Chỉ có nỗ lực mới thành công được." },
+        { hanzi: "只有十八岁以上才能开车。", pinyin: "Zhǐyǒu shíbā suì yǐshàng cáinéng kāichē.", meaning: "Chỉ có trên 18 tuổi mới được lái xe." },
+        { hanzi: "只有亲眼看到,我才会相信。", pinyin: "Zhǐyǒu qīnyǎn kàn dào, wǒ cái huì xiāngxìn.", meaning: "Chỉ khi tận mắt thấy tôi mới tin." }
+      ]
+    },
+    {
+      id: "g4-9",
+      title: "除了...以外,还/都/也... (ngoài...ra, còn/đều...)",
+      structure: "除了 + Đối tượng + 以外, ... + 还/都/也 + ...",
+      explanation: "Có 2 nghĩa quan trọng: (1) BAO GỒM cả → dùng 还 (Ngoài X, còn cả Y); (2) NGOẠI TRỪ → dùng 都 (Trừ X ra, mọi thứ đều...). Phân biệt theo 还/也 hay 都. Có thể lược bỏ 以外.",
+      examples: [
+        { hanzi: "除了汉语,我还会说英语。", pinyin: "Chúle Hànyǔ, wǒ hái huì shuō Yīngyǔ.", meaning: "Ngoài tiếng Trung, tôi còn biết nói tiếng Anh." },
+        { hanzi: "除了他以外,大家都来了。", pinyin: "Chúle tā yǐwài, dàjiā dōu lái le.", meaning: "Trừ anh ấy ra, mọi người đều đã đến." },
+        { hanzi: "除了周末,我天天都工作。", pinyin: "Chúle zhōumò, wǒ tiāntiān dōu gōngzuò.", meaning: "Trừ cuối tuần, ngày nào tôi cũng làm việc." }
+      ]
+    },
+    {
+      id: "g4-10",
+      title: "非...不可 (nhất định phải...)",
+      structure: "Chủ ngữ + 非 + Động từ + 不可",
+      explanation: "Cấu trúc phủ định kép tạo nghĩa khẳng định MẠNH MẼ - nhất định phải làm gì đó, không thể không làm. Có thể thay bằng 非...不行 hoặc thêm 不能/不行. Mang sắc thái QUYẾT TÂM cao.",
+      examples: [
+        { hanzi: "我非去不可。", pinyin: "Wǒ fēi qù bùkě.", meaning: "Tôi nhất định phải đi." },
+        { hanzi: "这件事我非做不可。", pinyin: "Zhè jiàn shì wǒ fēi zuò bùkě.", meaning: "Việc này tôi nhất định phải làm." },
+        { hanzi: "他非要买这个不可。", pinyin: "Tā fēiyào mǎi zhège bùkě.", meaning: "Anh ấy nhất định phải mua cái này." }
+      ]
+    },
+    {
+      id: "g4-11",
+      title: "好像 (hǎoxiàng) - Dường như, hình như",
+      structure: "Chủ ngữ + 好像 + Mệnh đề (+ 似的/一样)",
+      explanation: "Biểu thị sự PHỎNG ĐOÁN không chắc chắn (dường như, hình như) hoặc SO SÁNH (giống như). Có thể thêm 似的 (shìde) hoặc 一样 (yíyàng) ở cuối câu để nhấn mạnh sự so sánh.",
+      examples: [
+        { hanzi: "他好像生病了。", pinyin: "Tā hǎoxiàng shēngbìng le.", meaning: "Hình như anh ấy bị ốm." },
+        { hanzi: "她好像很高兴的样子。", pinyin: "Tā hǎoxiàng hěn gāoxìng de yàngzi.", meaning: "Cô ấy có vẻ rất vui." },
+        { hanzi: "他笑得好像花儿一样。", pinyin: "Tā xiào de hǎoxiàng huār yíyàng.", meaning: "Cô ấy cười như hoa." }
+      ]
+    },
+    {
+      id: "g4-12",
+      title: "看起来 / 听起来 (trông có vẻ / nghe có vẻ)",
+      structure: "Chủ ngữ + 看/听/吃/闻 + 起来 + Tính từ/Mệnh đề",
+      explanation: "Cấu trúc 'V + 起来' biểu thị NHẬN ĐỊNH/CẢM NHẬN dựa trên giác quan tương ứng. 看起来 (trông), 听起来 (nghe), 吃起来 (ăn vào), 闻起来 (ngửi). Có thể đặt đầu câu hoặc giữa câu.",
+      examples: [
+        { hanzi: "她看起来很年轻。", pinyin: "Tā kàn qǐlái hěn niánqīng.", meaning: "Cô ấy trông rất trẻ." },
+        { hanzi: "这个主意听起来不错。", pinyin: "Zhège zhǔyì tīng qǐlái búcuò.", meaning: "Ý tưởng này nghe có vẻ hay." },
+        { hanzi: "这个菜吃起来很香。", pinyin: "Zhège cài chī qǐlái hěn xiāng.", meaning: "Món này ăn vào rất thơm." }
+      ]
+    },
+    {
+      id: "g4-13",
+      title: "一方面...另一方面... (một mặt...mặt khác...)",
+      structure: "一方面 + Vế 1, (另)一方面 + Vế 2",
+      explanation: "Biểu thị việc xem xét vấn đề từ HAI KHÍA CẠNH song song. Hai vế thường có quan hệ tương đương hoặc bổ sung lẫn nhau. Mang sắc thái VĂN VIẾT/PHÂN TÍCH.",
+      examples: [
+        { hanzi: "学习汉语,一方面是为了工作,另一方面是为了兴趣。", pinyin: "Xuéxí Hànyǔ, yìfāngmiàn shì wèile gōngzuò, lìng yìfāngmiàn shì wèile xìngqù.", meaning: "Học tiếng Trung, một mặt là vì công việc, mặt khác vì sở thích." },
+        { hanzi: "他一方面工作,另一方面学习。", pinyin: "Tā yìfāngmiàn gōngzuò, lìng yìfāngmiàn xuéxí.", meaning: "Anh ấy một mặt đi làm, mặt khác đi học." }
+      ]
+    },
+    {
+      id: "g4-14",
+      title: "于是 (yúshì) - Thế là, do đó",
+      structure: "Câu 1, 于是 + Câu 2",
+      explanation: "Liên từ chỉ HÀNH ĐỘNG TIẾP NỐI một cách tự nhiên/tất yếu sau sự việc trước. Khác với 所以 (chỉ kết quả logic), 于là biểu thị CHUỖI HÀNH ĐỘNG. Đứng đầu vế thứ hai.",
+      examples: [
+        { hanzi: "天突然下雨了,于是我们回家了。", pinyin: "Tiān tūrán xiàyǔ le, yúshì wǒmen huí jiā le.", meaning: "Trời đột nhiên mưa, thế là chúng tôi về nhà." },
+        { hanzi: "他听了我的话,于是同意了。", pinyin: "Tā tīng le wǒ de huà, yúshì tóngyì le.", meaning: "Anh ấy nghe lời tôi, thế là đồng ý." }
+      ]
+    },
+    {
+      id: "g4-15",
+      title: "不过 (búguò) - Nhưng, có điều",
+      structure: "Câu 1, 不过 + Câu 2",
+      explanation: "Liên từ chỉ sự CHUYỂN Ý NHẸ NHÀNG hơn 但是. Vế sau là điều BỔ SUNG, ĐÍNH CHÍNH cho vế trước, chứ không hoàn toàn đối lập. Mang sắc thái mềm mỏng, lịch sự.",
+      examples: [
+        { hanzi: "这家店不错,不过有点贵。", pinyin: "Zhè jiā diàn búcuò, búguò yǒudiǎn guì.", meaning: "Cửa hàng này được, có điều hơi đắt." },
+        { hanzi: "我会去,不过会迟到一点儿。", pinyin: "Wǒ huì qù, búguò huì chídào yìdiǎnr.", meaning: "Tôi sẽ đi, nhưng sẽ đến trễ chút." }
+      ]
+    },
+    {
+      id: "g4-16",
+      title: "拿...来说 (lấy...làm ví dụ)",
+      structure: "拿/就 + Đối tượng + 来说",
+      explanation: "Cấu trúc dẫn ra ví dụ cụ thể từ một đối tượng. Đứng ĐẦU CÂU, sau đó là phần phân tích/mô tả về đối tượng đó. Tương đương 'lấy X mà nói', 'đối với X mà nói'.",
+      examples: [
+        { hanzi: "拿我来说,我每天都学习。", pinyin: "Ná wǒ láishuō, wǒ měitiān dōu xuéxí.", meaning: "Lấy tôi mà nói, tôi học mỗi ngày." },
+        { hanzi: "就汉语来说,语法不太难。", pinyin: "Jiù Hànyǔ láishuō, yǔfǎ bú tài nán.", meaning: "Nói về tiếng Trung, ngữ pháp không khó lắm." }
+      ]
+    },
+    {
+      id: "g4-17",
+      title: "至于 (zhìyú) - Còn về phần",
+      structure: "Câu 1。至于 + Đối tượng mới, + Mệnh đề",
+      explanation: "Dùng để CHUYỂN CHỦ ĐỀ sang một khía cạnh/đối tượng khác có liên quan. Đứng đầu câu mới. Tương đương 'còn về phần', 'còn đối với'.",
+      examples: [
+        { hanzi: "我同意你的看法。至于具体方法,我们再讨论。", pinyin: "Wǒ tóngyì nǐ de kànfǎ. Zhìyú jùtǐ fāngfǎ, wǒmen zài tǎolùn.", meaning: "Tôi đồng ý với ý kiến của bạn. Còn về phương pháp cụ thể, chúng ta bàn sau." },
+        { hanzi: "至于他来不来,我不知道。", pinyin: "Zhìyú tā lái bu lái, wǒ bù zhīdào.", meaning: "Còn về việc anh ấy có đến không, tôi không biết." }
+      ]
+    },
+    {
+      id: "g4-18",
+      title: "在...看来 (theo...mà thấy/nói)",
+      structure: "在 + Người + 看来, + Quan điểm/Nhận định",
+      explanation: "Cấu trúc cố định để dẫn ra QUAN ĐIỂM CHỦ QUAN của ai đó. Tương đương 'theo X mà thấy', 'theo quan điểm của X'. Đứng đầu câu, sau đó là nội dung quan điểm.",
+      examples: [
+        { hanzi: "在我看来,这个问题很简单。", pinyin: "Zài wǒ kànlái, zhège wèntí hěn jiǎndān.", meaning: "Theo tôi thấy, vấn đề này rất đơn giản." },
+        { hanzi: "在他看来,学习最重要。", pinyin: "Zài tā kànlái, xuéxí zuì zhòngyào.", meaning: "Theo anh ấy, học tập quan trọng nhất." },
+        { hanzi: "在年轻人看来,这是一种时尚。", pinyin: "Zài niánqīng rén kànlái, zhè shì yì zhǒng shíshàng.", meaning: "Trong mắt giới trẻ, đây là một xu hướng." }
+      ]
+    },
+    {
+      id: "g4-19",
+      title: "尤其是 (yóuqí shì) - Đặc biệt là, nhất là",
+      structure: "Câu chung。尤其是 + Đối tượng/Tình huống cụ thể",
+      explanation: "Dùng để NHẤN MẠNH một trường hợp đặc biệt trong tổng thể đã đề cập. Tương đương 'đặc biệt là', 'nhất là'. Có thể đứng đầu câu hoặc giữa câu.",
+      examples: [
+        { hanzi: "我喜欢水果,尤其是苹果。", pinyin: "Wǒ xǐhuan shuǐguǒ, yóuqí shì píngguǒ.", meaning: "Tôi thích trái cây, đặc biệt là táo." },
+        { hanzi: "夏天很热,尤其是中午。", pinyin: "Xiàtiān hěn rè, yóuqí shì zhōngwǔ.", meaning: "Mùa hè rất nóng, nhất là buổi trưa." }
+      ]
+    },
+    {
+      id: "g4-20",
+      title: "Cấu trúc 是...的 (nhấn mạnh thông tin)",
+      structure: "Chủ ngữ + 是 + (Thời gian/Nơi/Cách thức/Người) + Động từ + 的",
+      explanation: "Cấu trúc 是...的 dùng để NHẤN MẠNH một thông tin cụ thể (thời gian, địa điểm, cách thức, mục đích...) của một sự việc đã xảy ra TRONG QUÁ KHỨ. KHÔNG dùng cho tương lai. Tân ngữ có thể đặt trước hoặc sau 的.",
+      examples: [
+        { hanzi: "我是昨天来的。", pinyin: "Wǒ shì zuótiān lái de.", meaning: "Tôi đến vào hôm qua. (Nhấn mạnh thời gian)" },
+        { hanzi: "他是从北京来的。", pinyin: "Tā shì cóng Běijīng lái de.", meaning: "Anh ấy đến từ Bắc Kinh. (Nhấn mạnh nơi xuất phát)" },
+        { hanzi: "我是坐飞机来的。", pinyin: "Wǒ shì zuò fēijī lái de.", meaning: "Tôi đến bằng máy bay. (Nhấn mạnh phương tiện)" },
+        { hanzi: "这本书是我买的。", pinyin: "Zhè běn shū shì wǒ mǎi de.", meaning: "Cuốn sách này là tôi mua. (Nhấn mạnh người thực hiện)" }
+      ]
+    },
+    {
+      id: "g4-21",
+      title: "Phó từ 究竟 / 到底 (rốt cuộc, cuối cùng)",
+      structure: "Chủ ngữ + 究竟/到底 + Câu hỏi",
+      explanation: "Dùng trong CÂU HỎI để nhấn mạnh sự sốt ruột, truy vấn đến cùng (tương đương 'rốt cuộc'). 到底 thông tục hơn, 究竟 trang trọng hơn. Đặt SAU chủ ngữ và TRƯỚC từ để hỏi (谁/什么/哪/怎么/为什么/几).",
+      examples: [
+        { hanzi: "你到底想做什么?", pinyin: "Nǐ dàodǐ xiǎng zuò shénme?", meaning: "Cuối cùng thì bạn muốn làm gì?" },
+        { hanzi: "他究竟去哪儿了?", pinyin: "Tā jiūjìng qù nǎr le?", meaning: "Rốt cuộc anh ấy đã đi đâu?" },
+        { hanzi: "这件事到底是真的还是假的?", pinyin: "Zhè jiàn shì dàodǐ shì zhēn de háishi jiǎ de?", meaning: "Việc này rốt cuộc là thật hay giả?" }
+      ]
+    },
+    {
+      id: "g4-22",
+      title: "Cấu trúc 不是...就是... (không phải...thì là...)",
+      structure: "不是 + A + 就是 + B",
+      explanation: "Biểu thị HAI KHẢ NĂNG, chắc chắn 1 trong 2 đúng (không có lựa chọn thứ 3). Mang sắc thái KHẲNG ĐỊNH MẠNH. Có thể dùng cho người, vật, sự kiện.",
+      examples: [
+        { hanzi: "他不是去图书馆,就是去公园。", pinyin: "Tā bú shì qù túshūguǎn, jiùshì qù gōngyuán.", meaning: "Anh ấy không phải đi thư viện thì là đi công viên." },
+        { hanzi: "周末我不是看书,就是看电影。", pinyin: "Zhōumò wǒ bú shì kàn shū, jiùshì kàn diànyǐng.", meaning: "Cuối tuần tôi không đọc sách thì xem phim." },
+        { hanzi: "这事不是他做的,就是她做的。", pinyin: "Zhè shì bú shì tā zuò de, jiùshì tā zuò de.", meaning: "Việc này không phải anh ấy làm thì là cô ấy làm." }
+      ]
+    },
+    {
+      id: "g4-23",
+      title: "Bổ ngữ trạng thái với 得 (de) - Mở rộng",
+      structure: "Động từ + 得 + Bổ ngữ trạng thái (Tính từ/Cụm từ)",
+      explanation: "Cấu trúc 得 nâng cao mô tả mức độ/cách thức của hành động. Khi có TÂN NGỮ, phải LẶP LẠI ĐỘNG TỪ: Động từ + Tân ngữ + Động từ + 得 + Bổ ngữ. Phủ định: Động từ + 得 + 不 + Bổ ngữ (không dùng 不得).",
+      examples: [
+        { hanzi: "他跑得很快。", pinyin: "Tā pǎo de hěn kuài.", meaning: "Anh ấy chạy rất nhanh." },
+        { hanzi: "她说汉语说得非常流利。", pinyin: "Tā shuō Hànyǔ shuō de fēicháng liúlì.", meaning: "Cô ấy nói tiếng Trung rất lưu loát." },
+        { hanzi: "今天我睡得不好。", pinyin: "Jīntiān wǒ shuì de bù hǎo.", meaning: "Hôm nay tôi ngủ không ngon." },
+        { hanzi: "他高兴得跳了起来。", pinyin: "Tā gāoxìng de tiào le qǐlái.", meaning: "Anh ấy vui đến nỗi nhảy lên." }
+      ]
+    },
+    {
+      id: "g4-24",
+      title: "Cụm 跟...一样 / 不一样 (giống/khác)",
+      structure: "A + 跟/和 + B + (不)一样 + (Tính từ)",
+      explanation: "So sánh hai đối tượng GIỐNG NHAU hoặc KHÁC NHAU. Có thể thêm tính từ phía sau để chỉ rõ giống/khác ở khía cạnh nào. Có thể thay 跟 bằng 和.",
+      examples: [
+        { hanzi: "我的书包跟你的一样。", pinyin: "Wǒ de shūbāo gēn nǐ de yíyàng.", meaning: "Cặp của tôi giống cặp của bạn." },
+        { hanzi: "他的想法跟我的不一样。", pinyin: "Tā de xiǎngfǎ gēn wǒ de bù yíyàng.", meaning: "Suy nghĩ của anh ấy khác tôi." },
+        { hanzi: "今天的天气跟昨天一样冷。", pinyin: "Jīntiān de tiānqì gēn zuótiān yíyàng lěng.", meaning: "Thời tiết hôm nay lạnh như hôm qua." }
+      ]
+    },
+    {
+      id: "g4-25",
+      title: "Cấu trúc 比...还/更 (so sánh hơn)",
+      structure: "A + 比 + B + 还/更 + Tính từ + (Số lượng/Mức độ)",
+      explanation: "Câu so sánh 比 nâng cao có thêm 还/更 nhấn mạnh mức độ hơn nữa. Sau tính từ có thể thêm cụm chỉ MỨC ĐỘ chênh lệch như 一点儿, 一些, 多了, 得多, hoặc số lượng cụ thể (3 岁, 10 公斤). KHÔNG dùng 很/非常 trong câu so sánh.",
+      examples: [
+        { hanzi: "他比我还高。", pinyin: "Tā bǐ wǒ hái gāo.", meaning: "Anh ấy còn cao hơn tôi." },
+        { hanzi: "今天比昨天更冷。", pinyin: "Jīntiān bǐ zuótiān gèng lěng.", meaning: "Hôm nay lạnh hơn hôm qua." },
+        { hanzi: "我比他大三岁。", pinyin: "Wǒ bǐ tā dà sān suì.", meaning: "Tôi hơn anh ấy 3 tuổi." },
+        { hanzi: "这个比那个贵得多。", pinyin: "Zhège bǐ nàge guì de duō.", meaning: "Cái này đắt hơn cái kia nhiều." }
+      ]
+    },
+    {
+      id: "g4-26",
+      title: "随着 (suízhe) - Cùng với, theo",
+      structure: "随着 + Sự thay đổi/Tiến trình, + Mệnh đề",
+      explanation: "Biểu thị sự thay đổi xảy ra ĐỒNG THỜI/THEO một quá trình khác. Sau 随着 thường là cụm danh từ chỉ thời gian, công nghệ, sự phát triển... Đứng ĐẦU CÂU. Mang sắc thái VĂN VIẾT.",
+      examples: [
+        { hanzi: "随着时间的过去,我越来越喜欢这里。", pinyin: "Suízhe shíjiān de guòqù, wǒ yuè lái yuè xǐhuan zhèlǐ.", meaning: "Theo thời gian, tôi ngày càng thích nơi này." },
+        { hanzi: "随着科技的发展,生活越来越方便。", pinyin: "Suízhe kējì de fāzhǎn, shēnghuó yuè lái yuè fāngbiàn.", meaning: "Cùng với sự phát triển của công nghệ, cuộc sống ngày càng tiện lợi." }
       ]
     }
   ],
