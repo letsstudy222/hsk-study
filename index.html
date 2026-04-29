@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="Học từ vựng tiếng Trung HSK 1-6 với flashcard SRS, quiz, ngữ pháp và luyện viết" />
+<meta name="description" content="Học từ vựng tiếng Trung HSK 1-6 với flashcard SRS, quiz, ngữ pháp, bài đọc và luyện viết" />
 <title>HSK 学习 - Học tiếng Trung</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -3532,6 +3532,274 @@ const grammar = {
   ]
 };
 
+const readings = {
+  hsk1: [
+    {
+      id: "r1-1",
+      title: "我的家",
+      titlePinyin: "Wǒ de jiā",
+      titleMeaning: "Gia đình tôi",
+      sentences: [
+        { hanzi: "我家有四个人。", pinyin: "Wǒ jiā yǒu sì gè rén.", meaning: "Nhà tôi có bốn người." },
+        { hanzi: "爸爸、妈妈、哥哥和我。", pinyin: "Bàba, māma, gēge hé wǒ.", meaning: "Bố, mẹ, anh trai và tôi." },
+        { hanzi: "爸爸是医生。", pinyin: "Bàba shì yīshēng.", meaning: "Bố tôi là bác sĩ." },
+        { hanzi: "妈妈是老师。", pinyin: "Māma shì lǎoshī.", meaning: "Mẹ tôi là giáo viên." },
+        { hanzi: "哥哥是学生。", pinyin: "Gēge shì xuésheng.", meaning: "Anh trai tôi là học sinh." },
+        { hanzi: "我也是学生。", pinyin: "Wǒ yě shì xuésheng.", meaning: "Tôi cũng là học sinh." },
+        { hanzi: "我爱我的家。", pinyin: "Wǒ ài wǒ de jiā.", meaning: "Tôi yêu gia đình tôi." }
+      ]
+    },
+    {
+      id: "r1-2",
+      title: "今天天气很好",
+      titlePinyin: "Jīntiān tiānqì hěn hǎo",
+      titleMeaning: "Hôm nay thời tiết rất đẹp",
+      sentences: [
+        { hanzi: "今天天气很好。", pinyin: "Jīntiān tiānqì hěn hǎo.", meaning: "Hôm nay thời tiết rất đẹp." },
+        { hanzi: "我和朋友去公园。", pinyin: "Wǒ hé péngyou qù gōngyuán.", meaning: "Tôi và bạn đi công viên." },
+        { hanzi: "公园里有很多人。", pinyin: "Gōngyuán lǐ yǒu hěn duō rén.", meaning: "Trong công viên có rất nhiều người." },
+        { hanzi: "我们看见小狗和小猫。", pinyin: "Wǒmen kànjiàn xiǎo gǒu hé xiǎo māo.", meaning: "Chúng tôi nhìn thấy chó và mèo nhỏ." },
+        { hanzi: "我们很高兴。", pinyin: "Wǒmen hěn gāoxìng.", meaning: "Chúng tôi rất vui." }
+      ]
+    },
+    {
+      id: "r1-3",
+      title: "我学习汉语",
+      titlePinyin: "Wǒ xuéxí Hànyǔ",
+      titleMeaning: "Tôi học tiếng Trung",
+      sentences: [
+        { hanzi: "我叫小明。", pinyin: "Wǒ jiào Xiǎo Míng.", meaning: "Tôi tên là Tiểu Minh." },
+        { hanzi: "我是越南人。", pinyin: "Wǒ shì Yuènán rén.", meaning: "Tôi là người Việt Nam." },
+        { hanzi: "我在学习汉语。", pinyin: "Wǒ zài xuéxí Hànyǔ.", meaning: "Tôi đang học tiếng Trung." },
+        { hanzi: "汉语很有意思。", pinyin: "Hànyǔ hěn yǒu yìsi.", meaning: "Tiếng Trung rất thú vị." },
+        { hanzi: "我每天学习两个小时。", pinyin: "Wǒ měitiān xuéxí liǎng gè xiǎoshí.", meaning: "Mỗi ngày tôi học hai giờ." },
+        { hanzi: "我的老师很好。", pinyin: "Wǒ de lǎoshī hěn hǎo.", meaning: "Cô giáo của tôi rất tốt." }
+      ]
+    }
+  ],
+
+  hsk2: [
+    {
+      id: "r2-1",
+      title: "我的一天",
+      titlePinyin: "Wǒ de yì tiān",
+      titleMeaning: "Một ngày của tôi",
+      sentences: [
+        { hanzi: "我每天早上六点起床。", pinyin: "Wǒ měitiān zǎoshang liù diǎn qǐchuáng.", meaning: "Mỗi sáng tôi dậy lúc 6 giờ." },
+        { hanzi: "起床以后,我去跑步。", pinyin: "Qǐchuáng yǐhòu, wǒ qù pǎobù.", meaning: "Sau khi dậy, tôi đi chạy bộ." },
+        { hanzi: "七点半我吃早饭。", pinyin: "Qī diǎn bàn wǒ chī zǎofàn.", meaning: "7 giờ rưỡi tôi ăn sáng." },
+        { hanzi: "八点我去上班。", pinyin: "Bā diǎn wǒ qù shàngbān.", meaning: "8 giờ tôi đi làm." },
+        { hanzi: "我坐地铁去公司。", pinyin: "Wǒ zuò dìtiě qù gōngsī.", meaning: "Tôi đi tàu điện ngầm đến công ty." },
+        { hanzi: "中午十二点我吃午饭。", pinyin: "Zhōngwǔ shí'èr diǎn wǒ chī wǔfàn.", meaning: "Buổi trưa 12 giờ tôi ăn trưa." },
+        { hanzi: "晚上六点我下班回家。", pinyin: "Wǎnshang liù diǎn wǒ xiàbān huí jiā.", meaning: "Buổi tối 6 giờ tôi tan làm về nhà." },
+        { hanzi: "晚饭后我看一会儿书。", pinyin: "Wǎnfàn hòu wǒ kàn yíhuìr shū.", meaning: "Sau bữa tối tôi đọc sách một lát." }
+      ]
+    },
+    {
+      id: "r2-2",
+      title: "去超市买东西",
+      titlePinyin: "Qù chāoshì mǎi dōngxi",
+      titleMeaning: "Đi siêu thị mua đồ",
+      sentences: [
+        { hanzi: "周末我和妈妈去超市。", pinyin: "Zhōumò wǒ hé māma qù chāoshì.", meaning: "Cuối tuần tôi và mẹ đi siêu thị." },
+        { hanzi: "我们买了很多东西。", pinyin: "Wǒmen mǎi le hěn duō dōngxi.", meaning: "Chúng tôi đã mua rất nhiều thứ." },
+        { hanzi: "有水果、蔬菜和牛奶。", pinyin: "Yǒu shuǐguǒ, shūcài hé niúnǎi.", meaning: "Có trái cây, rau và sữa." },
+        { hanzi: "苹果一斤十块钱。", pinyin: "Píngguǒ yì jīn shí kuài qián.", meaning: "Táo một cân 10 tệ." },
+        { hanzi: "妈妈说苹果有点儿贵。", pinyin: "Māma shuō píngguǒ yǒudiǎnr guì.", meaning: "Mẹ nói táo hơi đắt." },
+        { hanzi: "但是我很喜欢吃苹果。", pinyin: "Dànshì wǒ hěn xǐhuan chī píngguǒ.", meaning: "Nhưng tôi rất thích ăn táo." },
+        { hanzi: "所以妈妈给我买了两斤。", pinyin: "Suǒyǐ māma gěi wǒ mǎi le liǎng jīn.", meaning: "Vì vậy mẹ mua cho tôi 2 cân." }
+      ]
+    },
+    {
+      id: "r2-3",
+      title: "我的好朋友",
+      titlePinyin: "Wǒ de hǎo péngyou",
+      titleMeaning: "Người bạn tốt của tôi",
+      sentences: [
+        { hanzi: "我有一个好朋友。", pinyin: "Wǒ yǒu yí gè hǎo péngyou.", meaning: "Tôi có một người bạn tốt." },
+        { hanzi: "她叫小红,今年二十岁。", pinyin: "Tā jiào Xiǎo Hóng, jīnnián èrshí suì.", meaning: "Cô ấy tên là Tiểu Hồng, năm nay 20 tuổi." },
+        { hanzi: "她长得很漂亮,人也很好。", pinyin: "Tā zhǎng de hěn piàoliang, rén yě hěn hǎo.", meaning: "Cô ấy xinh đẹp và tốt bụng." },
+        { hanzi: "我们是大学同学。", pinyin: "Wǒmen shì dàxué tóngxué.", meaning: "Chúng tôi là bạn cùng đại học." },
+        { hanzi: "我们经常一起学习。", pinyin: "Wǒmen jīngcháng yìqǐ xuéxí.", meaning: "Chúng tôi thường học cùng nhau." },
+        { hanzi: "她喜欢音乐,我喜欢运动。", pinyin: "Tā xǐhuan yīnyuè, wǒ xǐhuan yùndòng.", meaning: "Cô ấy thích âm nhạc, tôi thích thể thao." },
+        { hanzi: "虽然爱好不同,但是我们是好朋友。", pinyin: "Suīrán àihào bùtóng, dànshì wǒmen shì hǎo péngyou.", meaning: "Tuy sở thích khác nhau, nhưng chúng tôi là bạn tốt." }
+      ]
+    }
+  ],
+
+  hsk3: [
+    {
+      id: "r3-1",
+      title: "学习汉语的方法",
+      titlePinyin: "Xuéxí Hànyǔ de fāngfǎ",
+      titleMeaning: "Phương pháp học tiếng Trung",
+      sentences: [
+        { hanzi: "学习汉语需要方法和坚持。", pinyin: "Xuéxí Hànyǔ xūyào fāngfǎ hé jiānchí.", meaning: "Học tiếng Trung cần có phương pháp và sự kiên trì." },
+        { hanzi: "首先,要每天听汉语。", pinyin: "Shǒuxiān, yào měitiān tīng Hànyǔ.", meaning: "Đầu tiên, phải nghe tiếng Trung mỗi ngày." },
+        { hanzi: "可以听音乐、看电影或者听新闻。", pinyin: "Kěyǐ tīng yīnyuè, kàn diànyǐng huòzhě tīng xīnwén.", meaning: "Có thể nghe nhạc, xem phim hoặc nghe tin tức." },
+        { hanzi: "其次,要多说,不要害怕说错。", pinyin: "Qícì, yào duō shuō, búyào hàipà shuō cuò.", meaning: "Thứ hai, phải nói nhiều, đừng sợ nói sai." },
+        { hanzi: "找一个汉语朋友一起练习。", pinyin: "Zhǎo yí gè Hànyǔ péngyou yìqǐ liànxí.", meaning: "Tìm một người bạn Trung Quốc cùng luyện tập." },
+        { hanzi: "另外,写汉字也很重要。", pinyin: "Lìngwài, xiě Hànzì yě hěn zhòngyào.", meaning: "Ngoài ra, viết chữ Hán cũng rất quan trọng." },
+        { hanzi: "每天写十个新字,慢慢就会进步。", pinyin: "Měitiān xiě shí gè xīn zì, mànman jiù huì jìnbù.", meaning: "Mỗi ngày viết 10 chữ mới, dần dần sẽ tiến bộ." },
+        { hanzi: "最后,要相信自己一定能学好。", pinyin: "Zuìhòu, yào xiāngxìn zìjǐ yídìng néng xué hǎo.", meaning: "Cuối cùng, phải tin rằng mình nhất định sẽ học giỏi." }
+      ]
+    },
+    {
+      id: "r3-2",
+      title: "我去过的城市",
+      titlePinyin: "Wǒ qù guo de chéngshì",
+      titleMeaning: "Thành phố tôi đã đi",
+      sentences: [
+        { hanzi: "我喜欢旅游,去过很多地方。", pinyin: "Wǒ xǐhuan lǚyóu, qù guo hěn duō dìfāng.", meaning: "Tôi thích du lịch, đã đi nhiều nơi." },
+        { hanzi: "我最喜欢的城市是北京。", pinyin: "Wǒ zuì xǐhuan de chéngshì shì Běijīng.", meaning: "Thành phố tôi yêu thích nhất là Bắc Kinh." },
+        { hanzi: "北京是中国的首都,有很长的历史。", pinyin: "Běijīng shì Zhōngguó de shǒudū, yǒu hěn cháng de lìshǐ.", meaning: "Bắc Kinh là thủ đô Trung Quốc, có lịch sử rất lâu đời." },
+        { hanzi: "在北京,我去了长城和故宫。", pinyin: "Zài Běijīng, wǒ qù le Chángchéng hé Gùgōng.", meaning: "Ở Bắc Kinh, tôi đã đi Vạn Lý Trường Thành và Cố Cung." },
+        { hanzi: "长城非常壮观,让我印象深刻。", pinyin: "Chángchéng fēicháng zhuàngguān, ràng wǒ yìnxiàng shēnkè.", meaning: "Trường Thành rất hùng vĩ, để lại cho tôi ấn tượng sâu sắc." },
+        { hanzi: "我还吃了北京烤鸭,味道真好。", pinyin: "Wǒ hái chī le Běijīng kǎoyā, wèidào zhēn hǎo.", meaning: "Tôi còn ăn vịt quay Bắc Kinh, vị rất ngon." },
+        { hanzi: "如果有机会,我还想去上海和西安。", pinyin: "Rúguǒ yǒu jīhuì, wǒ hái xiǎng qù Shànghǎi hé Xī'ān.", meaning: "Nếu có cơ hội, tôi còn muốn đi Thượng Hải và Tây An." }
+      ]
+    },
+    {
+      id: "r3-3",
+      title: "保护环境",
+      titlePinyin: "Bǎohù huánjìng",
+      titleMeaning: "Bảo vệ môi trường",
+      sentences: [
+        { hanzi: "现在,环境问题越来越严重。", pinyin: "Xiànzài, huánjìng wèntí yuè lái yuè yánzhòng.", meaning: "Hiện nay, vấn đề môi trường ngày càng nghiêm trọng." },
+        { hanzi: "空气污染让很多人生病。", pinyin: "Kōngqì wūrǎn ràng hěn duō rén shēngbìng.", meaning: "Ô nhiễm không khí khiến nhiều người bệnh." },
+        { hanzi: "我们每个人都应该保护环境。", pinyin: "Wǒmen měi gè rén dōu yīnggāi bǎohù huánjìng.", meaning: "Mỗi người chúng ta đều nên bảo vệ môi trường." },
+        { hanzi: "比如,少开车,多走路或者骑自行车。", pinyin: "Bǐrú, shǎo kāichē, duō zǒulù huòzhě qí zìxíngchē.", meaning: "Ví dụ, ít lái xe, đi bộ nhiều hoặc đi xe đạp." },
+        { hanzi: "不要随便扔垃圾,要分类处理。", pinyin: "Búyào suíbiàn rēng lājī, yào fēnlèi chǔlǐ.", meaning: "Đừng vứt rác bừa bãi, phải phân loại xử lý." },
+        { hanzi: "节约用水用电,这是每个人的责任。", pinyin: "Jiéyuē yòng shuǐ yòng diàn, zhè shì měi gè rén de zérèn.", meaning: "Tiết kiệm nước và điện là trách nhiệm của mỗi người." },
+        { hanzi: "只有大家一起努力,地球才能变得更好。", pinyin: "Zhǐyǒu dàjiā yìqǐ nǔlì, dìqiú cáinéng biàn de gèng hǎo.", meaning: "Chỉ khi mọi người cùng cố gắng, Trái đất mới có thể tốt đẹp hơn." }
+      ]
+    }
+  ],
+
+  hsk4: [
+    {
+      id: "r4-1",
+      title: "中国的传统节日",
+      titlePinyin: "Zhōngguó de chuántǒng jiérì",
+      titleMeaning: "Lễ hội truyền thống Trung Quốc",
+      sentences: [
+        { hanzi: "中国有很多传统节日,每个节日都有自己的特色。", pinyin: "Zhōngguó yǒu hěn duō chuántǒng jiérì, měi gè jiérì dōu yǒu zìjǐ de tèsè.", meaning: "Trung Quốc có nhiều lễ hội truyền thống, mỗi lễ hội đều có đặc sắc riêng." },
+        { hanzi: "其中,春节是最重要的节日。", pinyin: "Qízhōng, Chūnjié shì zuì zhòngyào de jiérì.", meaning: "Trong đó, Tết Nguyên đán là lễ hội quan trọng nhất." },
+        { hanzi: "春节的时候,全家人聚在一起吃团圆饭。", pinyin: "Chūnjié de shíhou, quán jiārén jù zài yìqǐ chī tuányuán fàn.", meaning: "Vào dịp Tết, cả gia đình tụ họp ăn bữa cơm đoàn viên." },
+        { hanzi: "孩子们最喜欢春节,因为可以收到红包。", pinyin: "Háizimen zuì xǐhuan Chūnjié, yīnwèi kěyǐ shōudào hóngbāo.", meaning: "Trẻ con thích Tết nhất vì được nhận lì xì." },
+        { hanzi: "中秋节是另一个重要的节日。", pinyin: "Zhōngqiūjié shì lìng yí gè zhòngyào de jiérì.", meaning: "Tết Trung thu là một lễ hội quan trọng khác." },
+        { hanzi: "中秋节晚上,人们一边吃月饼,一边赏月。", pinyin: "Zhōngqiūjié wǎnshang, rénmen yìbiān chī yuèbǐng, yìbiān shǎngyuè.", meaning: "Tối Trung thu, mọi người vừa ăn bánh trung thu vừa ngắm trăng." },
+        { hanzi: "这些节日不仅有趣,还能让人感受到中国文化的魅力。", pinyin: "Zhèxiē jiérì bùjǐn yǒuqù, hái néng ràng rén gǎnshòu dào Zhōngguó wénhuà de mèilì.", meaning: "Các lễ hội này không chỉ thú vị mà còn giúp cảm nhận sức hút của văn hóa Trung Quốc." }
+      ]
+    },
+    {
+      id: "r4-2",
+      title: "网络对生活的影响",
+      titlePinyin: "Wǎngluò duì shēnghuó de yǐngxiǎng",
+      titleMeaning: "Ảnh hưởng của Internet đến cuộc sống",
+      sentences: [
+        { hanzi: "随着科技的发展,网络改变了我们的生活。", pinyin: "Suízhe kējì de fāzhǎn, wǎngluò gǎibiàn le wǒmen de shēnghuó.", meaning: "Cùng với sự phát triển của công nghệ, Internet đã thay đổi cuộc sống chúng ta." },
+        { hanzi: "现在,我们可以在网上购物、学习、工作。", pinyin: "Xiànzài, wǒmen kěyǐ zài wǎng shàng gòuwù, xuéxí, gōngzuò.", meaning: "Hiện nay, chúng ta có thể mua sắm, học tập, làm việc trên mạng." },
+        { hanzi: "网络让生活变得更加方便。", pinyin: "Wǎngluò ràng shēnghuó biàn de gèngjiā fāngbiàn.", meaning: "Internet làm cho cuộc sống tiện lợi hơn." },
+        { hanzi: "但是,网络也带来了一些问题。", pinyin: "Dànshì, wǎngluò yě dài lái le yìxiē wèntí.", meaning: "Nhưng Internet cũng mang đến một số vấn đề." },
+        { hanzi: "比如,有些人上网时间太长,影响了健康。", pinyin: "Bǐrú, yǒu xiē rén shàngwǎng shíjiān tài cháng, yǐngxiǎng le jiànkāng.", meaning: "Ví dụ, một số người dùng mạng quá lâu, ảnh hưởng sức khỏe." },
+        { hanzi: "还有人在网上看到很多假信息。", pinyin: "Hái yǒu rén zài wǎng shàng kàndào hěn duō jiǎ xìnxī.", meaning: "Còn có người thấy nhiều thông tin giả trên mạng." },
+        { hanzi: "所以,我们要正确使用网络。", pinyin: "Suǒyǐ, wǒmen yào zhèngquè shǐyòng wǎngluò.", meaning: "Vì vậy, chúng ta phải sử dụng Internet đúng cách." },
+        { hanzi: "既要享受它的方便,也要避免它的坏处。", pinyin: "Jì yào xiǎngshòu tā de fāngbiàn, yě yào bìmiǎn tā de huàichù.", meaning: "Vừa hưởng tiện lợi vừa tránh tác hại của nó." }
+      ]
+    },
+    {
+      id: "r4-3",
+      title: "健康的生活方式",
+      titlePinyin: "Jiànkāng de shēnghuó fāngshì",
+      titleMeaning: "Lối sống lành mạnh",
+      sentences: [
+        { hanzi: "健康是人生最重要的财富。", pinyin: "Jiànkāng shì rénshēng zuì zhòngyào de cáifù.", meaning: "Sức khỏe là tài sản quan trọng nhất của đời người." },
+        { hanzi: "想要保持健康,需要养成好的习惯。", pinyin: "Xiǎng yào bǎochí jiànkāng, xūyào yǎngchéng hǎo de xíguàn.", meaning: "Muốn giữ sức khỏe, phải hình thành thói quen tốt." },
+        { hanzi: "首先,要按时吃饭,多吃蔬菜和水果。", pinyin: "Shǒuxiān, yào ànshí chīfàn, duō chī shūcài hé shuǐguǒ.", meaning: "Trước hết, phải ăn đúng giờ, ăn nhiều rau và trái cây." },
+        { hanzi: "其次,要坚持运动,每天至少三十分钟。", pinyin: "Qícì, yào jiānchí yùndòng, měitiān zhìshǎo sānshí fēnzhōng.", meaning: "Thứ hai, phải kiên trì vận động, mỗi ngày ít nhất 30 phút." },
+        { hanzi: "另外,睡眠也非常重要,晚上要早点睡觉。", pinyin: "Lìngwài, shuìmián yě fēicháng zhòngyào, wǎnshang yào zǎo diǎn shuìjiào.", meaning: "Ngoài ra, giấc ngủ cũng rất quan trọng, buổi tối phải đi ngủ sớm." },
+        { hanzi: "保持心情愉快也对健康有帮助。", pinyin: "Bǎochí xīnqíng yúkuài yě duì jiànkāng yǒu bāngzhù.", meaning: "Giữ tâm trạng vui vẻ cũng giúp ích cho sức khỏe." },
+        { hanzi: "如果你能做到这些,你一定会身体健康。", pinyin: "Rúguǒ nǐ néng zuòdào zhèxiē, nǐ yídìng huì shēntǐ jiànkāng.", meaning: "Nếu bạn làm được những điều này, bạn nhất định sẽ khỏe mạnh." }
+      ]
+    }
+  ],
+
+  hsk5: [
+    {
+      id: "r5-1",
+      title: "中国的茶文化",
+      titlePinyin: "Zhōngguó de chá wénhuà",
+      titleMeaning: "Văn hóa trà Trung Quốc",
+      sentences: [
+        { hanzi: "中国是茶的故乡,茶文化历史悠久。", pinyin: "Zhōngguó shì chá de gùxiāng, chá wénhuà lìshǐ yōujiǔ.", meaning: "Trung Quốc là quê hương của trà, văn hóa trà có lịch sử lâu đời." },
+        { hanzi: "据说,茶最早是在四千多年前被发现的。", pinyin: "Jùshuō, chá zuìzǎo shì zài sì qiān duō nián qián bèi fāxiàn de.", meaning: "Nghe nói, trà được phát hiện sớm nhất là hơn 4000 năm trước." },
+        { hanzi: "中国茶的种类非常多,主要有绿茶、红茶、乌龙茶等。", pinyin: "Zhōngguó chá de zhǒnglèi fēicháng duō, zhǔyào yǒu lǜchá, hóngchá, wūlóngchá děng.", meaning: "Các loại trà Trung Quốc rất đa dạng, chủ yếu có trà xanh, hồng trà, ô long, v.v." },
+        { hanzi: "不同的茶有不同的味道和功效。", pinyin: "Bùtóng de chá yǒu bùtóng de wèidào hé gōngxiào.", meaning: "Mỗi loại trà có hương vị và công dụng khác nhau." },
+        { hanzi: "对中国人来说,喝茶不仅是一种习惯,也是一种艺术。", pinyin: "Duì Zhōngguó rén láishuō, hē chá bùjǐn shì yì zhǒng xíguàn, yě shì yì zhǒng yìshù.", meaning: "Với người Trung Quốc, uống trà không chỉ là thói quen mà còn là nghệ thuật." },
+        { hanzi: "客人来了,主人会用最好的茶招待。", pinyin: "Kèrén lái le, zhǔrén huì yòng zuì hǎo de chá zhāodài.", meaning: "Khi có khách đến, chủ nhà sẽ dùng trà ngon nhất để tiếp đãi." },
+        { hanzi: "通过喝茶,人们可以放松心情、交流感情。", pinyin: "Tōngguò hē chá, rénmen kěyǐ fàngsōng xīnqíng, jiāoliú gǎnqíng.", meaning: "Qua việc uống trà, mọi người có thể thư giãn và giao lưu tình cảm." },
+        { hanzi: "如今,中国茶已经传播到了世界各地。", pinyin: "Rújīn, Zhōngguó chá yǐjīng chuánbō dào le shìjiè gèdì.", meaning: "Ngày nay, trà Trung Quốc đã lan truyền khắp thế giới." }
+      ]
+    },
+    {
+      id: "r5-2",
+      title: "现代人的压力",
+      titlePinyin: "Xiàndài rén de yālì",
+      titleMeaning: "Áp lực của người hiện đại",
+      sentences: [
+        { hanzi: "在现代社会,很多人都面临着各种各样的压力。", pinyin: "Zài xiàndài shèhuì, hěn duō rén dōu miànlín zhe gè zhǒng gè yàng de yālì.", meaning: "Trong xã hội hiện đại, nhiều người đối mặt với đủ loại áp lực." },
+        { hanzi: "工作压力是最常见的一种。", pinyin: "Gōngzuò yālì shì zuì chángjiàn de yì zhǒng.", meaning: "Áp lực công việc là loại phổ biến nhất." },
+        { hanzi: "为了完成任务,人们经常加班到深夜。", pinyin: "Wèile wánchéng rènwu, rénmen jīngcháng jiābān dào shēnyè.", meaning: "Để hoàn thành nhiệm vụ, mọi người thường tăng ca đến tận khuya." },
+        { hanzi: "除了工作,生活上的问题也让人感到疲劳。", pinyin: "Chúle gōngzuò, shēnghuó shàng de wèntí yě ràng rén gǎndào píláo.", meaning: "Ngoài công việc, những vấn đề trong cuộc sống cũng khiến người ta mệt mỏi." },
+        { hanzi: "房价上涨、孩子教育、家庭关系都是压力的来源。", pinyin: "Fángjià shàngzhǎng, háizi jiàoyù, jiātíng guānxi dōu shì yālì de láiyuán.", meaning: "Giá nhà tăng, giáo dục con cái, quan hệ gia đình đều là nguồn gốc áp lực." },
+        { hanzi: "长期的压力对身心健康有很大的影响。", pinyin: "Chángqī de yālì duì shēnxīn jiànkāng yǒu hěn dà de yǐngxiǎng.", meaning: "Áp lực lâu dài ảnh hưởng lớn đến sức khỏe thể chất và tinh thần." },
+        { hanzi: "因此,我们要学会调整心态,合理安排时间。", pinyin: "Yīncǐ, wǒmen yào xuéhuì tiáozhěng xīntài, hélǐ ānpái shíjiān.", meaning: "Vì vậy, chúng ta phải học cách điều chỉnh tâm thái, sắp xếp thời gian hợp lý." },
+        { hanzi: "适当的运动和休息可以帮助我们减轻压力。", pinyin: "Shìdàng de yùndòng hé xiūxi kěyǐ bāngzhù wǒmen jiǎnqīng yālì.", meaning: "Vận động và nghỉ ngơi hợp lý giúp giảm áp lực." },
+        { hanzi: "重要的是,要保持乐观的心态面对生活。", pinyin: "Zhòngyào de shì, yào bǎochí lèguān de xīntài miànduì shēnghuó.", meaning: "Quan trọng là phải giữ tâm trạng lạc quan đối mặt cuộc sống." }
+      ]
+    }
+  ],
+
+  hsk6: [
+    {
+      id: "r6-1",
+      title: "传统文化的传承",
+      titlePinyin: "Chuántǒng wénhuà de chuánchéng",
+      titleMeaning: "Sự kế thừa văn hóa truyền thống",
+      sentences: [
+        { hanzi: "在全球化的今天,如何传承传统文化成为了一个重要议题。", pinyin: "Zài quánqiúhuà de jīntiān, rúhé chuánchéng chuántǒng wénhuà chéngwéi le yí gè zhòngyào yìtí.", meaning: "Trong thời đại toàn cầu hóa, cách kế thừa văn hóa truyền thống đã trở thành chủ đề quan trọng." },
+        { hanzi: "传统文化是一个民族的灵魂和根基。", pinyin: "Chuántǒng wénhuà shì yí gè mínzú de línghún hé gēnjī.", meaning: "Văn hóa truyền thống là linh hồn và nền tảng của một dân tộc." },
+        { hanzi: "它包含着祖先们积累的智慧和经验。", pinyin: "Tā bāohán zhe zǔxiānmen jīlěi de zhìhuì hé jīngyàn.", meaning: "Nó bao hàm trí tuệ và kinh nghiệm mà tổ tiên đã tích lũy." },
+        { hanzi: "然而,现代生活方式的改变让许多传统逐渐被遗忘。", pinyin: "Rán'ér, xiàndài shēnghuó fāngshì de gǎibiàn ràng xǔduō chuántǒng zhújiàn bèi yíwàng.", meaning: "Tuy nhiên, sự thay đổi của lối sống hiện đại đã khiến nhiều truyền thống dần bị lãng quên." },
+        { hanzi: "年轻人对传统文化的兴趣日益减弱,这令人担忧。", pinyin: "Niánqīng rén duì chuántǒng wénhuà de xìngqù rìyì jiǎnruò, zhè lìng rén dānyōu.", meaning: "Sự quan tâm của giới trẻ đối với văn hóa truyền thống ngày càng giảm, điều này đáng lo ngại." },
+        { hanzi: "为了保护传统文化,政府和社会都应该采取行动。", pinyin: "Wèile bǎohù chuántǒng wénhuà, zhèngfǔ hé shèhuì dōu yīnggāi cǎiqǔ xíngdòng.", meaning: "Để bảo vệ văn hóa truyền thống, chính phủ và xã hội đều phải hành động." },
+        { hanzi: "教育是传承文化最有效的方式之一。", pinyin: "Jiàoyù shì chuánchéng wénhuà zuì yǒuxiào de fāngshì zhī yī.", meaning: "Giáo dục là một trong những cách hiệu quả nhất để kế thừa văn hóa." },
+        { hanzi: "学校应该开设相关课程,让学生了解和热爱传统文化。", pinyin: "Xuéxiào yīnggāi kāishè xiāngguān kèchéng, ràng xuésheng liǎojiě hé rè'ài chuántǒng wénhuà.", meaning: "Trường học nên mở các môn liên quan để học sinh hiểu và yêu văn hóa truyền thống." },
+        { hanzi: "同时,我们也要让传统文化与现代生活相结合。", pinyin: "Tóngshí, wǒmen yě yào ràng chuántǒng wénhuà yǔ xiàndài shēnghuó xiāng jiéhé.", meaning: "Đồng thời, chúng ta phải kết hợp văn hóa truyền thống với cuộc sống hiện đại." },
+        { hanzi: "只有这样,传统文化才能真正融入我们的生活并永远流传下去。", pinyin: "Zhǐyǒu zhèyàng, chuántǒng wénhuà cáinéng zhēnzhèng róngrù wǒmen de shēnghuó bìng yǒngyuǎn liúchuán xiàqu.", meaning: "Chỉ như vậy, văn hóa truyền thống mới thực sự hòa nhập vào cuộc sống và lưu truyền mãi mãi." }
+      ]
+    },
+    {
+      id: "r6-2",
+      title: "人工智能的发展",
+      titlePinyin: "Réngōng zhìnéng de fāzhǎn",
+      titleMeaning: "Sự phát triển của trí tuệ nhân tạo",
+      sentences: [
+        { hanzi: "近年来,人工智能技术取得了惊人的进步。", pinyin: "Jìnnián lái, réngōng zhìnéng jìshù qǔdé le jīngrén de jìnbù.", meaning: "Những năm gần đây, công nghệ trí tuệ nhân tạo đã đạt được tiến bộ đáng kinh ngạc." },
+        { hanzi: "从智能手机到自动驾驶汽车,人工智能已经渗透到生活的方方面面。", pinyin: "Cóng zhìnéng shǒujī dào zìdòng jiàshǐ qìchē, réngōng zhìnéng yǐjīng shèntòu dào shēnghuó de fāngfāngmiànmiàn.", meaning: "Từ điện thoại thông minh đến xe tự lái, AI đã thâm nhập mọi khía cạnh cuộc sống." },
+        { hanzi: "这项技术给人类带来了巨大的便利,同时也引发了广泛的讨论。", pinyin: "Zhè xiàng jìshù gěi rénlèi dài lái le jùdà de biànlì, tóngshí yě yǐnfā le guǎngfàn de tǎolùn.", meaning: "Công nghệ này mang lại tiện lợi to lớn cho con người, đồng thời gây nhiều tranh luận." },
+        { hanzi: "支持者认为,人工智能能够提高生产效率,改善医疗水平。", pinyin: "Zhīchí zhě rènwéi, réngōng zhìnéng nénggòu tígāo shēngchǎn xiàolǜ, gǎishàn yīliáo shuǐpíng.", meaning: "Người ủng hộ cho rằng AI có thể nâng cao hiệu suất sản xuất, cải thiện y tế." },
+        { hanzi: "反对者则担心,机器人会取代人类的工作,导致大规模失业。", pinyin: "Fǎnduì zhě zé dānxīn, jīqìrén huì qǔdài rénlèi de gōngzuò, dǎozhì dà guīmó shīyè.", meaning: "Người phản đối lo robot thay thế công việc con người, gây thất nghiệp quy mô lớn." },
+        { hanzi: "此外,数据隐私和伦理道德问题也不容忽视。", pinyin: "Cǐwài, shùjù yǐnsī hé lúnlǐ dàodé wèntí yě bùróng hūshì.", meaning: "Ngoài ra, vấn đề bảo mật dữ liệu và đạo đức cũng không thể xem nhẹ." },
+        { hanzi: "面对这些挑战,人类需要建立健全的法律法规。", pinyin: "Miànduì zhèxiē tiǎozhàn, rénlèi xūyào jiànlì jiànquán de fǎlǜ fǎguī.", meaning: "Trước những thách thức này, nhân loại cần xây dựng luật pháp hoàn chỉnh." },
+        { hanzi: "我们应该让人工智能为人类服务,而不是控制人类。", pinyin: "Wǒmen yīnggāi ràng réngōng zhìnéng wèi rénlèi fúwù, ér bú shì kòngzhì rénlèi.", meaning: "Chúng ta nên để AI phục vụ con người, chứ không phải kiểm soát con người." },
+        { hanzi: "未来,人与人工智能如何和谐共处,将是我们必须思考的问题。", pinyin: "Wèilái, rén yǔ réngōng zhìnéng rúhé héxié gòngchǔ, jiāng shì wǒmen bìxū sīkǎo de wèntí.", meaning: "Tương lai, con người và AI cùng tồn tại hài hòa thế nào, là vấn đề chúng ta phải suy nghĩ." }
+      ]
+    }
+  ]
+};
+
 
 
 const ALL_HSK = { 1: hsk1, 2: hsk2, 3: hsk3, 4: hsk4, 5: hsk5, 6: hsk6 };
@@ -3580,6 +3848,7 @@ const Header = ({ view, setView, darkMode, toggleDark }) => {
     { id:'home', label:'主页', viLabel:'Trang chủ' },
     { id:'vocab', label:'词汇', viLabel:'Từ vựng' },
     { id:'grammar', label:'语法', viLabel:'Ngữ pháp' },
+    { id:'reading', label:'阅读', viLabel:'Bài đọc' },
     { id:'flashcard', label:'卡片', viLabel:'Flashcard' },
     { id:'quiz', label:'测验', viLabel:'Quiz' },
     { id:'writing', label:'书写', viLabel:'Viết' },
@@ -3628,6 +3897,7 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount }) => {
   const features = [
     { icon:'辭', title:'Từ vựng HSK 1-6', desc:'Phân loại theo cấp với pinyin, ví dụ và dịch tiếng Việt', view:'vocab' },
     { icon:'法', title:'Ngữ pháp', desc:'Cấu trúc câu phổ biến với giải thích chi tiết', view:'grammar' },
+    { icon:'读', title:'Bài đọc', desc:'Luyện đọc theo cấp HSK với hover xem nghĩa từng chữ', view:'reading' },
     { icon:'卡', title:'Flashcard SRS', desc:'Ôn tập theo thuật toán lặp lại ngắt quãng', view:'flashcard' },
     { icon:'试', title:'Quiz', desc:'Trắc nghiệm 4 đáp án để kiểm tra kiến thức', view:'quiz' },
     { icon:'写', title:'Luyện viết', desc:'Tập viết chữ Hán trên canvas', view:'writing' },
@@ -3766,8 +4036,8 @@ const VocabDetailModal = ({ word, onClose, isLearned, isStarred, toggleLearned, 
           outlineColor: '#d6e4f0',
           highlightColor: '#5b9bd5',
           drawingColor: '#5b9bd5',
-          strokeAnimationSpeed: 1.2,
-          delayBetweenStrokes: 250,
+          strokeAnimationSpeed: 0.5,
+          delayBetweenStrokes: 600,
         });
 
         HanziWriter.loadCharacterData(currentChar).then(charData => {
@@ -4003,7 +4273,7 @@ const VocabView = ({ selectedHSK, setSelectedHSK, learned, toggleLearned, starre
         <div className="mt-4 text-sm flex items-center gap-2" style={{ color:'var(--muted)' }}>
           <span>Hiển thị <strong style={{ color:'var(--ink)' }}>{filtered.length}</strong> / {words.length} từ</span>
           <span style={{ color:'var(--accent)' }}>•</span>
-          <span className="text-xs">Nhấn vào từ để xem chi tiết</span>
+          <span className="text-xs">Nhấn ★ và ✓ để đánh dấu nhanh, nhấn vào từ để xem chi tiết</span>
         </div>
       </div>
 
@@ -4013,31 +4283,59 @@ const VocabView = ({ selectedHSK, setSelectedHSK, learned, toggleLearned, starre
           const isLearned = learned.includes(w.id);
           const isStarred = starred.includes(w.id);
           return (
-            <button key={w.id}
-              onClick={() => setSelectedWord(w)}
+            <div key={w.id}
               className="text-left p-4 rounded-2xl transition-all soft-shadow hover:soft-shadow-lg hover:-translate-y-0.5 relative group"
               style={{
                 background:'var(--surface)',
                 border:`1px solid ${isLearned ? 'var(--accent-2)' : 'var(--border)'}`,
                 opacity: isLearned ? 0.92 : 1
               }}>
-              {/* Status icons */}
-              <div className="absolute top-2 right-2 flex gap-1">
-                {isStarred && <span style={{ color: '#f59e0b', fontSize: '14px' }}>★</span>}
-                {isLearned && <span className="w-5 h-5 rounded-full flex items-center justify-center" style={{ background: 'var(--accent-2)', color: 'white', fontSize: '11px' }}>✓</span>}
+              {/* Quick action buttons - top right */}
+              <div className="absolute top-2 right-2 flex gap-1 z-10">
+                <button
+                  onClick={(e) => { e.stopPropagation(); toggleStar(w.id); }}
+                  className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110"
+                  title={isStarred ? "Bỏ đánh dấu" : "Đánh dấu yêu thích"}
+                  style={{
+                    background: isStarred ? '#fef3c7' : 'transparent',
+                    color: isStarred ? '#f59e0b' : 'var(--muted)',
+                    fontSize: '15px',
+                    border: `1px solid ${isStarred ? '#fde68a' : 'var(--border)'}`
+                  }}>
+                  {isStarred ? '★' : '☆'}
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); toggleLearned(w.id); }}
+                  className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110"
+                  title={isLearned ? "Bỏ đánh dấu đã thuộc" : "Đánh dấu đã thuộc"}
+                  style={{
+                    background: isLearned ? 'var(--accent-2)' : 'transparent',
+                    color: isLearned ? 'white' : 'var(--muted)',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    border: `1px solid ${isLearned ? 'var(--accent-2)' : 'var(--border)'}`
+                  }}>
+                  ✓
+                </button>
               </div>
 
-              <div className="flex items-baseline gap-2 mb-1.5">
-                <span className="text-3xl hanzi-text" style={{ color:'var(--ink)', fontWeight:500 }}>{w.hanzi}</span>
-              </div>
-              <div className="mb-1"><ColoredPinyin pinyin={w.pinyin} size="base" /></div>
-              <div className="text-sm line-clamp-1" style={{ color:'var(--muted)' }}>{w.meaning}</div>
+              {/* Clickable area for detail */}
+              <button
+                onClick={() => setSelectedWord(w)}
+                className="text-left w-full pr-16"
+                style={{ background: 'transparent', padding: 0 }}>
+                <div className="flex items-baseline gap-2 mb-1.5">
+                  <span className="text-3xl hanzi-text" style={{ color:'var(--ink)', fontWeight:500 }}>{w.hanzi}</span>
+                </div>
+                <div className="mb-1"><ColoredPinyin pinyin={w.pinyin} size="base" /></div>
+                <div className="text-sm line-clamp-1" style={{ color:'var(--muted)' }}>{w.meaning}</div>
 
-              {/* Hover hint */}
-              <div className="text-xs mt-2 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color:'var(--accent)' }}>
-                Nhấn để xem chi tiết →
-              </div>
-            </button>
+                {/* Hover hint */}
+                <div className="text-xs mt-2 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color:'var(--accent)' }}>
+                  Nhấn để xem chi tiết →
+                </div>
+              </button>
+            </div>
           );
         })}
       </div>
@@ -4596,8 +4894,8 @@ const WritingView = () => {
           radicalColor: accentColor,
           highlightColor: accentColor,
           drawingColor: accentColor,
-          strokeAnimationSpeed: 1,
-          delayBetweenStrokes: 300,
+          strokeAnimationSpeed: 0.5,
+          delayBetweenStrokes: 600,
           drawingFadeDuration: 300,
           showHintAfterMisses: 2,
         });
@@ -4907,6 +5205,489 @@ const WritingView = () => {
   );
 };
 
+// ============ READING VIEW ============
+// Lookup từ vựng theo hanzi - tìm nghĩa nhanh
+const buildVocabIndex = () => {
+  const index = {};
+  for (const level of [1,2,3,4,5,6]) {
+    for (const word of (ALL_HSK[level] || [])) {
+      // chỉ lưu từ đơn (1 ký tự) để hover từng chữ tra
+      if (word.hanzi && word.hanzi.length <= 4) {
+        if (!index[word.hanzi]) index[word.hanzi] = { ...word, level };
+      }
+    }
+  }
+  return index;
+};
+
+let _vocabIndexCache = null;
+const getVocabIndex = () => {
+  if (!_vocabIndexCache) _vocabIndexCache = buildVocabIndex();
+  return _vocabIndexCache;
+};
+
+// Tìm nghĩa của 1 ký tự hoặc cụm
+const lookupWord = (text) => {
+  const idx = getVocabIndex();
+  // Thử tìm trực tiếp
+  if (idx[text]) return idx[text];
+  return null;
+};
+
+// Popup hiển thị khi hover từng chữ
+const HoverPopup = ({ char, x, y, onClose }) => {
+  const containerRef = useRef(null);
+  const [strokeData, setStrokeData] = useState(null);
+  const word = lookupWord(char);
+
+  useEffect(() => {
+    let cancelled = false;
+    let writer = null;
+    const init = async () => {
+      try {
+        const HanziWriter = await loadHanziWriter();
+        if (cancelled || !containerRef.current) return;
+
+        // Lấy thông tin số nét
+        HanziWriter.loadCharacterData(char).then(data => {
+          if (data && data.strokes && !cancelled) {
+            setStrokeData({ strokeCount: data.strokes.length });
+          }
+        }).catch(() => {});
+
+        containerRef.current.innerHTML = '';
+        writer = HanziWriter.create(containerRef.current, char, {
+          width: 90,
+          height: 90,
+          padding: 4,
+          strokeColor: '#5b9bd5',
+          radicalColor: '#7eb4dc',
+          strokeAnimationSpeed: 0.5,
+          delayBetweenStrokes: 500,
+          showOutline: true,
+          showCharacter: false
+        });
+        setTimeout(() => {
+          if (!cancelled && writer) writer.animateCharacter();
+        }, 200);
+      } catch (e) { /* ignore */ }
+    };
+    init();
+    return () => { cancelled = true; };
+  }, [char]);
+
+  // Tính vị trí popup để không tràn màn hình
+  const popupWidth = 320;
+  const popupHeight = 220;
+  const padding = 16;
+  let left = x + 16;
+  let top = y + 16;
+  if (typeof window !== 'undefined') {
+    if (left + popupWidth > window.innerWidth - padding) left = x - popupWidth - 16;
+    if (top + popupHeight > window.innerHeight - padding) top = y - popupHeight - 16;
+    if (left < padding) left = padding;
+    if (top < padding) top = padding;
+  }
+
+  return (
+    <div
+      onMouseLeave={onClose}
+      className="fixed rounded-2xl soft-shadow-lg overflow-hidden"
+      style={{
+        left, top,
+        width: popupWidth,
+        background: 'var(--surface)',
+        border: '1px solid var(--accent-soft)',
+        zIndex: 1000,
+        animation: 'fadeIn 0.15s ease-out',
+        pointerEvents: 'auto'
+      }}
+    >
+      <div className="p-3 flex gap-3" style={{ background: 'linear-gradient(135deg, var(--surface), var(--surface-soft))' }}>
+        {/* Stroke order container */}
+        <div className="flex-shrink-0 rounded-xl" style={{ background: 'var(--bg)', padding: 4, border: '1px solid var(--border)' }}>
+          <div ref={containerRef} style={{ width: 90, height: 90 }} />
+        </div>
+        {/* Word info */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <div className="text-3xl hanzi-text" style={{ color: 'var(--ink)', fontWeight: 500, lineHeight: 1 }}>{char}</div>
+            <button
+              onClick={(e) => { e.stopPropagation(); speak(char); }}
+              className="text-xs px-2 py-0.5 rounded-md"
+              style={{ background: 'var(--accent)', color: 'white', fontWeight: 500 }}
+            >🔊</button>
+          </div>
+          {word ? (
+            <>
+              <div className="mb-1"><ColoredPinyin pinyin={word.pinyin} size="sm" /></div>
+              <div className="text-sm line-clamp-2" style={{ color: 'var(--ink)' }}>{word.meaning}</div>
+              <div className="text-xs mt-1 inline-block px-1.5 py-0.5 rounded-md" style={{ background: 'var(--bg)', color: 'var(--accent)', fontWeight: 500 }}>HSK {word.level}</div>
+            </>
+          ) : (
+            <div className="text-xs italic" style={{ color: 'var(--muted)' }}>Chưa có trong từ điển HSK 1-6</div>
+          )}
+          {strokeData && (
+            <div className="text-xs mt-1" style={{ color: 'var(--muted)' }}>{strokeData.strokeCount} nét</div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Component để render câu/đoạn văn với mỗi chữ có thể hover
+const HoverableText = ({ text, fontSize = '20px', lineHeight = 2 }) => {
+  const [hovered, setHovered] = useState(null); // { char, x, y }
+  const hideTimerRef = useRef(null);
+
+  const handleEnter = (e, char) => {
+    if (hideTimerRef.current) {
+      clearTimeout(hideTimerRef.current);
+      hideTimerRef.current = null;
+    }
+    // Bỏ qua dấu câu / khoảng trắng
+    if (/[\s,。!?,.!?;:、""''""''()()「」【】《》—\-…]/.test(char)) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    setHovered({ char, x: rect.left, y: rect.bottom });
+  };
+
+  const handleLeave = () => {
+    // Delay nhỏ để di chuột vào popup không bị mất
+    hideTimerRef.current = setTimeout(() => setHovered(null), 150);
+  };
+
+  // Tách text thành các ký tự
+  const chars = Array.from(text);
+
+  return (
+    <>
+      <span
+        className="hanzi-text"
+        style={{ fontSize, lineHeight, color: 'var(--ink)', fontWeight: 500 }}
+      >
+        {chars.map((ch, i) => {
+          const isHanzi = /[\u4e00-\u9fff]/.test(ch);
+          if (!isHanzi) return <span key={i}>{ch}</span>;
+          return (
+            <span
+              key={i}
+              onMouseEnter={(e) => handleEnter(e, ch)}
+              onMouseLeave={handleLeave}
+              className="cursor-pointer transition-colors"
+              style={{
+                display: 'inline-block',
+                padding: '0 1px',
+                borderBottom: '1px dashed transparent',
+                color: hovered && hovered.char === ch ? 'var(--accent)' : 'inherit'
+              }}
+              onMouseOver={(e) => { e.currentTarget.style.borderBottomColor = 'var(--accent-soft)'; }}
+              onMouseOut={(e) => { e.currentTarget.style.borderBottomColor = 'transparent'; }}
+            >
+              {ch}
+            </span>
+          );
+        })}
+      </span>
+      {hovered && (
+        <HoverPopup
+          char={hovered.char}
+          x={hovered.x}
+          y={hovered.y}
+          onClose={() => setHovered(null)}
+        />
+      )}
+    </>
+  );
+};
+
+const ReadingView = () => {
+  const [hskLevel, setHskLevel] = useState(1);
+  const [selectedReadingId, setSelectedReadingId] = useState(null);
+  const [displayMode, setDisplayMode] = useState('combined'); // 'chinese' | 'pinyin' | 'meaning' | 'combined'
+  const [studyMode, setStudyMode] = useState('full'); // 'full' (đoạn văn) | 'sentence' (từng câu)
+  const [currentSentenceIdx, setCurrentSentenceIdx] = useState(0);
+
+  const levelReadings = readings[`hsk${hskLevel}`] || [];
+  const selectedReading = levelReadings.find(r => r.id === selectedReadingId);
+
+  // Reset khi đổi cấp/bài
+  useEffect(() => {
+    setSelectedReadingId(null);
+  }, [hskLevel]);
+
+  useEffect(() => {
+    setCurrentSentenceIdx(0);
+  }, [selectedReadingId, studyMode]);
+
+  // Render một câu với chế độ hiển thị
+  const renderSentence = (sentence, key, isCurrent = false) => {
+    const showChinese = displayMode === 'chinese' || displayMode === 'combined';
+    const showPinyin = displayMode === 'pinyin' || displayMode === 'combined';
+    const showMeaning = displayMode === 'meaning';
+    return (
+      <div
+        key={key}
+        className="p-5 rounded-2xl transition-all"
+        style={{
+          background: isCurrent ? 'var(--surface-soft)' : 'var(--surface)',
+          border: `1px solid ${isCurrent ? 'var(--accent-soft)' : 'var(--border)'}`,
+          marginBottom: '12px'
+        }}>
+        {/* Chinese */}
+        {showChinese && (
+          <div className="mb-2 flex items-start gap-2">
+            <button
+              onClick={() => speak(sentence.hanzi)}
+              className="flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center mt-1 transition-all hover:scale-110"
+              style={{ background: 'var(--bg)', color: 'var(--accent)', fontSize: '13px', border: '1px solid var(--border)' }}
+              title="Phát âm"
+            >🔊</button>
+            <div style={{ flex: 1 }}>
+              <HoverableText text={sentence.hanzi} fontSize="22px" lineHeight={1.9} />
+            </div>
+          </div>
+        )}
+        {/* Pinyin */}
+        {showPinyin && (
+          <div className="mb-1.5" style={{ paddingLeft: showChinese ? '36px' : '0' }}>
+            <ColoredPinyin pinyin={sentence.pinyin} size="base" />
+          </div>
+        )}
+        {/* Meaning - luôn hiển thị nếu là chế độ riêng nghĩa, hoặc trong combined nếu user muốn */}
+        {(showMeaning || displayMode === 'combined') && (
+          <div
+            className="text-sm italic"
+            style={{
+              color: 'var(--muted)',
+              paddingLeft: showChinese && displayMode === 'combined' ? '36px' : '0'
+            }}>
+            {sentence.meaning}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Khi chưa chọn bài: hiển thị danh sách bài đọc
+  if (!selectedReading) {
+    return (
+      <div className="max-w-5xl mx-auto px-6 py-8">
+        <div className="mb-6">
+          <div className="text-xs tracking-[0.3em] mb-2" style={{ color: 'var(--accent)' }}>阅读 · BÀI ĐỌC</div>
+          <h1 className="text-4xl mb-4" style={{ fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--ink)' }}>
+            Luyện đọc theo cấp HSK
+          </h1>
+          <div className="flex gap-2 flex-wrap mb-3">
+            {[1,2,3,4,5,6].map(level => (
+              <button
+                key={level}
+                onClick={() => setHskLevel(level)}
+                className="px-4 py-2 rounded-2xl transition-all"
+                style={{
+                  background: hskLevel === level ? 'var(--accent)' : 'var(--surface)',
+                  color: hskLevel === level ? 'white' : 'var(--ink)',
+                  border: '1px solid var(--border)',
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 600
+                }}>
+                HSK {level}
+              </button>
+            ))}
+          </div>
+          <div className="text-sm" style={{ color: 'var(--muted)' }}>
+            <strong style={{ color: 'var(--ink)' }}>{levelReadings.length}</strong> bài đọc · 
+            <span className="ml-2 text-xs">Di chuột vào từng chữ để xem nghĩa và thứ tự nét</span>
+          </div>
+        </div>
+
+        {levelReadings.length === 0 ? (
+          <div className="text-center py-16 rounded-3xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--muted)' }}>
+            <div className="text-5xl mb-3 hanzi-text">读</div>
+            <div>Đang cập nhật bài đọc HSK {hskLevel}...</div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {levelReadings.map((reading, idx) => (
+              <button
+                key={reading.id}
+                onClick={() => setSelectedReadingId(reading.id)}
+                className="text-left p-5 rounded-3xl soft-shadow hover:soft-shadow-lg hover:-translate-y-1 transition-all relative overflow-hidden"
+                style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+                <div className="absolute top-0 left-0 w-1 h-full" style={{ background: 'var(--accent)' }} />
+                <div className="flex items-start gap-3 mb-3 pl-2">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-2xl flex items-center justify-center"
+                    style={{ background: 'var(--bg)', color: 'var(--accent)', fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '14px', border: '1px solid var(--border)' }}>
+                    {String(idx + 1).padStart(2, '0')}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xl mb-1 hanzi-text" style={{ color: 'var(--ink)', fontWeight: 500 }}>{reading.title}</div>
+                    <div className="mb-1"><ColoredPinyin pinyin={reading.titlePinyin} size="sm" /></div>
+                    <div className="text-sm italic" style={{ color: 'var(--muted)' }}>{reading.titleMeaning}</div>
+                  </div>
+                </div>
+                <div className="text-xs flex items-center justify-between pl-2" style={{ color: 'var(--accent)' }}>
+                  <span>{reading.sentences.length} câu</span>
+                  <span>Đọc bài →</span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // Khi đã chọn bài: hiển thị bài đọc
+  const totalSentences = selectedReading.sentences.length;
+  return (
+    <div className="max-w-4xl mx-auto px-6 py-8">
+      {/* Back button */}
+      <button
+        onClick={() => setSelectedReadingId(null)}
+        className="mb-4 px-3 py-1.5 rounded-2xl text-sm transition-all"
+        style={{ background: 'var(--surface)', color: 'var(--ink)', border: '1px solid var(--border)', fontWeight: 500 }}
+      >← Danh sách bài đọc</button>
+
+      {/* Title */}
+      <div className="mb-6 p-6 rounded-3xl soft-shadow" style={{ background: 'linear-gradient(135deg, var(--surface), var(--surface-soft))', border: '1px solid var(--border)' }}>
+        <div className="text-xs tracking-[0.3em] mb-2" style={{ color: 'var(--accent)' }}>HSK {hskLevel} · 阅读</div>
+        <h1 className="text-3xl mb-2 hanzi-text" style={{ color: 'var(--ink)', fontWeight: 500 }}>{selectedReading.title}</h1>
+        <div className="mb-1"><ColoredPinyin pinyin={selectedReading.titlePinyin} size="lg" /></div>
+        <div className="text-base italic" style={{ color: 'var(--muted)' }}>{selectedReading.titleMeaning}</div>
+      </div>
+
+      {/* Mode controls */}
+      <div className="mb-5 p-4 rounded-2xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+        {/* Display mode */}
+        <div className="mb-3">
+          <div className="text-xs tracking-widest mb-2" style={{ color: 'var(--muted)', fontWeight: 600 }}>CHẾ ĐỘ HIỂN THỊ</div>
+          <div className="flex gap-1.5 flex-wrap">
+            {[
+              { key: 'chinese', label: '汉 Chữ Hán' },
+              { key: 'pinyin', label: 'ā Pinyin' },
+              { key: 'meaning', label: 'V Nghĩa' },
+              { key: 'combined', label: '✓ Kết hợp' }
+            ].map(opt => (
+              <button
+                key={opt.key}
+                onClick={() => setDisplayMode(opt.key)}
+                className="px-3 py-1.5 rounded-xl text-sm transition-all"
+                style={{
+                  background: displayMode === opt.key ? 'var(--accent)' : 'var(--bg)',
+                  color: displayMode === opt.key ? 'white' : 'var(--ink)',
+                  border: '1px solid var(--border)',
+                  fontWeight: 500
+                }}>
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Study mode */}
+        <div>
+          <div className="text-xs tracking-widest mb-2" style={{ color: 'var(--muted)', fontWeight: 600 }}>CÁCH HỌC</div>
+          <div className="flex gap-1.5 flex-wrap">
+            <button
+              onClick={() => setStudyMode('full')}
+              className="px-3 py-1.5 rounded-xl text-sm transition-all"
+              style={{
+                background: studyMode === 'full' ? 'var(--accent-2)' : 'var(--bg)',
+                color: studyMode === 'full' ? 'white' : 'var(--ink)',
+                border: '1px solid var(--border)',
+                fontWeight: 500
+              }}>📖 Cả bài</button>
+            <button
+              onClick={() => setStudyMode('sentence')}
+              className="px-3 py-1.5 rounded-xl text-sm transition-all"
+              style={{
+                background: studyMode === 'sentence' ? 'var(--accent-2)' : 'var(--bg)',
+                color: studyMode === 'sentence' ? 'white' : 'var(--ink)',
+                border: '1px solid var(--border)',
+                fontWeight: 500
+              }}>📑 Từng câu</button>
+            <button
+              onClick={() => speak(selectedReading.sentences.map(s => s.hanzi).join(' '))}
+              className="px-3 py-1.5 rounded-xl text-sm transition-all ml-auto"
+              style={{ background: 'var(--accent)', color: 'white', fontWeight: 500 }}
+            >🔊 Nghe cả bài</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      {studyMode === 'full' ? (
+        <div>
+          {selectedReading.sentences.map((s, i) => renderSentence(s, i))}
+        </div>
+      ) : (
+        <div>
+          {/* Sentence-by-sentence mode */}
+          <div className="mb-3 flex items-center justify-between">
+            <div className="text-sm" style={{ color: 'var(--muted)' }}>
+              Câu <strong style={{ color: 'var(--ink)' }}>{currentSentenceIdx + 1}</strong> / {totalSentences}
+            </div>
+            <div className="text-xs" style={{ color: 'var(--accent)' }}>{Math.round((currentSentenceIdx + 1) / totalSentences * 100)}%</div>
+          </div>
+
+          {/* Progress bar */}
+          <div className="mb-4 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--bg)' }}>
+            <div className="h-full transition-all duration-500" style={{
+              width: `${(currentSentenceIdx + 1) / totalSentences * 100}%`,
+              background: 'linear-gradient(90deg, var(--accent-soft), var(--accent))'
+            }} />
+          </div>
+
+          {/* Current sentence */}
+          {renderSentence(selectedReading.sentences[currentSentenceIdx], currentSentenceIdx, true)}
+
+          {/* Navigation */}
+          <div className="flex gap-2 mt-4">
+            <button
+              onClick={() => setCurrentSentenceIdx(Math.max(0, currentSentenceIdx - 1))}
+              disabled={currentSentenceIdx === 0}
+              className="flex-1 py-3 rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ background: 'var(--surface)', color: 'var(--ink)', border: '1px solid var(--border)', fontWeight: 500 }}
+            >← Câu trước</button>
+            <button
+              onClick={() => setCurrentSentenceIdx(Math.min(totalSentences - 1, currentSentenceIdx + 1))}
+              disabled={currentSentenceIdx === totalSentences - 1}
+              className="flex-1 py-3 rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ background: 'var(--accent)', color: 'white', fontWeight: 500 }}
+            >Câu tiếp →</button>
+          </div>
+
+          {/* Sentence list jump */}
+          <div className="mt-5 p-3 rounded-2xl" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="text-xs tracking-widest mb-2" style={{ color: 'var(--muted)', fontWeight: 600 }}>NHẢY TỚI CÂU</div>
+            <div className="flex gap-1.5 flex-wrap">
+              {selectedReading.sentences.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setCurrentSentenceIdx(i)}
+                  className="w-8 h-8 rounded-lg text-xs transition-all"
+                  style={{
+                    background: i === currentSentenceIdx ? 'var(--accent)' : (i < currentSentenceIdx ? 'var(--accent-soft)' : 'var(--bg)'),
+                    color: i <= currentSentenceIdx ? 'white' : 'var(--ink)',
+                    border: '1px solid var(--border)',
+                    fontWeight: 500
+                  }}>{i + 1}</button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Tip */}
+      <div className="mt-6 p-3 rounded-2xl text-sm flex items-start gap-2" style={{ background: 'var(--surface-soft)', color: 'var(--muted)' }}>
+        <span>💡</span>
+        <div>Mẹo: Di chuột vào bất kỳ chữ Hán nào để xem nghĩa, pinyin và thứ tự nét bút. Nhấn 🔊 để nghe phát âm.</div>
+      </div>
+    </div>
+  );
+};
+
 // ============ PROGRESS VIEW ============
 const ProgressView = ({ learned, starred, srsData, quizScores }) => {
   const stats = useMemo(() => {
@@ -5174,6 +5955,7 @@ function App() {
         {view === 'home' && <HomeView setView={setView} setSelectedHSK={setSelectedHSK} learnedCount={learnedCount} totalCount={totalCount} />}
         {view === 'vocab' && <VocabView selectedHSK={selectedHSK} setSelectedHSK={setSelectedHSK} learned={learned} toggleLearned={toggleLearned} starred={starred} toggleStar={toggleStar} />}
         {view === 'grammar' && <GrammarView />}
+        {view === 'reading' && <ReadingView />}
         {view === 'flashcard' && <FlashcardView srsData={srsData} updateSRS={updateSRS} />}
         {view === 'quiz' && <QuizView toggleLearned={toggleLearned} learned={learned} addQuizScore={addQuizScore} />}
         {view === 'writing' && <WritingView />}
