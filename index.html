@@ -3774,11 +3774,288 @@ const grammar = {
   hsk5: [
     {
       id: "g5-1",
-      title: "Cấu trúc 即使...也... (cho dù...cũng...)",
-      structure: "即使 + Điều kiện + 也 + Kết quả",
-      explanation: "Biểu thị giả thiết và nhượng bộ.",
+      title: "万一 (wànyī) - Lỡ, vạn nhất",
+      structure: "万一 + Tình huống bất ngờ, (就) + Hậu quả/Phương án",
+      explanation: "Biểu thị một tình huống bất lợi có XÁC SUẤT THẤP nhưng vẫn đáng đề phòng. Mạnh hơn 如果 (nếu) - mang sắc thái lo lắng, dự phòng. Đặt ở ĐẦU CÂU. Thường đi kèm 怎么办 (làm sao) hoặc 就 + giải pháp.",
       examples: [
-        { hanzi: "即使下雨,我也要去。", pinyin: "Jíshǐ xiàyǔ, wǒ yě yào qù.", meaning: "Cho dù trời mưa tôi vẫn sẽ đi." }
+        { hanzi: "万一下雨,我们就改天去。", pinyin: "Wànyī xiàyǔ, wǒmen jiù gǎitiān qù.", meaning: "Lỡ trời mưa, chúng ta đổi sang ngày khác." },
+        { hanzi: "万一他不来怎么办?", pinyin: "Wànyī tā bù lái zěnme bàn?", meaning: "Lỡ anh ấy không đến thì làm sao?" },
+        { hanzi: "带把伞吧,万一下雨呢。", pinyin: "Dài bǎ sǎn ba, wànyī xiàyǔ ne.", meaning: "Mang theo cái ô đi, lỡ mưa thì sao." }
+      ]
+    },
+    {
+      id: "g5-2",
+      title: "宁可...也不... (thà...chứ không...)",
+      structure: "宁可 + Phương án A + 也不 + Phương án B",
+      explanation: "Biểu thị sự LỰA CHỌN ưu tiên A hơn B trong tình huống bất đắc dĩ. Khi cả hai phương án đều không lý tưởng, người nói chọn A vì A ít tệ hơn. Có thể thay 宁可 bằng 宁愿. Mang sắc thái QUYẾT ĐOÁN, kiên định.",
+      examples: [
+        { hanzi: "我宁可走路,也不坐他的车。", pinyin: "Wǒ nìngkě zǒulù, yě bú zuò tā de chē.", meaning: "Tôi thà đi bộ chứ không ngồi xe của anh ấy." },
+        { hanzi: "他宁可饿着,也不吃这种食物。", pinyin: "Tā nìngkě è zhe, yě bù chī zhè zhǒng shíwù.", meaning: "Anh ấy thà nhịn đói chứ không ăn loại đồ ăn này." },
+        { hanzi: "宁愿失败,也不放弃尝试。", pinyin: "Nìngyuàn shībài, yě bú fàngqì chángshì.", meaning: "Thà thất bại chứ không từ bỏ thử nghiệm." }
+      ]
+    },
+    {
+      id: "g5-3",
+      title: "与其...不如... (thay vì...chi bằng...)",
+      structure: "与其 + Phương án A, 不如 + Phương án B",
+      explanation: "So sánh hai phương án và CHỌN PHƯƠNG ÁN B (sau 不如) là tốt hơn. Khác với 宁可...也不... (chọn A bất đắc dĩ), 与其...不如... mang nghĩa B THẬT SỰ TỐT HƠN A. Mang tính lời khuyên.",
+      examples: [
+        { hanzi: "与其等他,不如自己去。", pinyin: "Yǔqí děng tā, bùrú zìjǐ qù.", meaning: "Thay vì đợi anh ấy, chi bằng tự đi." },
+        { hanzi: "与其抱怨,不如行动。", pinyin: "Yǔqí bàoyuàn, bùrú xíngdòng.", meaning: "Thay vì than phiền, chi bằng hành động." },
+        { hanzi: "与其买新的,不如修理旧的。", pinyin: "Yǔqí mǎi xīn de, bùrú xiūlǐ jiù de.", meaning: "Thay vì mua mới, chi bằng sửa cái cũ." }
+      ]
+    },
+    {
+      id: "g5-4",
+      title: "一旦...就... (một khi...là...)",
+      structure: "一旦 + Sự kiện kích hoạt, (chủ ngữ) + 就 + Kết quả",
+      explanation: "Biểu thị một khi điều kiện xảy ra thì kết quả LẬP TỨC theo sau, mang tính TẤT YẾU và KHÔNG THỂ ĐẢO NGƯỢC. Sự kiện sau 一旦 thường là điều có thể xảy ra trong tương lai. Khác với 一...就... (hai hành động liên tiếp đơn giản), 一旦 nhấn mạnh tính NGHIÊM TRỌNG/QUAN TRỌNG.",
+      examples: [
+        { hanzi: "一旦决定,就不要后悔。", pinyin: "Yídàn juédìng, jiù búyào hòuhuǐ.", meaning: "Một khi đã quyết định thì đừng hối hận." },
+        { hanzi: "一旦失去,就再也找不回来了。", pinyin: "Yídàn shīqù, jiù zài yě zhǎo bù huílái le.", meaning: "Một khi đã mất thì không tìm lại được nữa." },
+        { hanzi: "一旦养成习惯,就很难改变。", pinyin: "Yídàn yǎngchéng xíguàn, jiù hěn nán gǎibiàn.", meaning: "Một khi đã thành thói quen thì rất khó thay đổi." }
+      ]
+    },
+    {
+      id: "g5-5",
+      title: "Cấu trúc 在...下 (dưới...)",
+      structure: "在 + Cụm danh từ (sự giúp đỡ/lãnh đạo/tình huống) + 下, + Mệnh đề",
+      explanation: "Cấu trúc cố định biểu thị ĐIỀU KIỆN/HOÀN CẢNH ảnh hưởng đến hành động. Cụm giữa 在 và 下 thường là: 帮助下 (sự giúp đỡ), 领导下 (lãnh đạo), 支持下 (hỗ trợ), 影响下 (ảnh hưởng), 情况下 (tình huống). Văn viết.",
+      examples: [
+        { hanzi: "在老师的帮助下,我考上了大学。", pinyin: "Zài lǎoshī de bāngzhù xià, wǒ kǎoshàng le dàxué.", meaning: "Dưới sự giúp đỡ của cô giáo, tôi đã đỗ đại học." },
+        { hanzi: "在大家的努力下,问题解决了。", pinyin: "Zài dàjiā de nǔlì xià, wèntí jiějué le.", meaning: "Nhờ sự nỗ lực của mọi người, vấn đề đã được giải quyết." },
+        { hanzi: "在这种情况下,我们必须谨慎。", pinyin: "Zài zhè zhǒng qíngkuàng xià, wǒmen bìxū jǐnshèn.", meaning: "Trong tình huống này, chúng ta phải thận trọng." }
+      ]
+    },
+    {
+      id: "g5-6",
+      title: "对...来说 (đối với...mà nói)",
+      structure: "对 + Đối tượng + 来说, + Quan điểm/Tình trạng",
+      explanation: "Cấu trúc cố định để dẫn ra QUAN ĐIỂM/TÌNH TRẠNG từ góc nhìn của một đối tượng cụ thể. Đặt ở ĐẦU CÂU. Khác với 在...看来 (chỉ là quan điểm cá nhân), 对...来说 mở rộng cho cả tình trạng khách quan đối với đối tượng đó.",
+      examples: [
+        { hanzi: "对我来说,健康最重要。", pinyin: "Duì wǒ láishuō, jiànkāng zuì zhòngyào.", meaning: "Đối với tôi, sức khỏe là quan trọng nhất." },
+        { hanzi: "对学生来说,考试压力很大。", pinyin: "Duì xuésheng láishuō, kǎoshì yālì hěn dà.", meaning: "Đối với học sinh, áp lực thi cử rất lớn." },
+        { hanzi: "对外国人来说,汉字很难写。", pinyin: "Duì wàiguó rén láishuō, Hànzì hěn nán xiě.", meaning: "Đối với người nước ngoài, chữ Hán rất khó viết." }
+      ]
+    },
+    {
+      id: "g5-7",
+      title: "Cấu trúc 是否 (yes/no - phải hay không)",
+      structure: "Chủ ngữ + 是否 + Động từ/Tính từ",
+      explanation: "Tương đương 'có ... không' / 'phải hay không phải' nhưng MANG SẮC THÁI VĂN VIẾT/TRANG TRỌNG. Thường dùng trong câu hỏi gián tiếp, báo cáo, văn bản chính thức. KHÔNG dùng 吗 ở cuối câu khi đã có 是否.",
+      examples: [
+        { hanzi: "他是否会来,我不清楚。", pinyin: "Tā shìfǒu huì lái, wǒ bù qīngchu.", meaning: "Anh ấy có đến hay không, tôi không rõ." },
+        { hanzi: "请告诉我您是否同意。", pinyin: "Qǐng gàosu wǒ nín shìfǒu tóngyì.", meaning: "Vui lòng cho tôi biết ngài có đồng ý hay không." },
+        { hanzi: "我们正在考虑是否接受这个建议。", pinyin: "Wǒmen zhèngzài kǎolǜ shìfǒu jiēshòu zhège jiànyì.", meaning: "Chúng tôi đang cân nhắc có nên chấp nhận đề nghị này không." }
+      ]
+    },
+    {
+      id: "g5-8",
+      title: "Cấu trúc 不见得 (chưa chắc, không hẳn)",
+      structure: "Chủ ngữ + 不见得 + Động từ/Tính từ",
+      explanation: "Biểu thị sự PHẢN BÁC NHẸ NHÀNG, không đồng tình hoàn toàn. Tương đương 'chưa chắc', 'không hẳn'. Lịch sự hơn 不一定. Thường dùng để đáp lại quan điểm của người khác. Có thể đứng đầu câu hoặc giữa câu.",
+      examples: [
+        { hanzi: "贵的不见得就是好的。", pinyin: "Guì de bú jiànde jiùshì hǎo de.", meaning: "Đắt chưa chắc đã tốt." },
+        { hanzi: "他说的不见得是真的。", pinyin: "Tā shuō de bú jiànde shì zhēn de.", meaning: "Điều anh ấy nói chưa chắc là thật." },
+        { hanzi: "学得多不见得就学得好。", pinyin: "Xué de duō bú jiànde jiù xué de hǎo.", meaning: "Học nhiều chưa chắc đã học giỏi." }
+      ]
+    },
+    {
+      id: "g5-9",
+      title: "宁愿...也要... (thà...cũng phải...)",
+      structure: "宁愿 + Hy sinh + 也要 + Mục tiêu",
+      explanation: "Biểu thị sự QUYẾT TÂM cao - sẵn sàng chịu hy sinh để đạt mục tiêu. Khác 宁可...也不... (tránh điều xấu hơn), 宁愿...也要... nhấn mạnh KHÁT VỌNG đạt được. Mang sắc thái mạnh mẽ, kiên định.",
+      examples: [
+        { hanzi: "我宁愿辛苦一点,也要把工作做好。", pinyin: "Wǒ nìngyuàn xīnkǔ yìdiǎn, yě yào bǎ gōngzuò zuò hǎo.", meaning: "Tôi thà vất vả một chút cũng phải làm tốt công việc." },
+        { hanzi: "她宁愿不睡觉,也要把书看完。", pinyin: "Tā nìngyuàn bú shuìjiào, yě yào bǎ shū kàn wán.", meaning: "Cô ấy thà không ngủ cũng phải đọc xong sách." },
+        { hanzi: "他宁愿放弃高薪,也要追求梦想。", pinyin: "Tā nìngyuàn fàngqì gāo xīn, yě yào zhuīqiú mèngxiǎng.", meaning: "Anh ấy thà bỏ lương cao cũng phải theo đuổi ước mơ." }
+      ]
+    },
+    {
+      id: "g5-10",
+      title: "通过 (tōngguò) - Thông qua, qua",
+      structure: "通过 + Phương tiện/Cách thức/Quá trình, + Mệnh đề kết quả",
+      explanation: "Giới từ chỉ PHƯƠNG TIỆN/CÁCH THỨC để đạt được điều gì đó. Sau 通过 là cụm danh từ hoặc danh động từ. Khác với 用 (dùng vật cụ thể) hay 经过 (trải qua thời gian/quá trình), 通过 nhấn mạnh CƠ CHẾ/PHƯƠNG TIỆN.",
+      examples: [
+        { hanzi: "通过努力,他实现了梦想。", pinyin: "Tōngguò nǔlì, tā shíxiàn le mèngxiǎng.", meaning: "Thông qua nỗ lực, anh ấy đã thực hiện được ước mơ." },
+        { hanzi: "我们通过网络保持联系。", pinyin: "Wǒmen tōngguò wǎngluò bǎochí liánxì.", meaning: "Chúng tôi giữ liên lạc qua mạng." },
+        { hanzi: "通过这次经验,我学到了很多。", pinyin: "Tōngguò zhè cì jīngyàn, wǒ xuédào le hěn duō.", meaning: "Qua lần kinh nghiệm này, tôi đã học được nhiều." }
+      ]
+    },
+    {
+      id: "g5-11",
+      title: "本来 (běnlái) - Vốn dĩ, lẽ ra",
+      structure: "Chủ ngữ + 本来 + Mệnh đề (+ 但是/可是 + Tình hình thực tế)",
+      explanation: "Biểu thị (1) Trạng thái BAN ĐẦU/VỐN DĨ; (2) Kế hoạch ban đầu nhưng KHÔNG xảy ra như dự kiến (có chuyển ý). Có thể đứng đầu câu hoặc giữa câu. Phân biệt với 原来 (mới nhận ra sự thật).",
+      examples: [
+        { hanzi: "我本来想去,但是太累了。", pinyin: "Wǒ běnlái xiǎng qù, dànshì tài lèi le.", meaning: "Tôi vốn dĩ muốn đi, nhưng mệt quá." },
+        { hanzi: "她本来是老师,后来当了医生。", pinyin: "Tā běnlái shì lǎoshī, hòulái dāng le yīshēng.", meaning: "Cô ấy vốn là giáo viên, sau đó trở thành bác sĩ." },
+        { hanzi: "本来这件事很简单。", pinyin: "Běnlái zhè jiàn shì hěn jiǎndān.", meaning: "Vốn dĩ việc này rất đơn giản." }
+      ]
+    },
+    {
+      id: "g5-12",
+      title: "原来 (yuánlái) - Hóa ra, thì ra",
+      structure: "原来 + Sự thật vừa nhận ra",
+      explanation: "Biểu thị NHẬN RA SỰ THẬT đã tồn tại nhưng trước đó không biết. Mang sắc thái 'aha moment'. Khác 本来 (vốn là, trạng thái ban đầu), 原来 nhấn mạnh sự PHÁT HIỆN. Còn có nghĩa 'ban đầu, ngày trước'.",
+      examples: [
+        { hanzi: "原来你也在这里!", pinyin: "Yuánlái nǐ yě zài zhèlǐ!", meaning: "Hóa ra bạn cũng ở đây!" },
+        { hanzi: "原来他是我的同学。", pinyin: "Yuánlái tā shì wǒ de tóngxué.", meaning: "Thì ra anh ấy là bạn cùng lớp của tôi." },
+        { hanzi: "我原来住在北京。", pinyin: "Wǒ yuánlái zhù zài Běijīng.", meaning: "Trước đây tôi sống ở Bắc Kinh." }
+      ]
+    },
+    {
+      id: "g5-13",
+      title: "幸亏 (xìngkuī) - May mà, may sao",
+      structure: "幸亏 + Sự kiện may mắn, + Kết quả tốt",
+      explanation: "Biểu thị sự MAY MẮN khi một điều kiện thuận lợi đã giúp tránh được hậu quả xấu. Đặt ĐẦU CÂU. Vế sau thường có 不然/否则 (nếu không thì). Tương đương 'may mà', 'may sao'.",
+      examples: [
+        { hanzi: "幸亏你帮忙,不然我就麻烦了。", pinyin: "Xìngkuī nǐ bāngmáng, bùrán wǒ jiù máfan le.", meaning: "May mà có bạn giúp, không thì tôi gặp rắc rối." },
+        { hanzi: "幸亏带了伞,不然就被淋湿了。", pinyin: "Xìngkuī dài le sǎn, bùrán jiù bèi línshī le.", meaning: "May mà mang ô, không thì đã bị ướt." },
+        { hanzi: "幸亏发现得早。", pinyin: "Xìngkuī fāxiàn de zǎo.", meaning: "May mà phát hiện sớm." }
+      ]
+    },
+    {
+      id: "g5-14",
+      title: "Cấu trúc 不仅...而且... (không chỉ...mà còn...)",
+      structure: "不仅 + Mệnh đề 1, 而且 + Mệnh đề 2",
+      explanation: "Phiên bản TRANG TRỌNG/VĂN VIẾT của 不但...而且... Cấu trúc tăng tiến nhấn mạnh thêm thông tin ở vế thứ hai. Có thể thay 而且 bằng 还/也. Khi cùng chủ ngữ, 不仅 đặt SAU chủ ngữ; khi khác chủ ngữ, đặt TRƯỚC chủ ngữ.",
+      examples: [
+        { hanzi: "他不仅会说汉语,而且说得很流利。", pinyin: "Tā bùjǐn huì shuō Hànyǔ, érqiě shuō de hěn liúlì.", meaning: "Anh ấy không chỉ biết nói tiếng Trung mà còn nói rất lưu loát." },
+        { hanzi: "这个产品不仅质量好,价格也合理。", pinyin: "Zhège chǎnpǐn bùjǐn zhìliàng hǎo, jiàgé yě hélǐ.", meaning: "Sản phẩm này không chỉ chất lượng tốt mà giá cũng hợp lý." },
+        { hanzi: "不仅我去,我们全家都去。", pinyin: "Bùjǐn wǒ qù, wǒmen quán jiā dōu qù.", meaning: "Không chỉ tôi đi, cả nhà tôi đều đi." }
+      ]
+    },
+    {
+      id: "g5-15",
+      title: "Phó từ 简直 (jiǎnzhí) - Đơn giản là, thật là",
+      structure: "Chủ ngữ + 简直 + Tính từ/Mệnh đề (thường có 太...了 hoặc 不...)",
+      explanation: "Biểu thị sự PHÓNG ĐẠI/CẢM THÁN mạnh mẽ - hoàn toàn đến mức không thể tin được. Tương đương 'thật là', 'đến nỗi'. Thường đi kèm với cấu trúc 太...了 hoặc cấu trúc phủ định mạnh. Mang sắc thái cảm xúc cao.",
+      examples: [
+        { hanzi: "这个消息简直太好了!", pinyin: "Zhège xiāoxi jiǎnzhí tài hǎo le!", meaning: "Tin này thật là tuyệt vời!" },
+        { hanzi: "他简直不敢相信自己的耳朵。", pinyin: "Tā jiǎnzhí bù gǎn xiāngxìn zìjǐ de ěrduo.", meaning: "Anh ấy đơn giản là không dám tin vào tai mình." },
+        { hanzi: "这道题简直太难了。", pinyin: "Zhè dào tí jiǎnzhí tài nán le.", meaning: "Bài này thật là quá khó." }
+      ]
+    },
+    {
+      id: "g5-16",
+      title: "Cấu trúc 是...是... (cứ là... nhưng...)",
+      structure: "Chủ ngữ + 是 + Tính từ/Động từ + 是 + Tính từ/Động từ + (但是/可是)",
+      explanation: "Cấu trúc đặc biệt biểu thị NHƯỢNG BỘ - đồng ý điểm A nhưng có ý kiến khác. Tương đương 'X thì X đấy, nhưng...'. Phía sau thường có 但是/可是/不过. Mang sắc thái thừa nhận một phần nhưng còn ý phản biện.",
+      examples: [
+        { hanzi: "便宜是便宜,但是质量不好。", pinyin: "Piányi shì piányi, dànshì zhìliàng bù hǎo.", meaning: "Rẻ thì rẻ đấy, nhưng chất lượng không tốt." },
+        { hanzi: "好看是好看,可是太贵了。", pinyin: "Hǎokàn shì hǎokàn, kěshì tài guì le.", meaning: "Đẹp thì đẹp đấy, nhưng đắt quá." },
+        { hanzi: "去是想去,不过没时间。", pinyin: "Qù shì xiǎng qù, búguò méi shíjiān.", meaning: "Đi thì muốn đi, nhưng không có thời gian." }
+      ]
+    },
+    {
+      id: "g5-17",
+      title: "Cấu trúc 难免 (khó tránh khỏi)",
+      structure: "Chủ ngữ + 难免 + (会) + Sự việc tất yếu",
+      explanation: "Biểu thị một sự việc TẤT YẾU/KHÔNG THỂ TRÁNH KHỎI dù không mong muốn. Sau 难免 thường là việc TIÊU CỰC nhẹ. Có thể thêm 会 sau 难免. Mang sắc thái chấp nhận thực tế.",
+      examples: [
+        { hanzi: "学外语难免会犯错误。", pinyin: "Xué wàiyǔ nánmiǎn huì fàn cuòwù.", meaning: "Học ngoại ngữ khó tránh khỏi mắc lỗi." },
+        { hanzi: "刚开始工作,难免有些紧张。", pinyin: "Gāng kāishǐ gōngzuò, nánmiǎn yǒuxiē jǐnzhāng.", meaning: "Mới bắt đầu làm việc, khó tránh hơi căng thẳng." },
+        { hanzi: "人和人之间难免会有矛盾。", pinyin: "Rén hé rén zhījiān nánmiǎn huì yǒu máodùn.", meaning: "Giữa người với người khó tránh có mâu thuẫn." }
+      ]
+    },
+    {
+      id: "g5-18",
+      title: "Cấu trúc 看来 (xem ra, có vẻ)",
+      structure: "看来, + Mệnh đề suy đoán",
+      explanation: "Biểu thị sự SUY ĐOÁN dựa trên những gì quan sát được. Khác với 好像 (mơ hồ), 看来 dựa trên BẰNG CHỨNG cụ thể nên chắc chắn hơn. Đặt đầu câu hoặc sau chủ ngữ. Tương đương 'xem ra', 'có vẻ'.",
+      examples: [
+        { hanzi: "看来他不会来了。", pinyin: "Kànlái tā bú huì lái le.", meaning: "Xem ra anh ấy sẽ không đến." },
+        { hanzi: "看来这件事不简单。", pinyin: "Kànlái zhè jiàn shì bù jiǎndān.", meaning: "Có vẻ việc này không đơn giản." },
+        { hanzi: "看来我们得改变计划了。", pinyin: "Kànlái wǒmen děi gǎibiàn jìhuà le.", meaning: "Xem ra chúng ta phải thay đổi kế hoạch." }
+      ]
+    },
+    {
+      id: "g5-19",
+      title: "Cấu trúc 算是 (suànshì) - Coi như, kể là",
+      structure: "Chủ ngữ + 算是 + Đặc điểm/Phân loại",
+      explanation: "Biểu thị sự PHÂN LOẠI/ĐÁNH GIÁ tương đối. Tương đương 'coi như là', 'có thể tính là'. Mang sắc thái khiêm tốn, không khẳng định tuyệt đối. Thường dùng để định vị ai/cái gì trong một nhóm.",
+      examples: [
+        { hanzi: "他算是我最好的朋友。", pinyin: "Tā suànshì wǒ zuì hǎo de péngyou.", meaning: "Anh ấy coi như bạn thân nhất của tôi." },
+        { hanzi: "这算是一次成功的尝试。", pinyin: "Zhè suànshì yí cì chénggōng de chángshì.", meaning: "Đây kể là một lần thử nghiệm thành công." },
+        { hanzi: "我的汉语算是不错的。", pinyin: "Wǒ de Hànyǔ suànshì búcuò de.", meaning: "Tiếng Trung của tôi coi như là khá." }
+      ]
+    },
+    {
+      id: "g5-20",
+      title: "Trợ từ ngữ khí 罢了 (bàle) - Chỉ vậy thôi",
+      structure: "Mệnh đề + 罢了 (有时 + 不过/只是 + Mệnh đề + 罢了)",
+      explanation: "Trợ từ ngữ khí cuối câu mang nghĩa GIẢM NHẸ - chỉ là vậy thôi, không có gì đáng kể. Thường đi kèm 不过/只是/无非 ở đầu câu. Văn viết và văn nói lịch sự. Tương đương 'mà thôi'.",
+      examples: [
+        { hanzi: "我只是开个玩笑罢了。", pinyin: "Wǒ zhǐshì kāi gè wánxiào bàle.", meaning: "Tôi chỉ đùa thôi." },
+        { hanzi: "他不过是说说罢了,别当真。", pinyin: "Tā búguò shì shuōshuo bàle, bié dàngzhēn.", meaning: "Anh ấy chỉ nói chơi thôi, đừng coi là thật." },
+        { hanzi: "这只是一个建议罢了。", pinyin: "Zhè zhǐshì yí gè jiànyì bàle.", meaning: "Đây chỉ là một gợi ý thôi." }
+      ]
+    },
+    {
+      id: "g5-21",
+      title: "Phó từ 居然 / 竟然 (jūrán/jìngrán) - Không ngờ, lại",
+      structure: "Chủ ngữ + 居然/竟然 + Mệnh đề bất ngờ",
+      explanation: "Biểu thị sự NGẠC NHIÊN cao độ về một điều bất ngờ, vượt ngoài dự đoán. 居然 nhấn mạnh sự kinh ngạc của người nói; 竟然 trang trọng hơn. Đặt SAU chủ ngữ và TRƯỚC động từ. Sự việc có thể tích cực hoặc tiêu cực.",
+      examples: [
+        { hanzi: "他居然把这件事忘了!", pinyin: "Tā jūrán bǎ zhè jiàn shì wàng le!", meaning: "Không ngờ anh ấy lại quên việc này!" },
+        { hanzi: "她竟然一个人完成了所有工作。", pinyin: "Tā jìngrán yí gè rén wánchéng le suǒyǒu gōngzuò.", meaning: "Không ngờ cô ấy một mình hoàn thành tất cả công việc." },
+        { hanzi: "这么简单的题,他竟然不会做。", pinyin: "Zhème jiǎndān de tí, tā jìngrán bú huì zuò.", meaning: "Bài đơn giản thế này mà anh ấy lại không làm được." }
+      ]
+    },
+    {
+      id: "g5-22",
+      title: "毕竟 (bìjìng) - Suy cho cùng, dù sao",
+      structure: "毕竟 + Lý do quan trọng (giải thích tại sao thông cảm)",
+      explanation: "Biểu thị việc DẪN RA LÝ DO CƠ BẢN/QUAN TRỌNG để giải thích, thường đi với sự thông cảm. Khác 到底 (truy vấn), 毕竟 nhấn mạnh sự THẬT KHÁCH QUAN không thể bỏ qua. Đặt đầu câu hoặc sau chủ ngữ.",
+      examples: [
+        { hanzi: "孩子还小,毕竟不懂事。", pinyin: "Háizi hái xiǎo, bìjìng bù dǒngshì.", meaning: "Trẻ con còn nhỏ, dù sao cũng chưa hiểu chuyện." },
+        { hanzi: "他毕竟是新来的,需要时间适应。", pinyin: "Tā bìjìng shì xīn lái de, xūyào shíjiān shìyìng.", meaning: "Anh ấy dù sao cũng mới đến, cần thời gian thích nghi." },
+        { hanzi: "毕竟事实就是事实。", pinyin: "Bìjìng shìshí jiùshì shìshí.", meaning: "Suy cho cùng, sự thật vẫn là sự thật." }
+      ]
+    },
+    {
+      id: "g5-23",
+      title: "Cấu trúc 经过 (jīngguò) - Trải qua",
+      structure: "经过 + Cụm danh từ/Quá trình, + Kết quả",
+      explanation: "Giới từ chỉ TRẢI QUA một quá trình/thời gian/sự kiện trước khi đạt kết quả. Sau 经过 thường là cụm chỉ thời gian dài hoặc nỗ lực. Khác 通过 (phương tiện/cách thức), 经过 nhấn mạnh THỜI GIAN/QUÁ TRÌNH trải qua.",
+      examples: [
+        { hanzi: "经过半年的努力,他通过了考试。", pinyin: "Jīngguò bànnián de nǔlì, tā tōngguò le kǎoshì.", meaning: "Trải qua nửa năm nỗ lực, anh ấy đã thi đỗ." },
+        { hanzi: "经过讨论,我们做出了决定。", pinyin: "Jīngguò tǎolùn, wǒmen zuòchū le juédìng.", meaning: "Sau khi thảo luận, chúng tôi đã ra quyết định." },
+        { hanzi: "经过这次失败,他变得更坚强了。", pinyin: "Jīngguò zhè cì shībài, tā biàn de gèng jiānqiáng le.", meaning: "Trải qua thất bại này, anh ấy trở nên kiên cường hơn." }
+      ]
+    },
+    {
+      id: "g5-24",
+      title: "Cấu trúc 否则 / 不然 (nếu không thì)",
+      structure: "Mệnh đề điều kiện, 否则/不然 + Hậu quả",
+      explanation: "Liên từ chỉ HẬU QUẢ tiêu cực nếu không thực hiện điều kiện ở vế trước. 否则 trang trọng hơn (văn viết); 不然 thông tục hơn (văn nói). Tương đương 'nếu không thì'. Đứng đầu vế thứ hai.",
+      examples: [
+        { hanzi: "你要努力学习,否则会落后。", pinyin: "Nǐ yào nǔlì xuéxí, fǒuzé huì luòhòu.", meaning: "Bạn phải chăm chỉ học, nếu không sẽ tụt hậu." },
+        { hanzi: "快点走,不然就迟到了。", pinyin: "Kuài diǎn zǒu, bùrán jiù chídào le.", meaning: "Đi nhanh lên, không thì sẽ muộn." },
+        { hanzi: "记得带钥匙,否则进不了门。", pinyin: "Jìde dài yàoshi, fǒuzé jìn bù liǎo mén.", meaning: "Nhớ mang chìa khóa, nếu không thì không vào được cửa." }
+      ]
+    },
+    {
+      id: "g5-25",
+      title: "Cấu trúc 似的 (shìde) - Giống như, tựa như",
+      structure: "Cụm so sánh + 似的 (thường đi với 像/好像)",
+      explanation: "Trợ từ kết thúc CỤM SO SÁNH, tương đương 'giống như', 'như là'. Thường đi với 像 hoặc 好像 ở đầu cụm. Đặt SAU đối tượng được so sánh. Có thể thay bằng 一样 nhưng 似的 mang tính ẩn dụ hơn.",
+      examples: [
+        { hanzi: "她笑得像花儿似的。", pinyin: "Tā xiào de xiàng huār shìde.", meaning: "Cô ấy cười như hoa." },
+        { hanzi: "他高兴得像孩子似的。", pinyin: "Tā gāoxìng de xiàng háizi shìde.", meaning: "Anh ấy vui như đứa trẻ." },
+        { hanzi: "天气热得像夏天似的。", pinyin: "Tiānqì rè de xiàng xiàtiān shìde.", meaning: "Thời tiết nóng như mùa hè." }
+      ]
+    },
+    {
+      id: "g5-26",
+      title: "Cấu trúc 哪怕...也... (cho dù...cũng...)",
+      structure: "哪怕 + Giả thiết cực đoan, + (Chủ ngữ) + 也 + Hành động",
+      explanation: "Biểu thị nhượng bộ TRONG TÌNH HUỐNG CỰC ĐOAN/khó khăn nhất, kết quả vẫn không thay đổi. Mạnh hơn 即使...也... vì 哪怕 đặt giả thiết ở MỨC ĐỘ tối đa. Mang sắc thái QUYẾT TÂM cao độ.",
+      examples: [
+        { hanzi: "哪怕只有一线希望,我也不会放弃。", pinyin: "Nǎpà zhǐyǒu yíxiàn xīwàng, wǒ yě bú huì fàngqì.", meaning: "Cho dù chỉ có một tia hy vọng, tôi cũng không từ bỏ." },
+        { hanzi: "哪怕走遍全世界,我也要找到你。", pinyin: "Nǎpà zǒubiàn quán shìjiè, wǒ yě yào zhǎodào nǐ.", meaning: "Cho dù đi khắp thế giới, tôi cũng phải tìm thấy em." },
+        { hanzi: "哪怕再难,我们也要坚持下去。", pinyin: "Nǎpà zài nán, wǒmen yě yào jiānchí xiàqu.", meaning: "Cho dù khó đến đâu, chúng ta cũng phải kiên trì." }
       ]
     }
   ],
