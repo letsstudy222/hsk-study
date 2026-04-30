@@ -7,7 +7,7 @@
 <title>HSK 学习 - Học tiếng Trung</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
 <script src="https://cdn.tailwindcss.com"></script>
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -4923,114 +4923,32 @@ const grammar = {
 const readings = {
   hsk1: [
     {
-      id: "r1-short-1",
-      title: "你好",
-      titlePinyin: "Nǐ hǎo",
-      titleMeaning: "Xin chào",
-      sentences: [
-        { hanzi: "你好!", pinyin: "Nǐ hǎo!", meaning: "Xin chào!" },
-        { hanzi: "我叫小李。", pinyin: "Wǒ jiào Xiǎo Lǐ.", meaning: "Tôi tên là Tiểu Lý." },
-        { hanzi: "你叫什么名字?", pinyin: "Nǐ jiào shénme míngzi?", meaning: "Bạn tên là gì?" },
-        { hanzi: "认识你很高兴。", pinyin: "Rènshi nǐ hěn gāoxìng.", meaning: "Rất vui được gặp bạn." }
-      ]
-    },
-    {
-      id: "r1-short-2",
-      title: "我会说汉语",
-      titlePinyin: "Wǒ huì shuō Hànyǔ",
-      titleMeaning: "Tôi biết nói tiếng Trung",
-      sentences: [
-        { hanzi: "我会说一点儿汉语。", pinyin: "Wǒ huì shuō yìdiǎnr Hànyǔ.", meaning: "Tôi biết nói một chút tiếng Trung." },
-        { hanzi: "我喜欢学习汉语。", pinyin: "Wǒ xǐhuan xuéxí Hànyǔ.", meaning: "Tôi thích học tiếng Trung." },
-        { hanzi: "汉语不太难。", pinyin: "Hànyǔ bú tài nán.", meaning: "Tiếng Trung không khó lắm." }
-      ]
-    },
-    {
-      id: "r1-short-3",
-      title: "在饭店",
-      titlePinyin: "Zài fàndiàn",
-      titleMeaning: "Ở nhà hàng",
-      sentences: [
-        { hanzi: "我去饭店吃饭。", pinyin: "Wǒ qù fàndiàn chīfàn.", meaning: "Tôi đến nhà hàng ăn cơm." },
-        { hanzi: "我喜欢吃米饭。", pinyin: "Wǒ xǐhuan chī mǐfàn.", meaning: "Tôi thích ăn cơm." },
-        { hanzi: "服务员,请给我一杯水。", pinyin: "Fúwùyuán, qǐng gěi wǒ yì bēi shuǐ.", meaning: "Phục vụ ơi, cho tôi một cốc nước." },
-        { hanzi: "谢谢!", pinyin: "Xièxie!", meaning: "Cảm ơn!" }
-      ]
-    },
-    {
-      id: "r1-short-4",
-      title: "买苹果",
-      titlePinyin: "Mǎi píngguǒ",
-      titleMeaning: "Mua táo",
-      sentences: [
-        { hanzi: "我去商店买东西。", pinyin: "Wǒ qù shāngdiàn mǎi dōngxi.", meaning: "Tôi đến cửa hàng mua đồ." },
-        { hanzi: "苹果多少钱?", pinyin: "Píngguǒ duōshao qián?", meaning: "Táo bao nhiêu tiền?" },
-        { hanzi: "五块钱一个。", pinyin: "Wǔ kuài qián yí gè.", meaning: "Năm tệ một quả." },
-        { hanzi: "我买三个。", pinyin: "Wǒ mǎi sān gè.", meaning: "Tôi mua ba quả." }
-      ]
-    },
-    {
-      id: "r1-short-5",
-      title: "今天星期几",
-      titlePinyin: "Jīntiān xīngqī jǐ",
-      titleMeaning: "Hôm nay thứ mấy",
-      sentences: [
-        { hanzi: "今天星期一。", pinyin: "Jīntiān xīngqī yī.", meaning: "Hôm nay thứ hai." },
-        { hanzi: "我去学校学习。", pinyin: "Wǒ qù xuéxiào xuéxí.", meaning: "Tôi đến trường học." },
-        { hanzi: "明天星期二。", pinyin: "Míngtiān xīngqī èr.", meaning: "Ngày mai thứ ba." },
-        { hanzi: "星期六我不上学。", pinyin: "Xīngqī liù wǒ bú shàngxué.", meaning: "Thứ bảy tôi không đi học." }
-      ]
-    },
-    {
-      id: "r1-short-6",
-      title: "打电话",
-      titlePinyin: "Dǎ diànhuà",
-      titleMeaning: "Gọi điện thoại",
-      sentences: [
-        { hanzi: "喂,你好!", pinyin: "Wèi, nǐ hǎo!", meaning: "A lô, xin chào!" },
-        { hanzi: "请问,小王在吗?", pinyin: "Qǐngwèn, Xiǎo Wáng zài ma?", meaning: "Cho hỏi, Tiểu Vương có ở đó không?" },
-        { hanzi: "他不在家。", pinyin: "Tā bú zài jiā.", meaning: "Anh ấy không có ở nhà." },
-        { hanzi: "好的,谢谢。再见!", pinyin: "Hǎo de, xièxie. Zàijiàn!", meaning: "Vâng, cảm ơn. Tạm biệt!" }
-      ]
-    },
-    {
-      id: "r1-short-7",
-      title: "我的猫",
-      titlePinyin: "Wǒ de māo",
-      titleMeaning: "Con mèo của tôi",
-      sentences: [
-        { hanzi: "我有一只猫。", pinyin: "Wǒ yǒu yì zhī māo.", meaning: "Tôi có một con mèo." },
-        { hanzi: "它叫小白。", pinyin: "Tā jiào Xiǎo Bái.", meaning: "Nó tên là Tiểu Bạch." },
-        { hanzi: "小白很漂亮。", pinyin: "Xiǎo Bái hěn piàoliang.", meaning: "Tiểu Bạch rất đẹp." },
-        { hanzi: "我很爱它。", pinyin: "Wǒ hěn ài tā.", meaning: "Tôi rất yêu nó." }
-      ]
-    },
-    {
       id: "r1-1",
       title: "我的家",
       titlePinyin: "Wǒ de jiā",
       titleMeaning: "Gia đình tôi",
       sentences: [
         { hanzi: "我家有四个人。", pinyin: "Wǒ jiā yǒu sì gè rén.", meaning: "Nhà tôi có bốn người." },
-        { hanzi: "爸爸、妈妈、哥哥和我。", pinyin: "Bàba, māma, gēge hé wǒ.", meaning: "Bố, mẹ, anh trai và tôi." },
-        { hanzi: "爸爸是医生。", pinyin: "Bàba shì yīshēng.", meaning: "Bố tôi là bác sĩ." },
-        { hanzi: "妈妈是老师。", pinyin: "Māma shì lǎoshī.", meaning: "Mẹ tôi là giáo viên." },
-        { hanzi: "哥哥是学生。", pinyin: "Gēge shì xuésheng.", meaning: "Anh trai tôi là học sinh." },
-        { hanzi: "我也是学生。", pinyin: "Wǒ yě shì xuésheng.", meaning: "Tôi cũng là học sinh." },
-        { hanzi: "我爱我的家。", pinyin: "Wǒ ài wǒ de jiā.", meaning: "Tôi yêu gia đình tôi." }
+        { hanzi: "爸爸是医生,妈妈是老师。", pinyin: "Bàba shì yīshēng, māma shì lǎoshī.", meaning: "Bố tôi là bác sĩ, mẹ tôi là giáo viên." },
+        { hanzi: "我哥哥今年二十岁,他是大学生。", pinyin: "Wǒ gēge jīnnián èrshí suì, tā shì dàxuéshēng.", meaning: "Anh trai tôi năm nay 20 tuổi, anh ấy là sinh viên đại học." },
+        { hanzi: "我今年十八岁,在学习汉语。", pinyin: "Wǒ jīnnián shíbā suì, zài xuéxí Hànyǔ.", meaning: "Tôi năm nay 18 tuổi, đang học tiếng Trung." },
+        { hanzi: "我们家有一只小狗,它很可爱。", pinyin: "Wǒmen jiā yǒu yì zhī xiǎo gǒu, tā hěn kě'ài.", meaning: "Nhà tôi có một con chó nhỏ, nó rất đáng yêu." },
+        { hanzi: "晚上我们一起吃饭,看电视。", pinyin: "Wǎnshang wǒmen yìqǐ chīfàn, kàn diànshì.", meaning: "Buổi tối chúng tôi cùng ăn cơm và xem TV." },
+        { hanzi: "我很爱我的家。", pinyin: "Wǒ hěn ài wǒ de jiā.", meaning: "Tôi rất yêu gia đình mình." }
       ]
     },
     {
       id: "r1-2",
       title: "今天天气很好",
       titlePinyin: "Jīntiān tiānqì hěn hǎo",
-      titleMeaning: "Hôm nay thời tiết rất đẹp",
+      titleMeaning: "Hôm nay trời rất đẹp",
       sentences: [
-        { hanzi: "今天天气很好。", pinyin: "Jīntiān tiānqì hěn hǎo.", meaning: "Hôm nay thời tiết rất đẹp." },
-        { hanzi: "我和朋友去公园。", pinyin: "Wǒ hé péngyou qù gōngyuán.", meaning: "Tôi và bạn đi công viên." },
-        { hanzi: "公园里有很多人。", pinyin: "Gōngyuán lǐ yǒu hěn duō rén.", meaning: "Trong công viên có rất nhiều người." },
-        { hanzi: "我们看见小狗和小猫。", pinyin: "Wǒmen kànjiàn xiǎo gǒu hé xiǎo māo.", meaning: "Chúng tôi nhìn thấy chó và mèo nhỏ." },
-        { hanzi: "我们很高兴。", pinyin: "Wǒmen hěn gāoxìng.", meaning: "Chúng tôi rất vui." }
+        { hanzi: "今天是星期天,天气很好。", pinyin: "Jīntiān shì xīngqītiān, tiānqì hěn hǎo.", meaning: "Hôm nay là chủ nhật, thời tiết rất đẹp." },
+        { hanzi: "我和朋友一起去公园玩儿。", pinyin: "Wǒ hé péngyou yìqǐ qù gōngyuán wánr.", meaning: "Tôi cùng bạn đi công viên chơi." },
+        { hanzi: "公园里有很多人,有大人也有孩子。", pinyin: "Gōngyuán lǐ yǒu hěn duō rén, yǒu dàrén yě yǒu háizi.", meaning: "Trong công viên có nhiều người, có người lớn và trẻ em." },
+        { hanzi: "我们看见了几只小猫和小狗。", pinyin: "Wǒmen kànjiàn le jǐ zhī xiǎo māo hé xiǎo gǒu.", meaning: "Chúng tôi nhìn thấy mấy con mèo và chó nhỏ." },
+        { hanzi: "我们买了水果,坐在椅子上吃。", pinyin: "Wǒmen mǎi le shuǐguǒ, zuò zài yǐzi shàng chī.", meaning: "Chúng tôi mua trái cây, ngồi trên ghế ăn." },
+        { hanzi: "下午四点,我们高兴地回家了。", pinyin: "Xiàwǔ sì diǎn, wǒmen gāoxìng de huí jiā le.", meaning: "Bốn giờ chiều, chúng tôi vui vẻ về nhà." }
       ]
     },
     {
@@ -5039,163 +4957,210 @@ const readings = {
       titlePinyin: "Wǒ xuéxí Hànyǔ",
       titleMeaning: "Tôi học tiếng Trung",
       sentences: [
-        { hanzi: "我叫小明。", pinyin: "Wǒ jiào Xiǎo Míng.", meaning: "Tôi tên là Tiểu Minh." },
-        { hanzi: "我是越南人。", pinyin: "Wǒ shì Yuènán rén.", meaning: "Tôi là người Việt Nam." },
-        { hanzi: "我在学习汉语。", pinyin: "Wǒ zài xuéxí Hànyǔ.", meaning: "Tôi đang học tiếng Trung." },
-        { hanzi: "汉语很有意思。", pinyin: "Hànyǔ hěn yǒu yìsi.", meaning: "Tiếng Trung rất thú vị." },
-        { hanzi: "我每天学习两个小时。", pinyin: "Wǒ měitiān xuéxí liǎng gè xiǎoshí.", meaning: "Mỗi ngày tôi học hai giờ." },
-        { hanzi: "我的老师很好。", pinyin: "Wǒ de lǎoshī hěn hǎo.", meaning: "Cô giáo của tôi rất tốt." }
+        { hanzi: "我叫小明,是越南人。", pinyin: "Wǒ jiào Xiǎo Míng, shì Yuènán rén.", meaning: "Tôi tên là Tiểu Minh, là người Việt Nam." },
+        { hanzi: "我在大学学习汉语,我的老师是中国人。", pinyin: "Wǒ zài dàxué xuéxí Hànyǔ, wǒ de lǎoshī shì Zhōngguó rén.", meaning: "Tôi học tiếng Trung ở đại học, cô giáo tôi là người Trung Quốc." },
+        { hanzi: "汉语很有意思,但是有点难。", pinyin: "Hànyǔ hěn yǒu yìsi, dànshì yǒudiǎn nán.", meaning: "Tiếng Trung rất thú vị nhưng hơi khó." },
+        { hanzi: "我每天早上六点起床,听汉语。", pinyin: "Wǒ měitiān zǎoshang liù diǎn qǐchuáng, tīng Hànyǔ.", meaning: "Mỗi sáng tôi dậy lúc sáu giờ, nghe tiếng Trung." },
+        { hanzi: "晚上我读书,写汉字。", pinyin: "Wǎnshang wǒ dú shū, xiě Hànzì.", meaning: "Buổi tối tôi đọc sách, viết chữ Hán." },
+        { hanzi: "我会说一点儿汉语了。", pinyin: "Wǒ huì shuō yìdiǎnr Hànyǔ le.", meaning: "Tôi đã biết nói một chút tiếng Trung rồi." },
+        { hanzi: "我的朋友说我学得很快。", pinyin: "Wǒ de péngyou shuō wǒ xué de hěn kuài.", meaning: "Bạn tôi nói tôi học rất nhanh." }
+      ]
+    },
+    {
+      id: "r1-4",
+      title: "去商店买东西",
+      titlePinyin: "Qù shāngdiàn mǎi dōngxi",
+      titleMeaning: "Đi cửa hàng mua đồ",
+      sentences: [
+        { hanzi: "今天上午,妈妈和我去商店买东西。", pinyin: "Jīntiān shàngwǔ, māma hé wǒ qù shāngdiàn mǎi dōngxi.", meaning: "Sáng nay, mẹ và tôi đi cửa hàng mua đồ." },
+        { hanzi: "商店里东西很多,人也很多。", pinyin: "Shāngdiàn lǐ dōngxi hěn duō, rén yě hěn duō.", meaning: "Trong cửa hàng đồ rất nhiều, người cũng đông." },
+        { hanzi: "妈妈买了米,鸡蛋和牛奶。", pinyin: "Māma mǎi le mǐ, jīdàn hé niúnǎi.", meaning: "Mẹ mua gạo, trứng gà và sữa." },
+        { hanzi: "我喜欢吃苹果,所以买了三个。", pinyin: "Wǒ xǐhuan chī píngguǒ, suǒyǐ mǎi le sān gè.", meaning: "Tôi thích ăn táo nên mua ba quả." },
+        { hanzi: "苹果一个五块钱,一共十五块。", pinyin: "Píngguǒ yí gè wǔ kuài qián, yígòng shíwǔ kuài.", meaning: "Táo năm tệ một quả, tổng cộng 15 tệ." },
+        { hanzi: "我们买了很多东西,然后回家了。", pinyin: "Wǒmen mǎi le hěn duō dōngxi, ránhòu huí jiā le.", meaning: "Chúng tôi mua rất nhiều đồ, sau đó về nhà." }
+      ]
+    },
+    {
+      id: "r1-5",
+      title: "我的一天",
+      titlePinyin: "Wǒ de yì tiān",
+      titleMeaning: "Một ngày của tôi",
+      sentences: [
+        { hanzi: "我每天早上七点起床。", pinyin: "Wǒ měitiān zǎoshang qī diǎn qǐchuáng.", meaning: "Mỗi sáng tôi dậy lúc bảy giờ." },
+        { hanzi: "我先喝一杯水,然后吃早饭。", pinyin: "Wǒ xiān hē yì bēi shuǐ, ránhòu chī zǎofàn.", meaning: "Tôi uống một cốc nước trước, sau đó ăn sáng." },
+        { hanzi: "八点我去学校,我的学校不太远。", pinyin: "Bā diǎn wǒ qù xuéxiào, wǒ de xuéxiào bú tài yuǎn.", meaning: "Tám giờ tôi đến trường, trường tôi không xa lắm." },
+        { hanzi: "中午我和同学一起吃饭。", pinyin: "Zhōngwǔ wǒ hé tóngxué yìqǐ chīfàn.", meaning: "Buổi trưa tôi cùng bạn học ăn cơm." },
+        { hanzi: "下午五点我回家。", pinyin: "Xiàwǔ wǔ diǎn wǒ huí jiā.", meaning: "Năm giờ chiều tôi về nhà." },
+        { hanzi: "晚上我看书,听音乐。", pinyin: "Wǎnshang wǒ kàn shū, tīng yīnyuè.", meaning: "Buổi tối tôi đọc sách, nghe nhạc." },
+        { hanzi: "十点半我睡觉,我每天都很高兴。", pinyin: "Shí diǎn bàn wǒ shuìjiào, wǒ měitiān dōu hěn gāoxìng.", meaning: "Mười giờ rưỡi tôi đi ngủ, mỗi ngày tôi đều rất vui." }
+      ]
+    },
+    {
+      id: "r1-6",
+      title: "我的好朋友",
+      titlePinyin: "Wǒ de hǎo péngyou",
+      titleMeaning: "Người bạn tốt của tôi",
+      sentences: [
+        { hanzi: "我有一个好朋友,她叫小红。", pinyin: "Wǒ yǒu yí gè hǎo péngyou, tā jiào Xiǎo Hóng.", meaning: "Tôi có một người bạn tốt, cô ấy tên Tiểu Hồng." },
+        { hanzi: "她今年十九岁,是大学生。", pinyin: "Tā jīnnián shíjiǔ suì, shì dàxuéshēng.", meaning: "Cô ấy năm nay 19 tuổi, là sinh viên đại học." },
+        { hanzi: "小红长得很漂亮,人也很好。", pinyin: "Xiǎo Hóng zhǎng de hěn piàoliang, rén yě hěn hǎo.", meaning: "Tiểu Hồng xinh đẹp, tính tình cũng tốt." },
+        { hanzi: "她喜欢看书,我喜欢听音乐。", pinyin: "Tā xǐhuan kàn shū, wǒ xǐhuan tīng yīnyuè.", meaning: "Cô ấy thích đọc sách, tôi thích nghe nhạc." },
+        { hanzi: "周末我们经常一起去咖啡店。", pinyin: "Zhōumò wǒmen jīngcháng yìqǐ qù kāfēi diàn.", meaning: "Cuối tuần chúng tôi thường đi quán cà phê cùng nhau." },
+        { hanzi: "我们一起喝咖啡,说很多话。", pinyin: "Wǒmen yìqǐ hē kāfēi, shuō hěn duō huà.", meaning: "Chúng tôi cùng uống cà phê và nói chuyện rất nhiều." },
+        { hanzi: "小红是我最好的朋友。", pinyin: "Xiǎo Hóng shì wǒ zuì hǎo de péngyou.", meaning: "Tiểu Hồng là người bạn tốt nhất của tôi." }
+      ]
+    },
+    {
+      id: "r1-7",
+      title: "在饭馆吃饭",
+      titlePinyin: "Zài fànguǎn chīfàn",
+      titleMeaning: "Ăn ở nhà hàng",
+      sentences: [
+        { hanzi: "今天是我的生日,爸爸妈妈带我去饭馆吃饭。", pinyin: "Jīntiān shì wǒ de shēngrì, bàba māma dài wǒ qù fànguǎn chīfàn.", meaning: "Hôm nay là sinh nhật tôi, bố mẹ đưa tôi đi nhà hàng ăn." },
+        { hanzi: "饭馆里人很多,服务员都很忙。", pinyin: "Fànguǎn lǐ rén hěn duō, fúwùyuán dōu hěn máng.", meaning: "Trong nhà hàng đông người, phục vụ đều rất bận." },
+        { hanzi: "我们点了鱼,牛肉和米饭。", pinyin: "Wǒmen diǎn le yú, niúròu hé mǐfàn.", meaning: "Chúng tôi gọi cá, thịt bò và cơm." },
+        { hanzi: "服务员还给我们一杯茶。", pinyin: "Fúwùyuán hái gěi wǒmen yì bēi chá.", meaning: "Phục vụ còn mang cho chúng tôi một cốc trà." },
+        { hanzi: "饭菜很好吃,我吃了很多。", pinyin: "Fàncài hěn hǎochī, wǒ chī le hěn duō.", meaning: "Đồ ăn rất ngon, tôi ăn rất nhiều." },
+        { hanzi: "今天我很高兴,谢谢爸爸妈妈。", pinyin: "Jīntiān wǒ hěn gāoxìng, xièxie bàba māma.", meaning: "Hôm nay tôi rất vui, cảm ơn bố mẹ." }
+      ]
+    },
+    {
+      id: "r1-8",
+      title: "我的房间",
+      titlePinyin: "Wǒ de fángjiān",
+      titleMeaning: "Phòng của tôi",
+      sentences: [
+        { hanzi: "我有一个小房间,房间里东西不多。", pinyin: "Wǒ yǒu yí gè xiǎo fángjiān, fángjiān lǐ dōngxi bù duō.", meaning: "Tôi có một phòng nhỏ, đồ đạc trong phòng không nhiều." },
+        { hanzi: "房间里有一张床,一张桌子和一把椅子。", pinyin: "Fángjiān lǐ yǒu yì zhāng chuáng, yì zhāng zhuōzi hé yì bǎ yǐzi.", meaning: "Trong phòng có một cái giường, một cái bàn và một cái ghế." },
+        { hanzi: "桌子上有书,有一台电脑。", pinyin: "Zhuōzi shàng yǒu shū, yǒu yì tái diànnǎo.", meaning: "Trên bàn có sách, có một cái máy tính." },
+        { hanzi: "我喜欢在房间里看书,听音乐。", pinyin: "Wǒ xǐhuan zài fángjiān lǐ kàn shū, tīng yīnyuè.", meaning: "Tôi thích đọc sách, nghe nhạc trong phòng." },
+        { hanzi: "晚上我在床上睡觉,做漂亮的梦。", pinyin: "Wǎnshang wǒ zài chuáng shàng shuìjiào, zuò piàoliang de mèng.", meaning: "Buổi tối tôi ngủ trên giường, mơ những giấc mơ đẹp." },
+        { hanzi: "我很喜欢我的房间。", pinyin: "Wǒ hěn xǐhuan wǒ de fángjiān.", meaning: "Tôi rất thích căn phòng của mình." }
       ]
     }
   ],
 
   hsk2: [
     {
-      id: "r2-short-1",
-      title: "我的房间",
-      titlePinyin: "Wǒ de fángjiān",
-      titleMeaning: "Phòng của tôi",
-      sentences: [
-        { hanzi: "我的房间不大。", pinyin: "Wǒ de fángjiān bú dà.", meaning: "Phòng của tôi không lớn." },
-        { hanzi: "里面有一张床和一张桌子。", pinyin: "Lǐmiàn yǒu yì zhāng chuáng hé yì zhāng zhuōzi.", meaning: "Bên trong có một cái giường và một cái bàn." },
-        { hanzi: "桌子上有很多书。", pinyin: "Zhuōzi shàng yǒu hěn duō shū.", meaning: "Trên bàn có nhiều sách." },
-        { hanzi: "我每天在房间里学习。", pinyin: "Wǒ měitiān zài fángjiān lǐ xuéxí.", meaning: "Mỗi ngày tôi học trong phòng." }
-      ]
-    },
-    {
-      id: "r2-short-2",
-      title: "天气",
-      titlePinyin: "Tiānqì",
-      titleMeaning: "Thời tiết",
-      sentences: [
-        { hanzi: "今天天气不太好。", pinyin: "Jīntiān tiānqì bú tài hǎo.", meaning: "Hôm nay thời tiết không đẹp lắm." },
-        { hanzi: "外面下雨了。", pinyin: "Wàimiàn xiàyǔ le.", meaning: "Bên ngoài đang mưa." },
-        { hanzi: "我没带伞,所以没出去。", pinyin: "Wǒ méi dài sǎn, suǒyǐ méi chūqù.", meaning: "Tôi không mang ô nên không ra ngoài." },
-        { hanzi: "希望明天天气好。", pinyin: "Xīwàng míngtiān tiānqì hǎo.", meaning: "Hy vọng ngày mai trời đẹp." }
-      ]
-    },
-    {
-      id: "r2-short-3",
-      title: "去医院",
-      titlePinyin: "Qù yīyuàn",
-      titleMeaning: "Đi bệnh viện",
-      sentences: [
-        { hanzi: "昨天我生病了。", pinyin: "Zuótiān wǒ shēngbìng le.", meaning: "Hôm qua tôi bị ốm." },
-        { hanzi: "我去医院看医生。", pinyin: "Wǒ qù yīyuàn kàn yīshēng.", meaning: "Tôi đến bệnh viện khám bác sĩ." },
-        { hanzi: "医生给我开了药。", pinyin: "Yīshēng gěi wǒ kāi le yào.", meaning: "Bác sĩ kê thuốc cho tôi." },
-        { hanzi: "他说要多休息,多喝水。", pinyin: "Tā shuō yào duō xiūxi, duō hē shuǐ.", meaning: "Ông ấy nói phải nghỉ ngơi, uống nhiều nước." },
-        { hanzi: "今天我已经好多了。", pinyin: "Jīntiān wǒ yǐjīng hǎo duō le.", meaning: "Hôm nay tôi đã khỏe hơn nhiều." }
-      ]
-    },
-    {
-      id: "r2-short-4",
-      title: "学习汉字",
-      titlePinyin: "Xuéxí Hànzì",
-      titleMeaning: "Học chữ Hán",
-      sentences: [
-        { hanzi: "学习汉字不容易。", pinyin: "Xuéxí Hànzì bù róngyì.", meaning: "Học chữ Hán không dễ." },
-        { hanzi: "但是我每天都练习。", pinyin: "Dànshì wǒ měitiān dōu liànxí.", meaning: "Nhưng tôi luyện tập mỗi ngày." },
-        { hanzi: "我已经会写两百个字了。", pinyin: "Wǒ yǐjīng huì xiě liǎng bǎi gè zì le.", meaning: "Tôi đã viết được 200 chữ rồi." },
-        { hanzi: "我觉得汉字很有意思。", pinyin: "Wǒ juéde Hànzì hěn yǒu yìsi.", meaning: "Tôi thấy chữ Hán rất thú vị." }
-      ]
-    },
-    {
-      id: "r2-short-5",
-      title: "周末计划",
-      titlePinyin: "Zhōumò jìhuà",
-      titleMeaning: "Kế hoạch cuối tuần",
-      sentences: [
-        { hanzi: "这个周末我有很多事情要做。", pinyin: "Zhège zhōumò wǒ yǒu hěn duō shìqing yào zuò.", meaning: "Cuối tuần này tôi có nhiều việc phải làm." },
-        { hanzi: "星期六上午我去打篮球。", pinyin: "Xīngqī liù shàngwǔ wǒ qù dǎ lánqiú.", meaning: "Sáng thứ bảy tôi đi chơi bóng rổ." },
-        { hanzi: "下午我和朋友去看电影。", pinyin: "Xiàwǔ wǒ hé péngyou qù kàn diànyǐng.", meaning: "Buổi chiều tôi và bạn đi xem phim." },
-        { hanzi: "星期天我要在家做作业。", pinyin: "Xīngqī tiān wǒ yào zài jiā zuò zuòyè.", meaning: "Chủ nhật tôi phải ở nhà làm bài tập." }
-      ]
-    },
-    {
-      id: "r2-short-6",
-      title: "在咖啡店",
-      titlePinyin: "Zài kāfēi diàn",
-      titleMeaning: "Ở quán cà phê",
-      sentences: [
-        { hanzi: "我家附近有一个咖啡店。", pinyin: "Wǒ jiā fùjìn yǒu yí gè kāfēi diàn.", meaning: "Gần nhà tôi có một quán cà phê." },
-        { hanzi: "那里的咖啡很好喝。", pinyin: "Nàlǐ de kāfēi hěn hǎo hē.", meaning: "Cà phê ở đó rất ngon." },
-        { hanzi: "我经常和朋友去那里。", pinyin: "Wǒ jīngcháng hé péngyou qù nàlǐ.", meaning: "Tôi thường đi đó với bạn." },
-        { hanzi: "我们一边喝咖啡,一边聊天。", pinyin: "Wǒmen yìbiān hē kāfēi, yìbiān liáotiān.", meaning: "Chúng tôi vừa uống cà phê vừa trò chuyện." },
-        { hanzi: "时间过得真快。", pinyin: "Shíjiān guò de zhēn kuài.", meaning: "Thời gian trôi thật nhanh." }
-      ]
-    },
-    {
-      id: "r2-short-7",
-      title: "坐公共汽车",
-      titlePinyin: "Zuò gōnggòng qìchē",
-      titleMeaning: "Đi xe buýt",
-      sentences: [
-        { hanzi: "我每天坐公共汽车去上班。", pinyin: "Wǒ měitiān zuò gōnggòng qìchē qù shàngbān.", meaning: "Mỗi ngày tôi đi xe buýt đi làm." },
-        { hanzi: "早上的公共汽车人很多。", pinyin: "Zǎoshang de gōnggòng qìchē rén hěn duō.", meaning: "Xe buýt buổi sáng rất đông người." },
-        { hanzi: "有时候没有座位。", pinyin: "Yǒu shíhou méiyǒu zuòwèi.", meaning: "Đôi khi không có chỗ ngồi." },
-        { hanzi: "从家到公司大概要半个小时。", pinyin: "Cóng jiā dào gōngsī dàgài yào bàn gè xiǎoshí.", meaning: "Từ nhà đến công ty khoảng nửa tiếng." }
-      ]
-    },
-    {
-      id: "r2-short-8",
-      title: "做菜",
-      titlePinyin: "Zuò cài",
-      titleMeaning: "Nấu ăn",
-      sentences: [
-        { hanzi: "我妈妈很会做菜。", pinyin: "Wǒ māma hěn huì zuò cài.", meaning: "Mẹ tôi rất biết nấu ăn." },
-        { hanzi: "她做的菜都很好吃。", pinyin: "Tā zuò de cài dōu hěn hǎochī.", meaning: "Món bà nấu đều rất ngon." },
-        { hanzi: "我也想学做菜。", pinyin: "Wǒ yě xiǎng xué zuò cài.", meaning: "Tôi cũng muốn học nấu ăn." },
-        { hanzi: "周末妈妈教我做鱼。", pinyin: "Zhōumò māma jiāo wǒ zuò yú.", meaning: "Cuối tuần mẹ dạy tôi nấu cá." },
-        { hanzi: "虽然不太好,但是我很高兴。", pinyin: "Suīrán bú tài hǎo, dànshì wǒ hěn gāoxìng.", meaning: "Dù không ngon lắm nhưng tôi rất vui." }
-      ]
-    },
-    {
       id: "r2-1",
-      title: "我的一天",
-      titlePinyin: "Wǒ de yì tiān",
-      titleMeaning: "Một ngày của tôi",
+      title: "我的大学生活",
+      titlePinyin: "Wǒ de dàxué shēnghuó",
+      titleMeaning: "Cuộc sống đại học của tôi",
       sentences: [
-        { hanzi: "我每天早上六点起床。", pinyin: "Wǒ měitiān zǎoshang liù diǎn qǐchuáng.", meaning: "Mỗi sáng tôi dậy lúc 6 giờ." },
-        { hanzi: "起床以后,我去跑步。", pinyin: "Qǐchuáng yǐhòu, wǒ qù pǎobù.", meaning: "Sau khi dậy, tôi đi chạy bộ." },
-        { hanzi: "七点半我吃早饭。", pinyin: "Qī diǎn bàn wǒ chī zǎofàn.", meaning: "7 giờ rưỡi tôi ăn sáng." },
-        { hanzi: "八点我去上班。", pinyin: "Bā diǎn wǒ qù shàngbān.", meaning: "8 giờ tôi đi làm." },
-        { hanzi: "我坐地铁去公司。", pinyin: "Wǒ zuò dìtiě qù gōngsī.", meaning: "Tôi đi tàu điện ngầm đến công ty." },
-        { hanzi: "中午十二点我吃午饭。", pinyin: "Zhōngwǔ shí'èr diǎn wǒ chī wǔfàn.", meaning: "Buổi trưa 12 giờ tôi ăn trưa." },
-        { hanzi: "晚上六点我下班回家。", pinyin: "Wǎnshang liù diǎn wǒ xiàbān huí jiā.", meaning: "Buổi tối 6 giờ tôi tan làm về nhà." },
-        { hanzi: "晚饭后我看一会儿书。", pinyin: "Wǎnfàn hòu wǒ kàn yíhuìr shū.", meaning: "Sau bữa tối tôi đọc sách một lát." }
+        { hanzi: "我是大学一年级的学生,在北京读书。", pinyin: "Wǒ shì dàxué yī niánjí de xuésheng, zài Běijīng dú shū.", meaning: "Tôi là sinh viên năm nhất, học ở Bắc Kinh." },
+        { hanzi: "我每天早上六点半起床,先去跑步,然后吃早饭。", pinyin: "Wǒ měitiān zǎoshang liù diǎn bàn qǐchuáng, xiān qù pǎobù, ránhòu chī zǎofàn.", meaning: "Mỗi sáng tôi dậy lúc 6h30, đi chạy bộ trước rồi ăn sáng." },
+        { hanzi: "上午八点开始上课,我学习汉语和英语。", pinyin: "Shàngwǔ bā diǎn kāishǐ shàngkè, wǒ xuéxí Hànyǔ hé Yīngyǔ.", meaning: "Tám giờ sáng bắt đầu học, tôi học tiếng Trung và tiếng Anh." },
+        { hanzi: "中午我和同学一起在学校吃饭,菜不贵也不错。", pinyin: "Zhōngwǔ wǒ hé tóngxué yìqǐ zài xuéxiào chīfàn, cài bú guì yě búcuò.", meaning: "Trưa tôi ăn cùng bạn ở trường, đồ ăn không đắt mà lại ngon." },
+        { hanzi: "下午我去图书馆看书或者写作业。", pinyin: "Xiàwǔ wǒ qù túshūguǎn kàn shū huòzhě xiě zuòyè.", meaning: "Chiều tôi đến thư viện đọc sách hoặc làm bài tập." },
+        { hanzi: "晚上我经常给爸爸妈妈打电话。", pinyin: "Wǎnshang wǒ jīngcháng gěi bàba māma dǎ diànhuà.", meaning: "Buổi tối tôi thường gọi điện cho bố mẹ." },
+        { hanzi: "虽然有点累,但是我觉得大学生活很有意思。", pinyin: "Suīrán yǒudiǎn lèi, dànshì wǒ juéde dàxué shēnghuó hěn yǒu yìsi.", meaning: "Tuy hơi mệt nhưng tôi thấy đời sống đại học rất thú vị." }
       ]
     },
     {
       id: "r2-2",
-      title: "去超市买东西",
-      titlePinyin: "Qù chāoshì mǎi dōngxi",
-      titleMeaning: "Đi siêu thị mua đồ",
+      title: "周末逛街",
+      titlePinyin: "Zhōumò guàngjiē",
+      titleMeaning: "Cuối tuần đi dạo phố",
       sentences: [
-        { hanzi: "周末我和妈妈去超市。", pinyin: "Zhōumò wǒ hé māma qù chāoshì.", meaning: "Cuối tuần tôi và mẹ đi siêu thị." },
-        { hanzi: "我们买了很多东西。", pinyin: "Wǒmen mǎi le hěn duō dōngxi.", meaning: "Chúng tôi đã mua rất nhiều thứ." },
-        { hanzi: "有水果、蔬菜和牛奶。", pinyin: "Yǒu shuǐguǒ, shūcài hé niúnǎi.", meaning: "Có trái cây, rau và sữa." },
-        { hanzi: "苹果一斤十块钱。", pinyin: "Píngguǒ yì jīn shí kuài qián.", meaning: "Táo một cân 10 tệ." },
-        { hanzi: "妈妈说苹果有点儿贵。", pinyin: "Māma shuō píngguǒ yǒudiǎnr guì.", meaning: "Mẹ nói táo hơi đắt." },
-        { hanzi: "但是我很喜欢吃苹果。", pinyin: "Dànshì wǒ hěn xǐhuan chī píngguǒ.", meaning: "Nhưng tôi rất thích ăn táo." },
-        { hanzi: "所以妈妈给我买了两斤。", pinyin: "Suǒyǐ māma gěi wǒ mǎi le liǎng jīn.", meaning: "Vì vậy mẹ mua cho tôi 2 cân." }
+        { hanzi: "上个周末天气很好,我和姐姐一起去逛街。", pinyin: "Shàng gè zhōumò tiānqì hěn hǎo, wǒ hé jiějie yìqǐ qù guàngjiē.", meaning: "Cuối tuần trước trời rất đẹp, tôi và chị gái cùng đi dạo phố." },
+        { hanzi: "我们坐地铁去市中心,大约花了三十分钟。", pinyin: "Wǒmen zuò dìtiě qù shì zhōngxīn, dàyuē huā le sānshí fēnzhōng.", meaning: "Chúng tôi đi tàu điện đến trung tâm thành phố, khoảng 30 phút." },
+        { hanzi: "商店里的衣服很漂亮,但是有一些太贵了。", pinyin: "Shāngdiàn lǐ de yīfu hěn piàoliang, dànshì yǒu yìxiē tài guì le.", meaning: "Quần áo trong cửa hàng rất đẹp, nhưng một số đắt quá." },
+        { hanzi: "我买了一件红色的衬衫,姐姐买了一双新鞋。", pinyin: "Wǒ mǎi le yí jiàn hóngsè de chènshān, jiějie mǎi le yì shuāng xīn xié.", meaning: "Tôi mua một cái áo sơ mi đỏ, chị tôi mua đôi giày mới." },
+        { hanzi: "我们累了,就去咖啡店休息了一会儿。", pinyin: "Wǒmen lèi le, jiù qù kāfēi diàn xiūxi le yíhuìr.", meaning: "Chúng tôi mệt nên ghé quán cà phê nghỉ một lát." },
+        { hanzi: "晚上六点我们坐地铁回家,玩得很开心。", pinyin: "Wǎnshang liù diǎn wǒmen zuò dìtiě huí jiā, wán de hěn kāixīn.", meaning: "Sáu giờ tối chúng tôi đi tàu về nhà, chơi rất vui." }
       ]
     },
     {
       id: "r2-3",
-      title: "我的好朋友",
-      titlePinyin: "Wǒ de hǎo péngyou",
-      titleMeaning: "Người bạn tốt của tôi",
+      title: "学习汉语真有意思",
+      titlePinyin: "Xuéxí Hànyǔ zhēn yǒu yìsi",
+      titleMeaning: "Học tiếng Trung thật thú vị",
       sentences: [
-        { hanzi: "我有一个好朋友。", pinyin: "Wǒ yǒu yí gè hǎo péngyou.", meaning: "Tôi có một người bạn tốt." },
-        { hanzi: "她叫小红,今年二十岁。", pinyin: "Tā jiào Xiǎo Hóng, jīnnián èrshí suì.", meaning: "Cô ấy tên là Tiểu Hồng, năm nay 20 tuổi." },
-        { hanzi: "她长得很漂亮,人也很好。", pinyin: "Tā zhǎng de hěn piàoliang, rén yě hěn hǎo.", meaning: "Cô ấy xinh đẹp và tốt bụng." },
-        { hanzi: "我们是大学同学。", pinyin: "Wǒmen shì dàxué tóngxué.", meaning: "Chúng tôi là bạn cùng đại học." },
-        { hanzi: "我们经常一起学习。", pinyin: "Wǒmen jīngcháng yìqǐ xuéxí.", meaning: "Chúng tôi thường học cùng nhau." },
-        { hanzi: "她喜欢音乐,我喜欢运动。", pinyin: "Tā xǐhuan yīnyuè, wǒ xǐhuan yùndòng.", meaning: "Cô ấy thích âm nhạc, tôi thích thể thao." },
-        { hanzi: "虽然爱好不同,但是我们是好朋友。", pinyin: "Suīrán àihào bùtóng, dànshì wǒmen shì hǎo péngyou.", meaning: "Tuy sở thích khác nhau, nhưng chúng tôi là bạn tốt." }
+        { hanzi: "我学习汉语已经一年了,觉得汉语真的很有意思。", pinyin: "Wǒ xuéxí Hànyǔ yǐjīng yì nián le, juéde Hànyǔ zhēn de hěn yǒu yìsi.", meaning: "Tôi học tiếng Trung được một năm rồi, thấy tiếng Trung thực sự rất thú vị." },
+        { hanzi: "刚开始的时候,我觉得汉字很难写。", pinyin: "Gāng kāishǐ de shíhou, wǒ juéde Hànzì hěn nán xiě.", meaning: "Lúc mới bắt đầu, tôi thấy chữ Hán rất khó viết." },
+        { hanzi: "现在我已经会写两百多个汉字了。", pinyin: "Xiànzài wǒ yǐjīng huì xiě liǎng bǎi duō gè Hànzì le.", meaning: "Bây giờ tôi đã viết được hơn 200 chữ Hán." },
+        { hanzi: "我最喜欢听中文歌,边听边学。", pinyin: "Wǒ zuì xǐhuan tīng Zhōngwén gē, biān tīng biān xué.", meaning: "Tôi thích nhất là nghe nhạc Trung, vừa nghe vừa học." },
+        { hanzi: "每天晚上我都看一集中国电视剧。", pinyin: "Měitiān wǎnshang wǒ dōu kàn yì jí Zhōngguó diànshìjù.", meaning: "Mỗi tối tôi đều xem một tập phim Trung Quốc." },
+        { hanzi: "我希望以后能去中国旅游,认识更多的朋友。", pinyin: "Wǒ xīwàng yǐhòu néng qù Zhōngguó lǚyóu, rènshi gèng duō de péngyou.", meaning: "Tôi hy vọng sau này có thể đi du lịch Trung Quốc, quen thêm nhiều bạn." },
+        { hanzi: "学习外语虽然不容易,但是非常有用。", pinyin: "Xuéxí wàiyǔ suīrán bù róngyì, dànshì fēicháng yǒuyòng.", meaning: "Học ngoại ngữ tuy không dễ nhưng rất có ích." }
+      ]
+    },
+    {
+      id: "r2-4",
+      title: "去医院看病",
+      titlePinyin: "Qù yīyuàn kànbìng",
+      titleMeaning: "Đến bệnh viện khám",
+      sentences: [
+        { hanzi: "前几天我感冒了,头疼,还发烧。", pinyin: "Qián jǐ tiān wǒ gǎnmào le, tóuténg, hái fāshāo.", meaning: "Mấy hôm trước tôi bị cảm, đau đầu và sốt." },
+        { hanzi: "妈妈说要带我去医院看医生。", pinyin: "Māma shuō yào dài wǒ qù yīyuàn kàn yīshēng.", meaning: "Mẹ nói sẽ đưa tôi đến bệnh viện khám bác sĩ." },
+        { hanzi: "医院离我家不远,我们坐出租车很快就到了。", pinyin: "Yīyuàn lí wǒ jiā bù yuǎn, wǒmen zuò chūzūchē hěn kuài jiù dào le.", meaning: "Bệnh viện cách nhà không xa, chúng tôi đi taxi rất nhanh đã đến." },
+        { hanzi: "医生很客气,问了我很多问题。", pinyin: "Yīshēng hěn kèqi, wèn le wǒ hěn duō wèntí.", meaning: "Bác sĩ rất lịch sự, hỏi tôi nhiều câu hỏi." },
+        { hanzi: "他给我开了一些药,让我多喝水,多休息。", pinyin: "Tā gěi wǒ kāi le yìxiē yào, ràng wǒ duō hē shuǐ, duō xiūxi.", meaning: "Bác sĩ kê cho tôi một ít thuốc, dặn tôi uống nhiều nước và nghỉ ngơi nhiều." },
+        { hanzi: "回家以后我吃了药,睡了一个长长的觉。", pinyin: "Huí jiā yǐhòu wǒ chī le yào, shuì le yí gè cháng cháng de jiào.", meaning: "Về nhà tôi uống thuốc, ngủ một giấc thật dài." },
+        { hanzi: "现在我已经好了,身体没事了。", pinyin: "Xiànzài wǒ yǐjīng hǎo le, shēntǐ méi shì le.", meaning: "Bây giờ tôi đã khỏe rồi, không sao nữa." }
+      ]
+    },
+    {
+      id: "r2-5",
+      title: "我家附近的咖啡店",
+      titlePinyin: "Wǒ jiā fùjìn de kāfēi diàn",
+      titleMeaning: "Quán cà phê gần nhà",
+      sentences: [
+        { hanzi: "我家附近有一家很安静的咖啡店。", pinyin: "Wǒ jiā fùjìn yǒu yì jiā hěn ānjìng de kāfēi diàn.", meaning: "Gần nhà tôi có một quán cà phê rất yên tĩnh." },
+        { hanzi: "店里的咖啡很好喝,服务员也很热情。", pinyin: "Diàn lǐ de kāfēi hěn hǎohē, fúwùyuán yě hěn rèqíng.", meaning: "Cà phê ở đó rất ngon, nhân viên cũng rất nhiệt tình." },
+        { hanzi: "我经常和朋友去那儿,我们一边喝咖啡一边聊天。", pinyin: "Wǒ jīngcháng hé péngyou qù nàr, wǒmen yìbiān hē kāfēi yìbiān liáotiān.", meaning: "Tôi thường đến đó với bạn, vừa uống cà phê vừa trò chuyện." },
+        { hanzi: "店里有很多书,客人可以坐下来看。", pinyin: "Diàn lǐ yǒu hěn duō shū, kèrén kěyǐ zuò xiàlái kàn.", meaning: "Quán có nhiều sách, khách có thể ngồi xuống đọc." },
+        { hanzi: "周末的时候人比较多,但是不太吵。", pinyin: "Zhōumò de shíhou rén bǐjiào duō, dànshì bú tài chǎo.", meaning: "Cuối tuần người khá đông nhưng không ồn lắm." },
+        { hanzi: "我最喜欢一个人在那儿写作业,真舒服。", pinyin: "Wǒ zuì xǐhuan yí gè rén zài nàr xiě zuòyè, zhēn shūfu.", meaning: "Tôi thích nhất là một mình đến đó làm bài tập, thật dễ chịu." }
+      ]
+    },
+    {
+      id: "r2-6",
+      title: "我的旅游计划",
+      titlePinyin: "Wǒ de lǚyóu jìhuà",
+      titleMeaning: "Kế hoạch du lịch của tôi",
+      sentences: [
+        { hanzi: "下个月我要和朋友们一起去旅游。", pinyin: "Xià gè yuè wǒ yào hé péngyoumen yìqǐ qù lǚyóu.", meaning: "Tháng sau tôi sẽ cùng các bạn đi du lịch." },
+        { hanzi: "我们打算去中国玩儿一个星期。", pinyin: "Wǒmen dǎsuàn qù Zhōngguó wánr yí gè xīngqī.", meaning: "Chúng tôi định đi Trung Quốc chơi một tuần." },
+        { hanzi: "第一站是北京,我们想去看长城。", pinyin: "Dì yī zhàn shì Běijīng, wǒmen xiǎng qù kàn Chángchéng.", meaning: "Trạm đầu tiên là Bắc Kinh, chúng tôi muốn đi thăm Vạn Lý Trường Thành." },
+        { hanzi: "然后去上海,听说上海是个很现代的城市。", pinyin: "Ránhòu qù Shànghǎi, tīngshuō Shànghǎi shì gè hěn xiàndài de chéngshì.", meaning: "Sau đó đi Thượng Hải, nghe nói Thượng Hải là thành phố rất hiện đại." },
+        { hanzi: "我已经买好了飞机票,也订了酒店。", pinyin: "Wǒ yǐjīng mǎi hǎo le fēijī piào, yě dìng le jiǔdiàn.", meaning: "Tôi đã mua vé máy bay và đặt khách sạn." },
+        { hanzi: "我每天都在学新的中文句子,这样旅游的时候可以用。", pinyin: "Wǒ měitiān dōu zài xué xīn de Zhōngwén jùzi, zhèyàng lǚyóu de shíhou kěyǐ yòng.", meaning: "Mỗi ngày tôi học câu tiếng Trung mới để khi du lịch có thể dùng." },
+        { hanzi: "我真的很期待这次旅游!", pinyin: "Wǒ zhēn de hěn qīdài zhè cì lǚyóu!", meaning: "Tôi thật sự rất mong chờ chuyến du lịch này!" }
+      ]
+    },
+    {
+      id: "r2-7",
+      title: "学习做菜",
+      titlePinyin: "Xuéxí zuò cài",
+      titleMeaning: "Học nấu ăn",
+      sentences: [
+        { hanzi: "上个月我开始跟妈妈学习做菜。", pinyin: "Shàng gè yuè wǒ kāishǐ gēn māma xuéxí zuò cài.", meaning: "Tháng trước tôi bắt đầu học nấu ăn với mẹ." },
+        { hanzi: "妈妈说做菜不难,但是要有耐心。", pinyin: "Māma shuō zuò cài bù nán, dànshì yào yǒu nàixīn.", meaning: "Mẹ nói nấu ăn không khó nhưng phải kiên nhẫn." },
+        { hanzi: "第一次我做的鸡蛋汤,味道不太好。", pinyin: "Dì yī cì wǒ zuò de jīdàn tāng, wèidao bú tài hǎo.", meaning: "Lần đầu tôi nấu canh trứng, vị không ngon lắm." },
+        { hanzi: "妈妈耐心地告诉我哪里做错了。", pinyin: "Māma nàixīn de gàosu wǒ nǎli zuò cuò le.", meaning: "Mẹ kiên nhẫn chỉ tôi sai chỗ nào." },
+        { hanzi: "现在我会做几个简单的菜了。", pinyin: "Xiànzài wǒ huì zuò jǐ ge jiǎndān de cài le.", meaning: "Bây giờ tôi đã biết nấu vài món đơn giản." },
+        { hanzi: "上个周末我做了番茄鸡蛋,爸爸妈妈都说好吃。", pinyin: "Shàng gè zhōumò wǒ zuò le fānqié jīdàn, bàba māma dōu shuō hǎochī.", meaning: "Cuối tuần trước tôi nấu trứng xào cà chua, bố mẹ đều khen ngon." },
+        { hanzi: "我觉得自己做的菜真的不一样。", pinyin: "Wǒ juéde zìjǐ zuò de cài zhēn de bù yíyàng.", meaning: "Tôi thấy món ăn tự mình nấu thật sự khác biệt." }
+      ]
+    },
+    {
+      id: "r2-8",
+      title: "我的爱好",
+      titlePinyin: "Wǒ de àihào",
+      titleMeaning: "Sở thích của tôi",
+      sentences: [
+        { hanzi: "每个人都有自己的爱好,我的爱好是看书。", pinyin: "Měi gè rén dōu yǒu zìjǐ de àihào, wǒ de àihào shì kàn shū.", meaning: "Mỗi người đều có sở thích riêng, sở thích của tôi là đọc sách." },
+        { hanzi: "我从小就喜欢看故事书。", pinyin: "Wǒ cóng xiǎo jiù xǐhuan kàn gùshi shū.", meaning: "Tôi thích đọc truyện từ nhỏ." },
+        { hanzi: "现在我喜欢看历史书和小说。", pinyin: "Xiànzài wǒ xǐhuan kàn lìshǐ shū hé xiǎoshuō.", meaning: "Bây giờ tôi thích đọc sách lịch sử và tiểu thuyết." },
+        { hanzi: "看书可以让我学到很多东西,也让我很快乐。", pinyin: "Kàn shū kěyǐ ràng wǒ xué dào hěn duō dōngxi, yě ràng wǒ hěn kuàilè.", meaning: "Đọc sách giúp tôi học được nhiều điều và cảm thấy hạnh phúc." },
+        { hanzi: "我家有两个大书架,上面都是书。", pinyin: "Wǒ jiā yǒu liǎng gè dà shūjià, shàngmiàn dōu shì shū.", meaning: "Nhà tôi có hai kệ sách lớn, trên đó toàn là sách." },
+        { hanzi: "周末的时候,我喜欢一个人在家里看书。", pinyin: "Zhōumò de shíhou, wǒ xǐhuan yí gè rén zài jiā lǐ kàn shū.", meaning: "Cuối tuần tôi thích một mình ở nhà đọc sách." },
+        { hanzi: "我希望以后能有自己的书房。", pinyin: "Wǒ xīwàng yǐhòu néng yǒu zìjǐ de shūfáng.", meaning: "Tôi hy vọng sau này có thể có phòng đọc sách riêng." }
       ]
     }
   ],
+
 
   hsk3: [
     {
@@ -5646,94 +5611,132 @@ const Header = ({ view, setView, darkMode, toggleDark }) => {
 };
 
 // ============ DAILY QUOTE CARD ============
-const QuoteCard = () => {
-  // Chọn câu nói theo ngày (cùng câu trong cả ngày, đổi mỗi ngày)
+const QuoteCard = ({ compact = false }) => {
+  // Khởi tạo ngẫu nhiên mỗi lần load trang/refresh
   const [currentIdx, setCurrentIdx] = useState(() => {
-    const today = new Date();
-    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
-    return dayOfYear % quotes.length;
+    return Math.floor(Math.random() * quotes.length);
   });
 
   const quote = quotes[currentIdx];
   const nextQuote = () => setCurrentIdx((currentIdx + 1) % quotes.length);
   const prevQuote = () => setCurrentIdx((currentIdx - 1 + quotes.length) % quotes.length);
+  const randomQuote = () => {
+    let newIdx;
+    do {
+      newIdx = Math.floor(Math.random() * quotes.length);
+    } while (newIdx === currentIdx && quotes.length > 1);
+    setCurrentIdx(newIdx);
+  };
 
   return (
-    <div className="mb-10 relative overflow-hidden rounded-2xl soft-shadow"
+    <div className="relative overflow-hidden rounded-3xl soft-shadow h-full flex flex-col"
       style={{
-        background: 'linear-gradient(135deg, var(--surface) 0%, var(--surface-soft) 100%)',
+        background: 'linear-gradient(155deg, var(--surface) 0%, var(--surface-soft) 60%, var(--surface) 100%)',
         border: '1px solid var(--accent-soft)'
       }}>
-      {/* Decorative background character */}
-      <div className="absolute top-0 right-3 text-[90px] leading-none select-none pointer-events-none hanzi-text"
-        style={{ color: 'var(--accent)', opacity: 0.05, fontWeight: 500 }}>志</div>
+      {/* Decorative background characters - elegant, calm */}
+      <div className="absolute -top-4 -right-2 text-[140px] leading-none select-none pointer-events-none hanzi-text"
+        style={{ color: 'var(--accent)', opacity: 0.04, fontWeight: 300 }}>语</div>
+      <div className="absolute -bottom-6 -left-3 text-[100px] leading-none select-none pointer-events-none hanzi-text"
+        style={{ color: 'var(--accent-2)', opacity: 0.04, fontWeight: 300 }}>志</div>
 
-      <div className="relative px-5 py-4 md:px-6 md:py-5">
-        {/* Compact header with controls inline */}
-        <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center"
+      <div className="relative px-6 py-5 flex flex-col h-full">
+        {/* Header with serif title */}
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl flex items-center justify-center"
               style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: 'white' }}>
-              <span className="hanzi-text" style={{ fontSize: '13px', fontWeight: 500 }}>语</span>
+              <span className="hanzi-text" style={{ fontSize: '15px', fontWeight: 400 }}>语</span>
             </div>
-            <div className="text-xs tracking-[0.25em]" style={{ color: 'var(--accent)', fontWeight: 600 }}>每日一句 · CÂU NÓI HÔM NAY</div>
+            <div>
+              <div className="text-[10px] tracking-[0.3em]" style={{ color: 'var(--accent)', fontWeight: 500 }}>每日一句</div>
+              <div style={{ fontFamily: 'Georgia, "Playfair Display", serif', color: 'var(--ink)', fontWeight: 500, fontSize: '13px', fontStyle: 'italic', letterSpacing: '0.02em' }}>
+                Câu nói cảm hứng
+              </div>
+            </div>
           </div>
           <div className="flex gap-1">
-            <button onClick={prevQuote}
-              className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110 text-sm"
-              style={{ background: 'var(--surface)', color: 'var(--accent)', border: '1px solid var(--border)' }}
-              title="Câu trước">←</button>
+            <button onClick={randomQuote}
+              className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110 hover:rotate-180"
+              style={{ background: 'var(--accent-soft)', color: 'white', fontSize: '12px', transition: 'transform 0.5s' }}
+              title="Câu ngẫu nhiên">⟳</button>
             <button onClick={() => speak(quote.hanzi)}
               className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110"
               style={{ background: 'var(--accent)', color: 'white', fontSize: '11px' }}
               title="Phát âm">🔊</button>
-            <button onClick={nextQuote}
-              className="w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110 text-sm"
-              style={{ background: 'var(--surface)', color: 'var(--accent)', border: '1px solid var(--border)' }}
-              title="Câu sau">→</button>
           </div>
         </div>
 
-        {/* Quote content - compact */}
-        <div className="mb-2">
-          {/* Hanzi - smaller, elegant */}
-          <div className="hanzi-text mb-1.5"
+        {/* Quote content - elegant typography */}
+        <div className="flex-1 flex flex-col justify-center mb-3">
+          {/* Decorative open quote */}
+          <div className="text-5xl leading-[0.5] mb-3 select-none"
             style={{
-              fontSize: 'clamp(18px, 2.5vw, 22px)',
-              fontWeight: 500,
+              color: 'var(--accent-soft)',
+              fontFamily: 'Georgia, "Playfair Display", serif',
+              fontWeight: 700,
+              opacity: 0.5
+            }}>"</div>
+
+          {/* Hanzi - serif weight, slightly larger letterspacing */}
+          <div className="hanzi-text mb-3 px-1"
+            style={{
+              fontSize: 'clamp(20px, 2.6vw, 26px)',
+              fontWeight: 400,
               color: 'var(--ink)',
-              lineHeight: 1.5,
-              letterSpacing: '0.02em'
+              lineHeight: 1.55,
+              letterSpacing: '0.05em'
             }}>
-            <span style={{ color: 'var(--accent-soft)', fontWeight: 700, marginRight: '4px' }}>"</span>
             {quote.hanzi}
           </div>
 
           {/* Pinyin */}
-          <div className="mb-1">
+          <div className="mb-3 px-1">
             <ColoredPinyin pinyin={quote.pinyin} size="sm" />
           </div>
 
-          {/* Vietnamese meaning */}
-          <div className="italic text-sm"
+          {/* Vietnamese - italic serif for elegance */}
+          <div className="px-1"
             style={{
               color: 'var(--muted)',
-              lineHeight: 1.5,
-              fontFamily: 'var(--font-display)',
-              fontWeight: 500
+              fontSize: '14px',
+              lineHeight: 1.55,
+              fontFamily: 'Georgia, "Playfair Display", "Crimson Text", serif',
+              fontStyle: 'italic',
+              fontWeight: 400,
+              letterSpacing: '0.01em'
             }}>
             « {quote.meaning} »
           </div>
         </div>
 
-        {/* Compact footer */}
-        <div className="flex items-center justify-between flex-wrap gap-2 pt-2 mt-1"
+        {/* Footer - author + nav */}
+        <div className="flex items-center justify-between flex-wrap gap-2 pt-3 mt-auto"
           style={{ borderTop: '1px dashed var(--border)' }}>
-          <div className="text-xs flex items-center gap-2" style={{ color: 'var(--accent)', fontFamily: 'var(--font-display)', fontWeight: 600 }}>
-            <span>—</span>
-            <span>{quote.author}</span>
+          <div className="flex items-center gap-1.5">
+            <span style={{ color: 'var(--accent-soft)', fontSize: '14px' }}>—</span>
+            <div className="text-xs"
+              style={{
+                color: 'var(--accent)',
+                fontFamily: 'Georgia, "Playfair Display", serif',
+                fontWeight: 500,
+                fontStyle: 'italic',
+                letterSpacing: '0.02em'
+              }}>
+              {quote.author}
+            </div>
           </div>
-          <div className="text-xs" style={{ color: 'var(--muted)' }}>{currentIdx + 1} / {quotes.length}</div>
+          <div className="flex items-center gap-1">
+            <button onClick={prevQuote}
+              className="w-6 h-6 rounded-full flex items-center justify-center transition-all hover:scale-110 text-xs"
+              style={{ background: 'var(--bg)', color: 'var(--accent)', border: '1px solid var(--border)' }}
+              title="Câu trước">‹</button>
+            <span className="text-[10px] mx-1" style={{ color: 'var(--muted)', fontFamily: 'Georgia, serif', fontStyle: 'italic' }}>{currentIdx + 1} / {quotes.length}</span>
+            <button onClick={nextQuote}
+              className="w-6 h-6 rounded-full flex items-center justify-center transition-all hover:scale-110 text-xs"
+              style={{ background: 'var(--bg)', color: 'var(--accent)', border: '1px solid var(--border)' }}
+              title="Câu sau">›</button>
+          </div>
         </div>
       </div>
     </div>
@@ -5759,19 +5762,25 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount }) => {
     <div className="max-w-7xl mx-auto px-6 py-12">
       <div className="relative mb-20">
         <div className="absolute -top-4 -left-4 text-[180px] opacity-[0.04] leading-none select-none pointer-events-none" style={{ fontFamily:'var(--font-display)' }}>學</div>
-        <div className="relative">
-          <div className="text-xs tracking-[0.3em] mb-4" style={{ color:'var(--accent)' }}>欢迎 · CHÀO MỪNG</div>
-          <h1 className="text-5xl md:text-7xl mb-6 leading-tight" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>
-            Học tiếng Trung<br />
-            <span style={{ color:'var(--accent)' }}>thông minh hơn</span>
-          </h1>
-          <p className="text-lg max-w-2xl leading-relaxed" style={{ color:'var(--muted)' }}>
-            Hệ thống học từ vựng HSK 1-6 với flashcard SRS, quiz, luyện viết và phát âm chuẩn tiếng phổ thông Trung Quốc.
-          </p>
+        <div className="relative grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
+          {/* Left: Hero text - takes 3 columns on large screens */}
+          <div className="lg:col-span-3 flex flex-col justify-center">
+            <div className="text-xs tracking-[0.3em] mb-4" style={{ color:'var(--accent)' }}>欢迎 · CHÀO MỪNG</div>
+            <h1 className="text-5xl md:text-6xl xl:text-7xl mb-6 leading-tight" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>
+              Học tiếng Trung<br />
+              <span style={{ color:'var(--accent)' }}>thông minh hơn</span>
+            </h1>
+            <p className="text-lg max-w-xl leading-relaxed" style={{ color:'var(--muted)' }}>
+              Hệ thống học từ vựng HSK 1-6 với flashcard SRS, quiz, luyện viết và phát âm chuẩn tiếng phổ thông Trung Quốc.
+            </p>
+          </div>
+
+          {/* Right: Quote card - takes 2 columns on large screens */}
+          <div className="lg:col-span-2 min-h-[360px]">
+            <QuoteCard />
+          </div>
         </div>
       </div>
-
-      <QuoteCard />
 
       <div className="mb-16 p-8 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
         <div className="flex justify-between items-baseline mb-3 flex-wrap gap-2">
@@ -7115,6 +7124,9 @@ const WritingView = () => {
   const [error, setError] = useState(null);
   const [strokeCount, setStrokeCount] = useState(0);
   const [currentStroke, setCurrentStroke] = useState(0);
+  // Bảng chọn từ vựng
+  const [showSelector, setShowSelector] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const writerContainerRef = useRef(null);
   const writerRef = useRef(null);
 
@@ -7125,6 +7137,17 @@ const WritingView = () => {
   const words = ALL_HSK[hskLevel] || [];
   const currentWord = words[currentIdx];
   const currentChar = currentWord ? currentWord.hanzi[charIdx] : '';
+
+  // Lọc từ vựng cho bảng chọn theo từ khóa
+  const filteredWords = useMemo(() => {
+    if (!searchQuery.trim()) return words;
+    const q = searchQuery.toLowerCase().trim();
+    return words.filter(w =>
+      w.hanzi.includes(q) ||
+      w.pinyin.toLowerCase().includes(q) ||
+      w.meaning.toLowerCase().includes(q)
+    );
+  }, [words, searchQuery]);
 
   // Reset character index when word changes
   useEffect(() => {
@@ -7319,12 +7342,107 @@ const WritingView = () => {
       <div className="mb-6">
         <div className="text-xs tracking-[0.3em] mb-2" style={{ color:'var(--accent)' }}>书写 · LUYỆN VIẾT</div>
         <h1 className="text-3xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Tập viết chữ Hán</h1>
-        <div className="flex gap-2 flex-wrap mb-3">
+        <div className="flex gap-2 flex-wrap mb-3 items-center">
           {[1,2,3,4,5,6].map(l => (
-            <button key={l} onClick={() => { setHskLevel(l); setCurrentIdx(0); }} className="px-3 py-1.5 rounded-2xl text-sm transition-all"
+            <button key={l} onClick={() => { setHskLevel(l); setCurrentIdx(0); setSearchQuery(''); }} className="px-3 py-1.5 rounded-2xl text-sm transition-all"
               style={{ background: hskLevel === l ? 'var(--accent)' : 'var(--surface)', color: hskLevel === l ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>HSK {l}</button>
           ))}
+          <button
+            onClick={() => setShowSelector(!showSelector)}
+            className="px-3 py-1.5 rounded-2xl text-sm transition-all ml-auto flex items-center gap-1.5"
+            style={{
+              background: showSelector ? 'var(--accent-2)' : 'var(--surface)',
+              color: showSelector ? 'white' : 'var(--ink)',
+              border:'1px solid var(--border)',
+              fontWeight: 500
+            }}>
+            <span>📚</span>
+            {showSelector ? 'Đóng bảng chọn' : 'Chọn từ luyện viết'}
+          </button>
         </div>
+
+        {/* Word selector panel */}
+        {showSelector && (
+          <div className="p-4 rounded-3xl mb-3 soft-shadow" style={{ background: 'var(--surface)', border: '1px solid var(--accent-soft)' }}>
+            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+              <div className="text-xs tracking-widest" style={{ color: 'var(--muted)', fontWeight: 600 }}>
+                CHỌN TỪ ĐỂ LUYỆN VIẾT
+              </div>
+              <div className="text-xs" style={{ color: 'var(--accent)' }}>
+                HSK {hskLevel} · {filteredWords.length} từ
+              </div>
+            </div>
+
+            {/* Search input */}
+            <div className="relative mb-3">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Tìm theo chữ Hán, pinyin hoặc nghĩa Việt..."
+                className="w-full px-4 py-2.5 pl-10 rounded-2xl text-sm transition-all focus:outline-none"
+                style={{
+                  background: 'var(--bg)',
+                  color: 'var(--ink)',
+                  border: '1px solid var(--border)',
+                  fontFamily: 'inherit'
+                }}
+              />
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-base" style={{ color: 'var(--muted)' }}>🔍</span>
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center transition-all hover:scale-110"
+                  style={{ background: 'var(--border)', color: 'var(--ink)', fontSize: '11px' }}
+                  title="Xóa"
+                >✕</button>
+              )}
+            </div>
+
+            {/* Word grid */}
+            {filteredWords.length === 0 ? (
+              <div className="py-8 text-center" style={{ color: 'var(--muted)' }}>
+                <div className="text-3xl mb-2 hanzi-text" style={{ color: 'var(--accent-soft)' }}>空</div>
+                <div className="text-sm">Không tìm thấy từ nào</div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 max-h-72 overflow-y-auto pr-1"
+                style={{ scrollbarWidth: 'thin' }}>
+                {filteredWords.map((w) => {
+                  // Tìm index gốc trong words array
+                  const realIdx = words.findIndex(x => x.id === w.id);
+                  const isCurrent = realIdx === currentIdx;
+                  return (
+                    <button
+                      key={w.id}
+                      onClick={() => {
+                        setCurrentIdx(realIdx);
+                        setCharIdx(0);
+                        setShowSelector(false);
+                        setSearchQuery('');
+                      }}
+                      className="text-left p-2.5 rounded-xl transition-all hover:scale-[1.03] hover:soft-shadow"
+                      style={{
+                        background: isCurrent ? 'var(--accent-soft)' : 'var(--bg)',
+                        border: `1px solid ${isCurrent ? 'var(--accent)' : 'var(--border)'}`,
+                        color: 'var(--ink)'
+                      }}>
+                      <div className="text-xl hanzi-text mb-0.5" style={{ fontWeight: 500, color: isCurrent ? 'white' : 'var(--ink)' }}>{w.hanzi}</div>
+                      <div className="text-xs mb-0.5" style={{ color: isCurrent ? 'white' : 'var(--accent)', opacity: isCurrent ? 0.95 : 1 }}>{w.pinyin}</div>
+                      <div className="text-xs line-clamp-1" style={{ color: isCurrent ? 'white' : 'var(--muted)', opacity: isCurrent ? 0.9 : 1 }}>{w.meaning}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Tip */}
+            <div className="mt-3 text-xs flex items-center gap-2" style={{ color: 'var(--muted)' }}>
+              <span>💡</span>
+              <span>Mẹo: Tìm từ bằng chữ Hán (你好), pinyin (nihao), hoặc nghĩa tiếng Việt (xin chào)</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Word info bar */}
