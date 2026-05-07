@@ -17,15 +17,15 @@
   html { overflow-y: scroll; }
   body { font-family: 'Nunito', 'Noto Sans SC', system-ui, sans-serif; letter-spacing: 0.01em; overflow-x: hidden; }
   ::-webkit-scrollbar { width: 12px; height: 12px; }
-  ::-webkit-scrollbar-track { background: rgba(168, 200, 232, 0.15); }
-  ::-webkit-scrollbar-thumb { background: #a8c8e8; border-radius: 8px; border: 2px solid rgba(168, 200, 232, 0.15); }
-  ::-webkit-scrollbar-thumb:hover { background: #5b9bd5; }
-  html { scrollbar-width: thin; scrollbar-color: #a8c8e8 rgba(168, 200, 232, 0.15); }
-  .loading-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 24px; background: #f0f7ff; z-index: 9999; font-family: 'Noto Sans SC', sans-serif; }
-  .loading-char { font-size: 88px; color: #5b9bd5; font-weight: 500; animation: pulse 1.8s ease-in-out infinite; }
-  .loading-text { font-size: 13px; color: #6b8caf; letter-spacing: 0.4em; font-family: 'Quicksand', sans-serif; font-weight: 500; }
+  ::-webkit-scrollbar-track { background: rgba(148, 195, 236, 0.18); }
+  ::-webkit-scrollbar-thumb { background: #94c3ec; border-radius: 8px; border: 2px solid rgba(148, 195, 236, 0.18); }
+  ::-webkit-scrollbar-thumb:hover { background: #3d8bd1; }
+  html { scrollbar-width: thin; scrollbar-color: #94c3ec rgba(148, 195, 236, 0.18); }
+  .loading-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 24px; background: #eaf3ff; z-index: 9999; font-family: 'Noto Sans SC', sans-serif; background-image: radial-gradient(circle at 20% 20%, rgba(148, 195, 236, 0.3) 0%, transparent 55%), radial-gradient(circle at 80% 80%, rgba(95, 168, 222, 0.18) 0%, transparent 55%); }
+  .loading-char { font-size: 88px; color: #3d8bd1; font-weight: 500; animation: pulse 1.8s ease-in-out infinite; text-shadow: 0 4px 24px rgba(61, 139, 209, 0.22); }
+  .loading-text { font-size: 13px; color: #5d80a8; letter-spacing: 0.4em; font-family: 'Quicksand', sans-serif; font-weight: 500; }
   .loading-dots { display: flex; gap: 8px; margin-top: 8px; }
-  .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: #a8c8e8; animation: bounce 1.4s ease-in-out infinite; }
+  .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: #94c3ec; animation: bounce 1.4s ease-in-out infinite; }
   .loading-dot:nth-child(1) { animation-delay: 0s; }
   .loading-dot:nth-child(2) { animation-delay: 0.2s; }
   .loading-dot:nth-child(3) { animation-delay: 0.4s; }
@@ -6214,42 +6214,44 @@ const QuoteCard = ({ compact = false }) => {
 
         {/* Quote content - elegant typography */}
         <div className="flex-1 flex flex-col justify-center mb-3">
-          {/* Decorative open quote */}
-          <div className="text-5xl leading-[0.5] mb-3 select-none"
+          {/* Decorative open quote - larger and more prominent */}
+          <div className="leading-[0.5] mb-4 select-none"
             style={{
               color: 'var(--accent-soft)',
               fontFamily: 'Georgia, "Playfair Display", serif',
               fontWeight: 700,
-              opacity: 0.5
+              fontSize: '72px',
+              opacity: 0.45
             }}>"</div>
 
-          {/* Hanzi - serif weight, slightly larger letterspacing */}
-          <div className="hanzi-text mb-3 px-1"
+          {/* Hanzi - serif weight, larger for impact */}
+          <div className="hanzi-text mb-4 px-1"
             style={{
-              fontSize: 'clamp(20px, 2.6vw, 26px)',
-              fontWeight: 400,
+              fontSize: 'clamp(26px, 3.2vw, 34px)',
+              fontWeight: 500,
               color: 'var(--ink)',
-              lineHeight: 1.55,
+              lineHeight: 1.5,
               letterSpacing: '0.05em'
             }}>
             {quote.hanzi}
           </div>
 
           {/* Pinyin */}
-          <div className="mb-3 px-1">
-            <ColoredPinyin pinyin={quote.pinyin} size="sm" />
+          <div className="mb-4 px-1">
+            <ColoredPinyin pinyin={quote.pinyin} size="base" />
           </div>
 
-          {/* Vietnamese - italic serif for elegance */}
+          {/* Vietnamese - italic serif for elegance, larger */}
           <div className="px-1"
             style={{
-              color: 'var(--muted)',
-              fontSize: '14px',
-              lineHeight: 1.55,
+              color: 'var(--ink)',
+              fontSize: '17px',
+              lineHeight: 1.6,
               fontFamily: 'Georgia, "Playfair Display", "Crimson Text", serif',
               fontStyle: 'italic',
               fontWeight: 400,
-              letterSpacing: '0.01em'
+              letterSpacing: '0.01em',
+              opacity: 0.85
             }}>
             « {quote.meaning} »
           </div>
@@ -6802,9 +6804,29 @@ const VocabDetailModal = ({ word, onClose, isLearned, isStarred, toggleLearned, 
 // ============ VOCAB VIEW ============
 const VocabView = ({ selectedHSK, setSelectedHSK, learned, toggleLearned, starred, toggleStar }) => {
   const [search, setSearch] = useState('');
+  const [globalSearch, setGlobalSearch] = useState('');
   const [filter, setFilter] = useState('all');
   const [selectedWord, setSelectedWord] = useState(null);
   const words = ALL_HSK[selectedHSK] || [];
+
+  // Tìm kiếm toàn cục: ưu tiên hơn search theo cấp
+  const isGlobalMode = globalSearch.trim().length > 0;
+
+  // Kết quả global search trên tất cả HSK 1-6
+  const globalResults = useMemo(() => {
+    if (!isGlobalMode) return [];
+    const q = globalSearch.toLowerCase().trim();
+    const all = [];
+    for (let level = 1; level <= 6; level++) {
+      const list = ALL_HSK[level] || [];
+      for (const w of list) {
+        if (w.hanzi.includes(q) || w.pinyin.toLowerCase().includes(q) || w.meaning.toLowerCase().includes(q)) {
+          all.push({ ...w, hskLevel: level });
+        }
+      }
+    }
+    return all.slice(0, 200); // giới hạn 200 kết quả để tránh lag
+  }, [globalSearch, isGlobalMode]);
 
   const filtered = useMemo(() => {
     return words.filter(w => {
@@ -6816,49 +6838,119 @@ const VocabView = ({ selectedHSK, setSelectedHSK, learned, toggleLearned, starre
     });
   }, [words, search, filter, learned, starred]);
 
+  // Danh sách hiển thị: nếu đang global search thì show globalResults, ngược lại show filtered
+  const displayList = isGlobalMode ? globalResults : filtered;
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-8">
       <div className="mb-8">
         <div className="text-xs tracking-[0.3em] mb-2" style={{ color:'var(--accent)' }}>词汇 · TỪ VỰNG</div>
         <h1 className="text-4xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>
-          Từ vựng HSK <span style={{ color:'var(--accent)' }}>{selectedHSK}</span>
+          {isGlobalMode ? (
+            <>Tìm kiếm <span style={{ color:'var(--accent)' }}>toàn bộ HSK</span></>
+          ) : (
+            <>Từ vựng HSK <span style={{ color:'var(--accent)' }}>{selectedHSK}</span></>
+          )}
         </h1>
-        <div className="flex gap-2 flex-wrap mb-6">
-          {[1,2,3,4,5,6].map(level => (
-            <button key={level} onClick={() => setSelectedHSK(level)} className="px-4 py-2 rounded-2xl transition-all"
-              style={{ background: selectedHSK === level ? 'var(--accent)' : 'var(--surface)', color: selectedHSK === level ? 'white' : 'var(--ink)', border:'1px solid var(--border)', fontFamily:'var(--font-display)', fontWeight:600 }}>
-              HSK {level}
-            </button>
-          ))}
-        </div>
-        <div className="flex flex-col md:flex-row gap-3">
-          <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Tìm theo chữ Hán, pinyin hoặc nghĩa..."
-            className="flex-1 px-4 py-3 rounded-2xl outline-none"
-            style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)' }} />
-          <div className="flex gap-2 flex-wrap">
-            {[
-              {id:'all', label:'Tất cả'},
-              {id:'notLearned', label:'Chưa thuộc'},
-              {id:'learned', label:'Đã thuộc'},
-              {id:'starred', label:'★ Đánh dấu'},
-            ].map(f => (
-              <button key={f.id} onClick={() => setFilter(f.id)} className="px-3 py-2 rounded-2xl text-sm"
-                style={{ background: filter === f.id ? 'var(--accent)' : 'var(--surface)', color: filter === f.id ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>
-                {f.label}
-              </button>
-            ))}
+
+        {/* GLOBAL SEARCH - ưu tiên hiển thị, nổi bật */}
+        <div className="mb-5 p-4 rounded-3xl soft-shadow" style={{
+          background: 'linear-gradient(135deg, var(--surface) 0%, var(--surface-soft) 100%)',
+          border: `2px solid ${isGlobalMode ? 'var(--accent)' : 'var(--accent-soft)'}`,
+          transition: 'border 0.2s'
+        }}>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-base">🌐</span>
+            <div className="text-xs tracking-widest" style={{ color: 'var(--accent)', fontWeight: 700 }}>
+              TÌM KIẾM TOÀN CỤC HSK 1-6
+            </div>
+            {isGlobalMode && (
+              <span className="ml-auto text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--accent)', color: 'white', fontWeight: 600 }}>
+                {globalResults.length} kết quả
+              </span>
+            )}
           </div>
+          <div className="relative">
+            <input
+              type="text"
+              value={globalSearch}
+              onChange={e => setGlobalSearch(e.target.value)}
+              placeholder="Tìm bất kỳ từ nào trong HSK 1-6 (chữ Hán, pinyin, nghĩa Việt)..."
+              className="w-full px-4 py-3 pl-11 rounded-2xl outline-none transition-all"
+              style={{
+                background: 'var(--bg)',
+                color: 'var(--ink)',
+                border: '1px solid var(--border)',
+                fontSize: '15px'
+              }}
+            />
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg" style={{ color: 'var(--accent)' }}>🔍</span>
+            {globalSearch && (
+              <button
+                onClick={() => setGlobalSearch('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center transition-all hover:scale-110"
+                style={{ background: 'var(--accent-soft)', color: 'white', fontSize: '11px', fontWeight: 600 }}
+                title="Xóa tìm kiếm"
+              >✕</button>
+            )}
+          </div>
+          {!isGlobalMode && (
+            <div className="mt-2 text-xs" style={{ color: 'var(--muted)' }}>
+              💡 Gõ để tìm kiếm trên toàn bộ <strong style={{ color: 'var(--accent)' }}>3.100 từ</strong> ở mọi cấp HSK
+            </div>
+          )}
         </div>
-        <div className="mt-4 text-sm flex items-center gap-2" style={{ color:'var(--muted)' }}>
-          <span>Hiển thị <strong style={{ color:'var(--ink)' }}>{filtered.length}</strong> / {words.length} từ</span>
-          <span style={{ color:'var(--accent)' }}>•</span>
-          <span className="text-xs">★ và ✓ để đánh dấu nhanh • Mở chi tiết và dùng <strong style={{ color: 'var(--ink)' }}>← →</strong> để chuyển từ, <strong style={{ color: 'var(--ink)' }}>Z</strong> để đánh dấu thuộc</span>
-        </div>
+
+        {/* HSK level selector & filter - ẨN khi đang global search */}
+        {!isGlobalMode && (
+          <>
+            <div className="flex gap-2 flex-wrap mb-6">
+              {[1,2,3,4,5,6].map(level => (
+                <button key={level} onClick={() => setSelectedHSK(level)} className="px-4 py-2 rounded-2xl transition-all"
+                  style={{ background: selectedHSK === level ? 'var(--accent)' : 'var(--surface)', color: selectedHSK === level ? 'white' : 'var(--ink)', border:'1px solid var(--border)', fontFamily:'var(--font-display)', fontWeight:600 }}>
+                  HSK {level}
+                </button>
+              ))}
+            </div>
+            <div className="flex flex-col md:flex-row gap-3">
+              <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder={`Tìm trong HSK ${selectedHSK}...`}
+                className="flex-1 px-4 py-3 rounded-2xl outline-none"
+                style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)' }} />
+              <div className="flex gap-2 flex-wrap">
+                {[
+                  {id:'all', label:'Tất cả'},
+                  {id:'notLearned', label:'Chưa thuộc'},
+                  {id:'learned', label:'Đã thuộc'},
+                  {id:'starred', label:'★ Đánh dấu'},
+                ].map(f => (
+                  <button key={f.id} onClick={() => setFilter(f.id)} className="px-3 py-2 rounded-2xl text-sm"
+                    style={{ background: filter === f.id ? 'var(--accent)' : 'var(--surface)', color: filter === f.id ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="mt-4 text-sm flex items-center gap-2" style={{ color:'var(--muted)' }}>
+              <span>Hiển thị <strong style={{ color:'var(--ink)' }}>{filtered.length}</strong> / {words.length} từ</span>
+              <span style={{ color:'var(--accent)' }}>•</span>
+              <span className="text-xs">★ và ✓ để đánh dấu nhanh • Mở chi tiết và dùng <strong style={{ color: 'var(--ink)' }}>← →</strong> để chuyển từ, <strong style={{ color: 'var(--ink)' }}>Z</strong> để đánh dấu thuộc</span>
+            </div>
+          </>
+        )}
+
+        {/* Hiển thị "không có kết quả" cho global search */}
+        {isGlobalMode && globalResults.length === 0 && (
+          <div className="p-8 rounded-2xl text-center" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="text-5xl mb-3 hanzi-text" style={{ color: 'var(--accent-soft)' }}>空</div>
+            <div className="text-lg" style={{ color: 'var(--ink)', fontWeight: 500 }}>Không tìm thấy từ nào</div>
+            <div className="text-sm mt-1" style={{ color: 'var(--muted)' }}>Hãy thử với từ khóa khác.</div>
+          </div>
+        )}
       </div>
 
       {/* Compact list grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        {filtered.map(w => {
+        {displayList.map(w => {
           const isLearned = learned.includes(w.id);
           const isStarred = starred.includes(w.id);
           return (
@@ -6869,6 +6961,18 @@ const VocabView = ({ selectedHSK, setSelectedHSK, learned, toggleLearned, starre
                 border:`1px solid ${isLearned ? 'var(--accent-2)' : 'var(--border)'}`,
                 opacity: isLearned ? 0.92 : 1
               }}>
+              {/* HSK level badge - only in global search */}
+              {isGlobalMode && w.hskLevel && (
+                <div className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full text-[10px]"
+                  style={{
+                    background: 'linear-gradient(135deg, var(--accent), var(--accent-2))',
+                    color: 'white',
+                    fontWeight: 700,
+                    letterSpacing: '0.05em'
+                  }}>
+                  HSK {w.hskLevel}
+                </div>
+              )}
               {/* Quick action buttons - top right */}
               <div className="absolute top-2 right-2 flex gap-1 z-10">
                 <button
@@ -6934,7 +7038,7 @@ const VocabView = ({ selectedHSK, setSelectedHSK, learned, toggleLearned, starre
           isStarred={starred.includes(selectedWord.id)}
           toggleLearned={toggleLearned}
           toggleStar={toggleStar}
-          wordList={filtered}
+          wordList={displayList}
           setSelectedWord={setSelectedWord}
         />
       )}
@@ -8997,35 +9101,36 @@ function App() {
 
   // CSS variables based on theme
   const themeStyles = darkMode ? {
-    '--bg': '#0f1a2e',
-    '--bg-header': 'rgba(15, 26, 46, 0.85)',
-    '--surface': '#1a2842',
-    '--surface-soft': '#243352',
-    '--ink': '#e8f1fc',
-    '--muted': '#8da9c9',
-    '--border': '#2d3e5c',
-    '--accent': '#7eb4dc',
-    '--accent-soft': '#5b9bd5',
-    '--accent-2': '#a8c8e8',
+    '--bg': '#0c1729',
+    '--bg-header': 'rgba(12, 23, 41, 0.85)',
+    '--surface': '#1a2944',
+    '--surface-soft': '#243756',
+    '--ink': '#f0f6fc',
+    '--muted': '#94aecc',
+    '--border': '#2e4264',
+    '--accent': '#7fb8e0',
+    '--accent-soft': '#5da3dc',
+    '--accent-2': '#a8d0ed',
     '--tone-1': '#93c5fd',
     '--tone-2': '#6ee7b7',
     '--tone-3': '#fcd34d',
     '--tone-4': '#fca5a5',
   } : {
-    '--bg': '#f0f7ff',
-    '--bg-header': 'rgba(240, 247, 255, 0.85)',
+    /* Pastel blue - refined for liveliness & contrast */
+    '--bg': '#eaf3ff',                         /* nhẹ hơn, hơi lavender */
+    '--bg-header': 'rgba(234, 243, 255, 0.85)',
     '--surface': '#ffffff',
-    '--surface-soft': '#e8f1fc',
-    '--ink': '#1e3a5f',
-    '--muted': '#6b8caf',
-    '--border': '#d6e4f0',
-    '--accent': '#5b9bd5',
-    '--accent-soft': '#a8c8e8',
-    '--accent-2': '#7eb4dc',
-    '--tone-1': '#2563eb',
-    '--tone-2': '#10b981',
-    '--tone-3': '#f59e0b',
-    '--tone-4': '#ef4444',
+    '--surface-soft': '#dbecfd',                /* xanh pastel rõ ràng hơn cũ */
+    '--ink': '#0f2945',                         /* đậm hơn để dễ đọc */
+    '--muted': '#5d80a8',                       /* hơi đậm hơn để contrast */
+    '--border': '#cce0f3',                      /* nhẹ nhàng hơn */
+    '--accent': '#3d8bd1',                      /* xanh chủ đạo đậm vibrant hơn */
+    '--accent-soft': '#94c3ec',                 /* xanh pastel sáng */
+    '--accent-2': '#5fa8de',                    /* xanh trung gian phân biệt rõ */
+    '--tone-1': '#1e62d8',
+    '--tone-2': '#0d9b6e',
+    '--tone-3': '#e08e0a',
+    '--tone-4': '#dc2f2f',
   };
 
   return (
@@ -9035,7 +9140,7 @@ function App() {
       background: 'var(--bg)',
       color: 'var(--ink)',
       minHeight: '100vh',
-      backgroundImage: 'radial-gradient(circle at 20% 20%, rgba(168, 200, 232, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(126, 180, 220, 0.1) 0%, transparent 50%)',
+      backgroundImage: 'radial-gradient(circle at 15% 15%, rgba(148, 195, 236, 0.22) 0%, transparent 55%), radial-gradient(circle at 85% 85%, rgba(95, 168, 222, 0.15) 0%, transparent 55%), radial-gradient(circle at 50% 50%, rgba(219, 236, 253, 0.1) 0%, transparent 70%)',
     }}>
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap');
@@ -9078,8 +9183,8 @@ function App() {
         html { scrollbar-width: thin; scrollbar-color: var(--accent-soft, #a8c8e8) var(--surface-soft, rgba(168, 200, 232, 0.15)); }
 
         .hanzi-text { font-family: var(--font-hanzi); font-weight: 500; }
-        .soft-shadow { box-shadow: 0 4px 24px rgba(91, 155, 213, 0.08); }
-        .soft-shadow-lg { box-shadow: 0 8px 32px rgba(91, 155, 213, 0.12); }
+        .soft-shadow { box-shadow: 0 4px 20px rgba(61, 139, 209, 0.10), 0 1px 3px rgba(61, 139, 209, 0.05); }
+        .soft-shadow-lg { box-shadow: 0 10px 40px rgba(61, 139, 209, 0.14), 0 2px 6px rgba(61, 139, 209, 0.08); }
         .line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
         .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
       `}</style>
