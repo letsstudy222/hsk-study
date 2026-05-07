@@ -6081,38 +6081,96 @@ const Header = ({ view, setView, darkMode, toggleDark }) => {
     { id:'progress', label:'进度', viLabel:'Tiến độ' },
   ];
   return (
-    <header className="sticky top-0 z-50 backdrop-blur-md" style={{ background:'var(--bg-header)', borderBottom:'1px solid var(--border)' }}>
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setView('home')}>
+    <header className="sticky top-0 z-50 backdrop-blur-md" style={{
+      background:'rgba(255, 255, 255, 0.92)',
+      borderBottom:'1px solid var(--accent-soft)',
+      boxShadow: '0 2px 16px rgba(91, 155, 213, 0.08)'
+    }}>
+      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-4">
+        {/* Logo */}
+        <div className="flex items-center gap-3 cursor-pointer transition-transform hover:scale-[1.02]" onClick={() => setView('home')}>
           <div className="relative">
             <div className="w-11 h-11 flex items-center justify-center rounded-2xl soft-shadow" style={{ background:'linear-gradient(135deg, var(--accent), var(--accent-2))', color:'white' }}>
               <span className="hanzi-text" style={{ fontSize:'22px', fontWeight: 500 }}>汉</span>
             </div>
-            <div className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full" style={{ background:'var(--accent-2)' }} />
+            <div className="absolute -bottom-1 -right-1 w-3 h-3 rounded-full ring-2" style={{ background:'var(--accent-2)', '--tw-ring-color': 'white' }} />
           </div>
           <div>
-            <div style={{ fontFamily:'var(--font-display)', fontSize:'20px', fontWeight:600, color:'var(--ink)', letterSpacing: '0.02em' }}>HSK <span className="hanzi-text">学习</span></div>
-            <div className="text-xs" style={{ color:'var(--muted)', letterSpacing:'0.1em' }}>HỌC TIẾNG TRUNG</div>
+            <div style={{ fontFamily:'var(--font-display)', fontSize:'20px', fontWeight:700, color:'var(--ink)', letterSpacing: '0.02em' }}>HSK <span className="hanzi-text" style={{ fontWeight: 600 }}>学习</span></div>
+            <div className="text-[11px] tracking-[0.18em]" style={{ color:'var(--accent)', fontWeight: 600 }}>HỌC TIẾNG TRUNG</div>
           </div>
         </div>
-        <nav className="hidden md:flex items-center gap-1">
-          {navItems.map(item => (
-            <button key={item.id} onClick={() => setView(item.id)} className="px-4 py-2 rounded-2xl transition-all"
-              style={{ background: view === item.id ? 'var(--accent)' : 'transparent', color: view === item.id ? 'white' : 'var(--ink)' }}>
-              <span className="text-sm font-medium" style={{ fontFamily:'var(--font-display)' }}>{item.label}</span>
-              <span className="text-xs ml-2" style={{ opacity:0.7 }}>{item.viLabel}</span>
-            </button>
-          ))}
+
+        {/* Desktop nav - improved contrast, spacing, hover, active */}
+        <nav className="hidden md:flex items-center gap-1.5 p-1 rounded-2xl" style={{ background: 'var(--surface-soft)', border: '1px solid var(--border)' }}>
+          {navItems.map(item => {
+            const isActive = view === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setView(item.id)}
+                className="relative px-3.5 py-2 rounded-xl transition-all duration-200 group"
+                style={{
+                  background: isActive
+                    ? 'linear-gradient(135deg, var(--accent), var(--accent-2))'
+                    : 'transparent',
+                  color: isActive ? 'white' : 'var(--ink)',
+                  boxShadow: isActive ? '0 4px 12px rgba(91, 155, 213, 0.35)' : 'none',
+                  fontWeight: isActive ? 600 : 500
+                }}
+                onMouseEnter={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.background = 'var(--surface)';
+                    e.currentTarget.style.color = 'var(--accent)';
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (!isActive) {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = 'var(--ink)';
+                  }
+                }}
+              >
+                <span className="hanzi-text text-[15px]" style={{ fontWeight: isActive ? 600 : 500 }}>{item.label}</span>
+                <span className="text-[11px] ml-1.5 tracking-wide" style={{ opacity: isActive ? 0.95 : 0.65, fontWeight: 500 }}>{item.viLabel}</span>
+              </button>
+            );
+          })}
         </nav>
-        <button onClick={toggleDark} className="p-2 rounded-2xl" style={{ background:'var(--surface)', color:'var(--ink)' }}>{darkMode ? '☀' : '☾'}</button>
+
+        {/* Dark toggle */}
+        <button onClick={toggleDark}
+          className="w-10 h-10 flex items-center justify-center rounded-2xl transition-all hover:scale-110"
+          style={{
+            background:'var(--surface)',
+            color:'var(--accent)',
+            border: '1px solid var(--border)',
+            fontSize: '16px'
+          }}
+          title={darkMode ? 'Chế độ sáng' : 'Chế độ tối'}
+        >{darkMode ? '☀' : '☾'}</button>
       </div>
-      <nav className="md:hidden flex items-center gap-1 px-4 pb-3 overflow-x-auto">
-        {navItems.map(item => (
-          <button key={item.id} onClick={() => setView(item.id)} className="px-3 py-1.5 rounded-2xl whitespace-nowrap text-sm flex-shrink-0"
-            style={{ background: view === item.id ? 'var(--accent)' : 'var(--surface)', color: view === item.id ? 'white' : 'var(--ink)' }}>
-            {item.viLabel}
-          </button>
-        ))}
+
+      {/* Mobile nav */}
+      <nav className="md:hidden flex items-center gap-1.5 px-4 pb-3 overflow-x-auto">
+        {navItems.map(item => {
+          const isActive = view === item.id;
+          return (
+            <button key={item.id} onClick={() => setView(item.id)}
+              className="px-3.5 py-2 rounded-xl whitespace-nowrap text-sm flex-shrink-0 transition-all"
+              style={{
+                background: isActive
+                  ? 'linear-gradient(135deg, var(--accent), var(--accent-2))'
+                  : 'var(--surface)',
+                color: isActive ? 'white' : 'var(--ink)',
+                fontWeight: isActive ? 600 : 500,
+                boxShadow: isActive ? '0 3px 10px rgba(91, 155, 213, 0.3)' : 'none',
+                border: isActive ? 'none' : '1px solid var(--border)'
+              }}>
+              {item.viLabel}
+            </button>
+          );
+        })}
       </nav>
     </header>
   );
@@ -6336,6 +6394,8 @@ const VocabDetailModal = ({ word, onClose, isLearned, isStarred, toggleLearned, 
   const [error, setError] = useState(null);
   const [keyboardHint, setKeyboardHint] = useState(null); // hiệu ứng nhấn phím
   const writerContainerRef = useRef(null);
+  const lastIndexRef = useRef(-1); // theo dõi vị trí trước đó để xử lý auto-advance
+  const justToggledRef = useRef(false); // flag để xử lý auto-advance sau khi toggle
 
   const currentChar = word ? word.hanzi[charIdx] : '';
 
@@ -6344,6 +6404,34 @@ const VocabDetailModal = ({ word, onClose, isLearned, isStarred, toggleLearned, 
     if (!wordList || !word) return -1;
     return wordList.findIndex(w => w.id === word.id);
   }, [wordList, word]);
+
+  // Cập nhật lastIndexRef mỗi khi từ thay đổi (để biết vị trí cũ)
+  useEffect(() => {
+    if (currentIndexInList >= 0) {
+      lastIndexRef.current = currentIndexInList;
+    }
+  }, [currentIndexInList]);
+
+  // Auto-advance: khi từ hiện tại bị filter ra khỏi list (currentIndexInList === -1)
+  // sau khi vừa nhấn Z, tự động chuyển đến từ tiếp theo cùng vị trí (hoặc đóng nếu hết)
+  useEffect(() => {
+    if (!word || !wordList || !setSelectedWord) return;
+    if (justToggledRef.current && currentIndexInList === -1) {
+      justToggledRef.current = false;
+      // Từ hiện tại đã bị lọc khỏi danh sách → chuyển đến từ tiếp theo
+      const targetIdx = lastIndexRef.current;
+      if (wordList.length === 0) {
+        // Hết từ trong list → đóng modal
+        onClose();
+      } else if (targetIdx < wordList.length) {
+        // Còn từ ở vị trí cũ (đã shift lên) → mở từ đó
+        setSelectedWord(wordList[targetIdx]);
+      } else {
+        // Đã ở cuối → mở từ cuối cùng còn lại
+        setSelectedWord(wordList[wordList.length - 1]);
+      }
+    }
+  }, [wordList, currentIndexInList, word, setSelectedWord, onClose]);
 
   const goToPrev = () => {
     if (!wordList || !setSelectedWord || currentIndexInList <= 0) return;
@@ -6373,11 +6461,15 @@ const VocabDetailModal = ({ word, onClose, isLearned, isStarred, toggleLearned, 
         goToNext();
       } else if (e.key === 'z' || e.key === 'Z') {
         e.preventDefault();
+        // Đánh dấu flag để effect tự động chuyển từ tiếp theo nếu cần
+        justToggledRef.current = true;
         toggleLearned(word.id);
         setKeyboardHint('learned');
         setTimeout(() => setKeyboardHint(null), 400);
       } else if (e.key === 's' || e.key === 'S') {
         e.preventDefault();
+        // Tương tự Z, vì filter "yêu thích" cũng có thể loại bỏ từ
+        justToggledRef.current = true;
         toggleStar(word.id);
         setKeyboardHint('star');
         setTimeout(() => setKeyboardHint(null), 400);
@@ -6390,6 +6482,9 @@ const VocabDetailModal = ({ word, onClose, isLearned, isStarred, toggleLearned, 
   useEffect(() => {
     if (!word) return;
     setCharIdx(0);
+    // Tự động phát âm khi mở từ mới (click-to-pronounce, chỉ phát 1 lần)
+    const t = setTimeout(() => speak(word.hanzi), 250);
+    return () => clearTimeout(t);
   }, [word]);
 
   useEffect(() => {
@@ -6575,7 +6670,7 @@ const VocabDetailModal = ({ word, onClose, isLearned, isStarred, toggleLearned, 
                 <span style={{ fontSize:'18px' }}>{isStarred ? '★' : '☆'}</span>
                 {isStarred ? 'Đã đánh dấu' : 'Đánh dấu'}
               </button>
-              <button onClick={() => toggleLearned(word.id)}
+              <button onClick={() => { justToggledRef.current = true; toggleLearned(word.id); }}
                 className="px-4 py-2.5 rounded-2xl text-sm transition-all flex items-center gap-2"
                 style={{ background: isLearned ? '#10b981' : 'var(--bg)', color: isLearned ? 'white' : 'var(--ink)', border:'1px solid var(--border)', fontWeight:500 }}>
                 <span style={{ fontSize:'18px' }}>{isLearned ? '✓' : '○'}</span>
@@ -7036,6 +7131,13 @@ const FlashcardView = ({ srsData, updateSRS }) => {
 
   const currentWord = filteredCards[currentIdx % (filteredCards.length || 1)];
 
+  // Tự động phát âm khi flashcard mới xuất hiện
+  useEffect(() => {
+    if (!currentWord) return;
+    const t = setTimeout(() => speak(currentWord.hanzi), 300);
+    return () => clearTimeout(t);
+  }, [currentWord?.id]);
+
   const handleRate = (quality) => {
     if (!currentWord) return;
     const prev = srsData[currentWord.id] || { ef: 2.5, interval: 0, reps: 0 };
@@ -7490,6 +7592,13 @@ const QuizView = ({ toggleLearned, learned, addQuizScore }) => {
 
   useEffect(() => { startQuiz(1); }, []);
 
+  // Tự động phát âm khi câu hỏi mới xuất hiện
+  useEffect(() => {
+    if (!questions[currentQ] || finished || showResult) return;
+    const t = setTimeout(() => speak(questions[currentQ].word.hanzi), 300);
+    return () => clearTimeout(t);
+  }, [currentQ, questions, finished]);
+
   const handleAnswer = (option) => {
     if (showResult) return;
     setSelectedAns(option);
@@ -7630,9 +7739,12 @@ const WritingView = () => {
     );
   }, [words, searchQuery]);
 
-  // Reset character index when word changes
+  // Reset character index when word changes + auto-speak
   useEffect(() => {
     setCharIdx(0);
+    if (!currentWord) return;
+    const t = setTimeout(() => speak(currentWord.hanzi), 300);
+    return () => clearTimeout(t);
   }, [currentIdx, hskLevel]);
 
   // Initialize / re-initialize HanziWriter when char or mode changes
