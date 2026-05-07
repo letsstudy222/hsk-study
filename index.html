@@ -15,15 +15,15 @@
   * { box-sizing: border-box; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
   html, body { margin: 0; padding: 0; }
   html { overflow-y: scroll; }
-  body { font-family: 'Nunito', 'Noto Sans SC', system-ui, sans-serif; letter-spacing: 0.01em; overflow-x: hidden; }
+  body { font-family: "Nunito", "Noto Sans SC", system-ui, sans-serif; letter-spacing: 0.01em; overflow-x: hidden; }
   ::-webkit-scrollbar { width: 12px; height: 12px; }
   ::-webkit-scrollbar-track { background: rgba(148, 195, 236, 0.18); }
   ::-webkit-scrollbar-thumb { background: #94c3ec; border-radius: 8px; border: 2px solid rgba(148, 195, 236, 0.18); }
   ::-webkit-scrollbar-thumb:hover { background: #3d8bd1; }
   html { scrollbar-width: thin; scrollbar-color: #94c3ec rgba(148, 195, 236, 0.18); }
-  .loading-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 24px; background: #eaf3ff; z-index: 9999; font-family: 'Noto Sans SC', sans-serif; background-image: radial-gradient(circle at 20% 20%, rgba(148, 195, 236, 0.3) 0%, transparent 55%), radial-gradient(circle at 80% 80%, rgba(95, 168, 222, 0.18) 0%, transparent 55%); }
+  .loading-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 24px; background: #eaf3ff; z-index: 9999; font-family: "Noto Sans SC", sans-serif; background-image: radial-gradient(circle at 20% 20%, rgba(148, 195, 236, 0.3) 0%, transparent 55%), radial-gradient(circle at 80% 80%, rgba(95, 168, 222, 0.18) 0%, transparent 55%); }
   .loading-char { font-size: 88px; color: #3d8bd1; font-weight: 500; animation: pulse 1.8s ease-in-out infinite; text-shadow: 0 4px 24px rgba(61, 139, 209, 0.22); }
-  .loading-text { font-size: 13px; color: #5d80a8; letter-spacing: 0.4em; font-family: 'Quicksand', sans-serif; font-weight: 500; }
+  .loading-text { font-size: 13px; color: #5d80a8; letter-spacing: 0.4em; font-family: "Quicksand", sans-serif; font-weight: 500; }
   .loading-dots { display: flex; gap: 8px; margin-top: 8px; }
   .loading-dot { width: 8px; height: 8px; border-radius: 50%; background: #94c3ec; animation: bounce 1.4s ease-in-out infinite; }
   .loading-dot:nth-child(1) { animation-delay: 0s; }
@@ -44,7 +44,7 @@
 <div id="root"></div>
 
 <script type="text/babel" data-presets="react">
-const { useState, useEffect, useMemo, useRef } = React;
+const { useState, useEffect, useMemo, useRef, useCallback } = React;
 
 const hsk1 = [
     { id: "1-1", hanzi: "爱", pinyin: "ài", meaning: "yêu, yêu thương", type: "động từ", example: "我爱你。", examplePinyin: "Wǒ ài nǐ.", exampleMeaning: "Tôi yêu bạn.", examples: [{ hanzi: "我爱你。", pinyin: "Wǒ ài nǐ.", meaning: "Tôi yêu bạn." }, { hanzi: "妈妈很爱我们家。", pinyin: "Māma hěn ài wǒmen jiā.", meaning: "Mẹ rất yêu thương gia đình chúng tôi." }, { hanzi: "我爱学习汉语。", pinyin: "Wǒ ài xuéxí Hànyǔ.", meaning: "Tôi yêu thích học tiếng Trung." }] },
@@ -6049,6 +6049,549 @@ const speak = (text) => {
   window.speechSynthesis.speak(u);
 };
 
+// ============ HABIT ENGINE ============
+// Toàn bộ logic Streak, Daily Goal, Freeze, Milestone
+
+const HABIT_KEY = 'hsk:habit';
+const GOAL_MINUTES_DEFAULT = 15;
+
+// Lấy chuỗi ngày dạng "YYYY-MM-DD" (theo local time)
+const todayStr = () => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
+const yesterdayStr = () => {
+  const d = new Date(); d.setDate(d.getDate()-1);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+};
+
+const defaultHabit = () => ({
+  streak: 0,
+  bestStreak: 0,
+  lastStudyDate: null,
+  studyHistory: {},      // { "2026-05-08": { minutes: 12, words: 23, actions: 5 } }
+  freezesLeft: 1,
+  freezesUsedDates: [],  // ngày đã dùng freeze
+  goalMinutes: GOAL_MINUTES_DEFAULT,
+  todayActivity: { minutes: 0, words: 0, actions: 0, startTime: null },
+  milestonesSeen: [],    // ["7d","30d","100d",...] đã hiển thị
+  xp: 0,
+  level: 0,
+});
+
+const XP_TABLE = {
+  reviewWord: 3, learnWord: 5, readingFinish: 15,
+  quizComplete: 20, writePractice: 8, streakDay: 10,
+  streak7: 100, streak30: 500, streak100: 2000,
+};
+const XP_LEVELS = [0,500,2000,5000,15000,Infinity];
+const LEVEL_NAMES = ['初学者','学习者','进步者','熟练者','高手','大师'];
+
+function calcLevel(xp) {
+  for (let i=XP_LEVELS.length-1; i>=0; i--) {
+    if (xp >= XP_LEVELS[i]) return i;
+  }
+  return 0;
+}
+
+function useHabit() {
+  const [habit, setHabitState] = useState(() => {
+    try {
+      const raw = localStorage.getItem(HABIT_KEY);
+      if (raw) {
+        const saved = JSON.parse(raw);
+        return { ...defaultHabit(), ...saved };
+      }
+    } catch(e) {}
+    return defaultHabit();
+  });
+
+  // Ref để tránh stale closure trong tracking
+  const habitRef = useRef(habit);
+  habitRef.current = habit;
+
+  const saveHabit = (next) => {
+    setHabitState(next);
+    try { localStorage.setItem(HABIT_KEY, JSON.stringify(next)); } catch(e) {}
+  };
+
+  // Tính toán trạng thái streak khi app mở
+  const computeStreakOnLoad = useCallback(() => {
+    const h = habitRef.current;
+    const today = todayStr();
+    const yesterday = yesterdayStr();
+    if (h.lastStudyDate === today) return; // đã tính hôm nay
+
+    let next = { ...h };
+
+    // Reset todayActivity nếu ngày mới
+    if (h.lastStudyDate !== today) {
+      next.todayActivity = { minutes: 0, words: 0, actions: 0, startTime: null };
+    }
+
+    // Kiểm tra streak bị gãy
+    if (h.lastStudyDate && h.lastStudyDate !== yesterday && h.lastStudyDate !== today) {
+      // Khoảng trống > 1 ngày → có thể dùng freeze
+      const lastDate = new Date(h.lastStudyDate);
+      const todayDate = new Date(today);
+      const gapDays = Math.floor((todayDate - lastDate) / 86400000);
+
+      if (gapDays === 2 && h.freezesLeft > 0) {
+        // Ngày hôm qua chưa học, dùng freeze tự động
+        next.freezesLeft = h.freezesLeft - 1;
+        next.freezesUsedDates = [...(h.freezesUsedDates||[]), yesterday];
+        next.studyHistory = { ...next.studyHistory, [yesterday]: { freeze: true } };
+        // Streak vẫn giữ
+      } else if (gapDays > 1) {
+        // Streak gãy
+        next.streak = 0;
+      }
+    }
+
+    saveHabit(next);
+  }, []);
+
+  useEffect(() => {
+    computeStreakOnLoad();
+  }, []);
+
+  // Hàm track activity (gọi từ mọi module)
+  const trackActivity = useCallback((type, amount = 1) => {
+    const h = habitRef.current;
+    const today = todayStr();
+    let next = { ...h };
+
+    // Update todayActivity
+    const activity = { ...next.todayActivity };
+    if (type === 'words') activity.words = (activity.words||0) + amount;
+    if (type === 'minutes') activity.minutes = (activity.minutes||0) + amount;
+    activity.actions = (activity.actions||0) + 1;
+    next.todayActivity = activity;
+
+    // Cộng XP
+    const xpGain = XP_TABLE[type] || 0;
+    next.xp = (next.xp||0) + xpGain * amount;
+    next.level = calcLevel(next.xp);
+
+    // Đánh dấu học ngày hôm nay + cập nhật streak
+    const alreadyStudiedToday = next.lastStudyDate === today;
+    if (!alreadyStudiedToday) {
+      const wasYesterday = next.lastStudyDate === yesterdayStr();
+      const wasFrozen = (next.freezesUsedDates||[]).includes(yesterdayStr());
+      if (wasYesterday || wasFrozen || !next.lastStudyDate) {
+        next.streak = (next.streak||0) + 1;
+      } else if (!next.lastStudyDate) {
+        next.streak = 1;
+      } else {
+        next.streak = 1; // reset
+      }
+      if (next.streak > (next.bestStreak||0)) next.bestStreak = next.streak;
+      next.lastStudyDate = today;
+      // Cộng XP streak day
+      next.xp += XP_TABLE.streakDay;
+      // Bonus streak milestones
+      if (next.streak === 7) next.xp += XP_TABLE.streak7;
+      if (next.streak === 30) next.xp += XP_TABLE.streak30;
+      if (next.streak === 100) next.xp += XP_TABLE.streak100;
+      next.level = calcLevel(next.xp);
+    }
+
+    // Lưu vào studyHistory
+    next.studyHistory = {
+      ...next.studyHistory,
+      [today]: {
+        minutes: activity.minutes,
+        words: activity.words,
+        actions: activity.actions,
+      }
+    };
+
+    saveHabit(next);
+    return next;
+  }, []);
+
+  // Dùng freeze thủ công
+  const useFreeze = useCallback(() => {
+    const h = habitRef.current;
+    if (h.freezesLeft <= 0) return false;
+    const today = todayStr();
+    const next = {
+      ...h,
+      freezesLeft: h.freezesLeft - 1,
+      freezesUsedDates: [...(h.freezesUsedDates||[]), today],
+    };
+    saveHabit(next);
+    return true;
+  }, []);
+
+  // Cập nhật goal
+  const setGoal = useCallback((minutes) => {
+    saveHabit({ ...habitRef.current, goalMinutes: minutes });
+  }, []);
+
+  // Tính daily goal progress (0-100)
+  const goalProgress = useMemo(() => {
+    const h = habit;
+    const target = h.goalMinutes || GOAL_MINUTES_DEFAULT;
+    const today = todayStr();
+    if (h.lastStudyDate !== today) return 0;
+    // Ước tính phút từ actions (mỗi action ≈ 0.25 phút, mỗi từ ≈ 0.2 phút)
+    const estimatedMinutes = (h.todayActivity.actions||0) * 0.25 + (h.todayActivity.words||0) * 0.2;
+    return Math.min(100, Math.round((estimatedMinutes / target) * 100));
+  }, [habit]);
+
+  // Milestone mới cần show
+  const pendingMilestone = useMemo(() => {
+    const h = habit;
+    const milestones = [
+      { key:'1d', streak:1, msg:'Ngày đầu tiên! 🌱', sub:'Hành trình ngàn dặm bắt đầu từ một bước.' },
+      { key:'3d', streak:3, msg:'3 ngày liên tiếp! 🔥', sub:'Bạn đang tạo thói quen học tập.' },
+      { key:'7d', streak:7, msg:'1 tuần liên tiếp! 🏅', sub:'Streak 7 ngày — bạn đang nghiêm túc rồi đấy!' },
+      { key:'14d', streak:14, msg:'2 tuần kiên trì! 🌟', sub:'Não bạn đang tái cấu trúc để học tiếng Trung.' },
+      { key:'30d', streak:30, msg:'1 tháng không nghỉ! 🏆', sub:'Thói quen đã hình thành. Không thể dừng lại được nữa!' },
+      { key:'50d', streak:50, msg:'50 ngày huyền thoại! 💎', sub:'Ở cấp độ này, bạn đã vượt qua 95% người học.' },
+      { key:'100d', streak:100, msg:'100 ngày — TRUYỀN THUYẾT! 🐉', sub:'你真的很厉害！Bạn thật sự xuất sắc!' },
+    ];
+    const seen = h.milestonesSeen || [];
+    return milestones.find(m => h.streak >= m.streak && !seen.includes(m.key)) || null;
+  }, [habit]);
+
+  const markMilestoneSeen = useCallback((key) => {
+    const h = habitRef.current;
+    const next = { ...h, milestonesSeen: [...(h.milestonesSeen||[]), key] };
+    saveHabit(next);
+  }, []);
+
+  // Số từ cần ôn hôm nay (để hiển thị trên dashboard — tính từ srsData riêng)
+  // Trả về habit state và các hàm
+  return {
+    habit,
+    goalProgress,
+    pendingMilestone,
+    trackActivity,
+    useFreeze,
+    setGoal,
+    markMilestoneSeen,
+  };
+}
+
+// ============ STREAK BADGE (Header widget) ============
+const StreakBadge = ({ habit, goalProgress, onOpenCalendar }) => {
+  const isActive = habit.lastStudyDate === todayStr();
+  const streak = habit.streak || 0;
+
+  return (
+    <div className="flex items-center gap-2">
+      {/* Streak counter */}
+      <button
+        onClick={onOpenCalendar}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl transition-all hover:scale-105"
+        style={{
+          background: streak > 0
+            ? 'linear-gradient(135deg, #ff6b2b 0%, #ff9500 100%)'
+            : 'var(--surface)',
+          color: streak > 0 ? 'white' : 'var(--muted)',
+          boxShadow: streak > 0 ? '0 4px 12px rgba(255, 107, 43, 0.35)' : 'none',
+          border: streak > 0 ? 'none' : '1px solid var(--border)'
+        }}
+        title="Xem lịch học tập"
+      >
+        <span style={{ fontSize: '16px', lineHeight: 1 }}>{streak > 0 ? '🔥' : '💤'}</span>
+        <span style={{ fontWeight: 700, fontSize: '14px' }}>{streak}</span>
+        {streak > 0 && (
+          <span style={{ fontSize: '11px', opacity: 0.9, fontWeight: 500 }}>ngày</span>
+        )}
+      </button>
+
+      {/* Daily goal ring */}
+      <button
+        onClick={onOpenCalendar}
+        className="relative flex items-center justify-center transition-all hover:scale-105"
+        style={{ width: '36px', height: '36px' }}
+        title={`Mục tiêu hôm nay: ${goalProgress}%`}
+      >
+        <svg width="36" height="36" style={{ transform: 'rotate(-90deg)' }}>
+          <circle cx="18" cy="18" r="14" fill="none"
+            strokeWidth="3"
+            stroke="var(--border)" />
+          <circle cx="18" cy="18" r="14" fill="none"
+            strokeWidth="3"
+            stroke={goalProgress >= 100 ? '#10b981' : 'var(--accent)'}
+            strokeLinecap="round"
+            strokeDasharray={`${2 * Math.PI * 14}`}
+            strokeDashoffset={`${2 * Math.PI * 14 * (1 - goalProgress / 100)}`}
+            style={{ transition: 'stroke-dashoffset 0.5s ease' }}
+          />
+        </svg>
+        <span style={{
+          position: 'absolute',
+          fontSize: '9px',
+          fontWeight: 700,
+          color: goalProgress >= 100 ? '#10b981' : 'var(--accent)',
+          lineHeight: 1
+        }}>{goalProgress >= 100 ? '✓' : `${goalProgress}%`}</span>
+      </button>
+    </div>
+  );
+};
+
+// ============ STREAK CALENDAR MODAL ============
+const StreakCalendarModal = ({ habit, goalProgress, onClose, onUseFreeze, onSetGoal }) => {
+  const [showGoalPicker, setShowGoalPicker] = useState(false);
+  const today = todayStr();
+  const streak = habit.streak || 0;
+  const bestStreak = habit.bestStreak || 0;
+  const freezesLeft = habit.freezesLeft || 0;
+
+  // Build calendar: 5 tuần × 7 ngày (35 ô)
+  const calendarDays = useMemo(() => {
+    const days = [];
+    const d = new Date();
+    // Quay về 34 ngày trước
+    d.setDate(d.getDate() - 34);
+    for (let i = 0; i < 35; i++) {
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const historyEntry = habit.studyHistory?.[dateStr];
+      const isFrozen = habit.freezesUsedDates?.includes(dateStr);
+      const isToday = dateStr === today;
+      days.push({
+        date: dateStr,
+        dayNum: d.getDate(),
+        studied: !!historyEntry && !isFrozen,
+        frozen: isFrozen,
+        words: historyEntry?.words || 0,
+        isToday,
+      });
+      d.setDate(d.getDate() + 1);
+    }
+    return days;
+  }, [habit, today]);
+
+  const todayStudied = habit.lastStudyDate === today;
+  const levelName = LEVEL_NAMES[habit.level || 0];
+  const xp = habit.xp || 0;
+  const currentLevelXP = XP_LEVELS[habit.level || 0];
+  const nextLevelXP = XP_LEVELS[(habit.level||0) + 1] || XP_LEVELS[XP_LEVELS.length-1];
+  const xpProgress = nextLevelXP === Infinity ? 100 :
+    Math.round(((xp - currentLevelXP) / (nextLevelXP - currentLevelXP)) * 100);
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="w-full max-w-md rounded-3xl overflow-hidden soft-shadow-lg"
+        style={{ background: 'var(--surface)', border: '1px solid var(--border)', maxHeight: '92vh', overflowY: 'auto' }}>
+
+        {/* Header */}
+        <div className="relative p-6 pb-4" style={{
+          background: streak > 0
+            ? 'linear-gradient(135deg, #ff6b2b 0%, #ff9500 100%)'
+            : 'linear-gradient(135deg, var(--accent), var(--accent-2))'
+        }}>
+          <button onClick={onClose}
+            className="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center"
+            style={{ background: 'rgba(255,255,255,0.25)', color: 'white', fontSize: '14px' }}>✕</button>
+          <div className="text-white text-center">
+            <div className="text-6xl mb-2" style={{ filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.2))' }}>
+              {streak > 0 ? '🔥' : '💤'}
+            </div>
+            <div style={{ fontSize: '42px', fontWeight: 800, lineHeight: 1 }}>{streak}</div>
+            <div style={{ fontSize: '14px', opacity: 0.9, marginTop: '4px', fontWeight: 500 }}>
+              ngày liên tiếp
+            </div>
+            <div style={{ fontSize: '12px', opacity: 0.75, marginTop: '4px' }}>
+              Kỷ lục: {bestStreak} ngày
+            </div>
+          </div>
+
+          {/* Today status */}
+          <div className="mt-4 px-4 py-2.5 rounded-2xl text-center"
+            style={{ background: 'rgba(255,255,255,0.2)', color: 'white' }}>
+            {todayStudied
+              ? <><span style={{ fontSize: '16px' }}>✅</span> <span style={{ fontWeight: 600 }}>Đã học hôm nay!</span></>
+              : <><span style={{ fontSize: '16px' }}>⏰</span> <span style={{ fontWeight: 600 }}>Chưa học hôm nay — hãy bắt đầu!</span></>
+            }
+          </div>
+        </div>
+
+        {/* Calendar */}
+        <div className="p-5 pb-3">
+          <div className="text-xs tracking-widest mb-3" style={{ color: 'var(--muted)', fontWeight: 600 }}>
+            LỊCH HỌC 35 NGÀY GẦN ĐÂY
+          </div>
+          {/* Day labels */}
+          <div className="grid grid-cols-7 gap-1 mb-1">
+            {['T2','T3','T4','T5','T6','T7','CN'].map(d => (
+              <div key={d} className="text-center" style={{ fontSize: '10px', color: 'var(--muted)', fontWeight: 600 }}>{d}</div>
+            ))}
+          </div>
+          {/* Calendar grid */}
+          <div className="grid grid-cols-7 gap-1">
+            {calendarDays.map((day, i) => (
+              <div key={i}
+                title={day.studied ? `${day.date}: ${day.words} từ đã học` : day.frozen ? `${day.date}: Dùng Freeze 🧊` : day.date}
+                className="aspect-square rounded-lg flex items-center justify-center relative"
+                style={{
+                  background: day.isToday
+                    ? (day.studied ? '#ff6b2b' : 'var(--accent)')
+                    : day.studied
+                      ? 'linear-gradient(135deg, #ff6b2b, #ff9500)'
+                      : day.frozen
+                        ? 'linear-gradient(135deg, #60a5fa, #93c5fd)'
+                        : 'var(--surface-soft)',
+                  border: day.isToday ? '2px solid white' : 'none',
+                  boxShadow: day.isToday ? '0 0 0 2px var(--accent)' : 'none',
+                }}>
+                <span style={{
+                  fontSize: '10px',
+                  fontWeight: day.isToday ? 700 : 600,
+                  color: (day.studied || day.frozen || day.isToday)
+                    ? 'white'
+                    : 'var(--muted)',
+                  lineHeight: 1
+                }}>{day.dayNum}</span>
+                {day.frozen && (
+                  <span style={{ position:'absolute', top:'1px', right:'1px', fontSize:'7px' }}>🧊</span>
+                )}
+              </div>
+            ))}
+          </div>
+          {/* Legend */}
+          <div className="flex gap-3 mt-2 flex-wrap">
+            {[
+              { color: 'linear-gradient(135deg, #ff6b2b, #ff9500)', label: 'Đã học' },
+              { color: 'linear-gradient(135deg, #60a5fa, #93c5fd)', label: 'Freeze' },
+              { color: 'var(--surface-soft)', label: 'Không học' },
+            ].map(({ color, label }) => (
+              <div key={label} className="flex items-center gap-1">
+                <div className="w-3 h-3 rounded" style={{ background: color }} />
+                <span style={{ fontSize: '10px', color: 'var(--muted)' }}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Stats row */}
+        <div className="px-5 pb-4 grid grid-cols-3 gap-2">
+          {[
+            { value: streak, label: 'Streak', icon: '🔥' },
+            { value: habit.todayActivity?.words || 0, label: 'Từ hôm nay', icon: '📚' },
+            { value: `${freezesLeft}`, label: 'Freeze còn', icon: '🧊' },
+          ].map(({ value, label, icon }) => (
+            <div key={label} className="text-center p-3 rounded-2xl"
+              style={{ background: 'var(--surface-soft)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: '18px' }}>{icon}</div>
+              <div style={{ fontWeight: 700, fontSize: '18px', color: 'var(--ink)', lineHeight: 1.2 }}>{value}</div>
+              <div style={{ fontSize: '10px', color: 'var(--muted)', marginTop: '2px' }}>{label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* XP / Level */}
+        <div className="px-5 pb-4">
+          <div className="p-4 rounded-2xl" style={{ background: 'var(--surface-soft)', border: '1px solid var(--border)' }}>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span style={{ fontSize: '18px' }}>⚡</span>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '15px', color: 'var(--ink)' }}>{levelName}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--muted)' }}>{xp.toLocaleString()} XP</div>
+                </div>
+              </div>
+              <div style={{ fontSize: '12px', color: 'var(--accent)', fontWeight: 600 }}>
+                {nextLevelXP === Infinity ? 'Max level' : `${(nextLevelXP - xp).toLocaleString()} XP nữa`}
+              </div>
+            </div>
+            <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
+              <div className="h-full rounded-full transition-all"
+                style={{ width: `${xpProgress}%`, background: 'linear-gradient(90deg, var(--accent), var(--accent-2))' }} />
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="px-5 pb-5 space-y-2">
+          {/* Use Freeze button */}
+          {freezesLeft > 0 && !todayStudied && (
+            <button
+              onClick={() => { onUseFreeze(); onClose(); }}
+              className="w-full py-3 rounded-2xl transition-all hover:scale-[1.02] flex items-center justify-center gap-2"
+              style={{ background: 'linear-gradient(135deg, #60a5fa, #3b82f6)', color: 'white', fontWeight: 600 }}>
+              <span>🧊</span>
+              <span>Dùng Freeze hôm nay ({freezesLeft} còn lại)</span>
+            </button>
+          )}
+
+          {/* Goal setting */}
+          {!showGoalPicker ? (
+            <button
+              onClick={() => setShowGoalPicker(true)}
+              className="w-full py-3 rounded-2xl transition-all hover:scale-[1.02] flex items-center justify-center gap-2"
+              style={{ background: 'var(--surface-soft)', color: 'var(--ink)', border: '1px solid var(--border)', fontWeight: 500 }}>
+              <span>🎯</span>
+              <span>Mục tiêu hiện tại: {habit.goalMinutes || GOAL_MINUTES_DEFAULT} phút/ngày</span>
+            </button>
+          ) : (
+            <div className="p-4 rounded-2xl" style={{ background: 'var(--surface-soft)', border: '1px solid var(--border)' }}>
+              <div className="text-xs tracking-widest mb-3 text-center" style={{ color: 'var(--muted)', fontWeight: 600 }}>
+                CHỌN MỤC TIÊU HÀng NGÀY
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {[5, 10, 15, 30].map(min => (
+                  <button key={min}
+                    onClick={() => { onSetGoal(min); setShowGoalPicker(false); }}
+                    className="py-3 rounded-xl transition-all hover:scale-105"
+                    style={{
+                      background: (habit.goalMinutes || GOAL_MINUTES_DEFAULT) === min
+                        ? 'var(--accent)' : 'var(--surface)',
+                      color: (habit.goalMinutes || GOAL_MINUTES_DEFAULT) === min ? 'white' : 'var(--ink)',
+                      border: '1px solid var(--border)',
+                      fontWeight: 600, fontSize: '13px'
+                    }}>
+                    {min} phút
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============ MILESTONE TOAST ============
+const MilestoneToast = ({ milestone, onClose }) => {
+  useEffect(() => {
+    const t = setTimeout(onClose, 6000);
+    return () => clearTimeout(t);
+  }, []);
+
+  return (
+    <div className="fixed bottom-6 left-1/2 z-[300] pointer-events-none"
+      style={{ transform: 'translateX(-50%)', animation: 'slideUp 0.4s ease forwards' }}>
+      <div className="pointer-events-auto px-6 py-4 rounded-3xl soft-shadow-lg text-center"
+        style={{
+          background: 'linear-gradient(135deg, #ff6b2b 0%, #ff9500 60%, #ffcc00 100%)',
+          minWidth: '280px', maxWidth: '360px'
+        }}>
+        <div style={{ fontSize: '32px', marginBottom: '4px' }}>🏆</div>
+        <div style={{ color: 'white', fontWeight: 800, fontSize: '18px', lineHeight: 1.2 }}>
+          {milestone.msg}
+        </div>
+        <div style={{ color: 'rgba(255,255,255,0.9)', fontSize: '13px', marginTop: '4px', lineHeight: 1.4 }}>
+          {milestone.sub}
+        </div>
+        <button onClick={onClose}
+          className="mt-3 px-4 py-1.5 rounded-full text-sm font-semibold"
+          style={{ background: 'rgba(255,255,255,0.25)', color: 'white' }}>
+          Tuyệt vời! ✨
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // ============ COMPONENTS ============
 const ColoredPinyin = ({ pinyin, size = 'base' }) => {
   const sizeClass = { sm:'text-sm', base:'text-base', lg:'text-lg', xl:'text-xl', '2xl':'text-2xl' }[size];
@@ -6064,7 +6607,7 @@ const ColoredPinyin = ({ pinyin, size = 'base' }) => {
 };
 
 // ============ HEADER ============
-const Header = ({ view, setView, darkMode, toggleDark }) => {
+const Header = ({ view, setView, darkMode, toggleDark, habit, goalProgress, onOpenStreak }) => {
   const navItems = [
     { id:'home', label:'主页', viLabel:'Trang chủ' },
     { id:'vocab', label:'词汇', viLabel:'Từ vựng' },
@@ -6096,7 +6639,7 @@ const Header = ({ view, setView, darkMode, toggleDark }) => {
           </div>
         </div>
 
-        {/* Desktop nav - improved contrast, spacing, hover, active */}
+        {/* Desktop nav */}
         <nav className="hidden md:flex items-center gap-1.5 p-1 rounded-2xl" style={{ background: 'var(--surface-soft)', border: '1px solid var(--border)' }}>
           {navItems.map(item => {
             const isActive = view === item.id;
@@ -6133,17 +6676,26 @@ const Header = ({ view, setView, darkMode, toggleDark }) => {
           })}
         </nav>
 
-        {/* Dark toggle */}
-        <button onClick={toggleDark}
-          className="w-10 h-10 flex items-center justify-center rounded-2xl transition-all hover:scale-110"
-          style={{
-            background:'var(--surface)',
-            color:'var(--accent)',
-            border: '1px solid var(--border)',
-            fontSize: '16px'
-          }}
-          title={darkMode ? 'Chế độ sáng' : 'Chế độ tối'}
-        >{darkMode ? '☀' : '☾'}</button>
+        {/* Right side: streak + goal + dark toggle */}
+        <div className="flex items-center gap-2">
+          {habit && (
+            <StreakBadge
+              habit={habit}
+              goalProgress={goalProgress}
+              onOpenCalendar={onOpenStreak}
+            />
+          )}
+          <button onClick={toggleDark}
+            className="w-10 h-10 flex items-center justify-center rounded-2xl transition-all hover:scale-110"
+            style={{
+              background:'var(--surface)',
+              color:'var(--accent)',
+              border: '1px solid var(--border)',
+              fontSize: '16px'
+            }}
+            title={darkMode ? 'Chế độ sáng' : 'Chế độ tối'}
+          >{darkMode ? '☀' : '☾'}</button>
+        </div>
       </div>
 
       {/* Mobile nav */}
@@ -6280,7 +6832,7 @@ const QuoteCard = ({ compact = false }) => {
 };
 
 // ============ HOME VIEW ============
-const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount }) => {
+const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount, habit, goalProgress, onOpenStreak }) => {
   const features = [
     { icon:'辭', title:'Từ vựng HSK 1-6', desc:'Phân loại theo cấp với pinyin, ví dụ và dịch tiếng Việt', view:'vocab' },
     { icon:'法', title:'Ngữ pháp', desc:'Cấu trúc câu phổ biến với giải thích chi tiết', view:'grammar' },
@@ -6294,34 +6846,145 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount }) => {
   const totalAll = Object.values(totalCount).reduce((a,b)=>a+b,0);
   const percent = totalAll > 0 ? Math.round((totalLearned / totalAll) * 100) : 0;
 
+  const streak = habit?.streak || 0;
+  const todayStudied = habit?.lastStudyDate === todayStr();
+  const levelName = LEVEL_NAMES[habit?.level || 0];
+
+  // Greeting by hour
+  const greeting = () => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Chào buổi sáng';
+    if (h < 18) return 'Chào buổi chiều';
+    if (h < 22) return 'Chào buổi tối';
+    return 'Còn vài giờ giữ streak đấy!';
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
-      <div className="relative mb-20">
+      {/* Hero section: greeting + streak banner on right */}
+      <div className="relative mb-12">
         <div className="absolute -top-4 -left-4 text-[180px] opacity-[0.04] leading-none select-none pointer-events-none" style={{ fontFamily:'var(--font-display)' }}>學</div>
         <div className="relative grid grid-cols-1 lg:grid-cols-5 gap-8 items-stretch">
-          {/* Left: Hero text - takes 3 columns on large screens */}
+          {/* Left: Hero text */}
           <div className="lg:col-span-3 flex flex-col justify-center">
-            <div className="text-xs tracking-[0.3em] mb-4" style={{ color:'var(--accent)' }}>欢迎 · CHÀO MỪNG</div>
+            <div className="text-xs tracking-[0.3em] mb-2" style={{ color:'var(--accent)' }}>
+              {greeting()} · {levelName}
+            </div>
             <h1 className="text-5xl md:text-6xl xl:text-7xl mb-6 leading-tight" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>
               Học tiếng Trung<br />
               <span style={{ color:'var(--accent)' }}>thông minh hơn</span>
             </h1>
-            <p className="text-lg max-w-xl leading-relaxed" style={{ color:'var(--muted)' }}>
+            <p className="text-lg max-w-xl leading-relaxed mb-6" style={{ color:'var(--muted)' }}>
               Hệ thống học từ vựng HSK 1-6 với flashcard SRS, quiz, luyện viết và phát âm chuẩn tiếng phổ thông Trung Quốc.
             </p>
+            {/* Quick action buttons */}
+            <div className="flex flex-wrap gap-3">
+              <button onClick={() => setView('flashcard')}
+                className="px-6 py-3 rounded-2xl font-semibold transition-all hover:scale-105"
+                style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: 'white', boxShadow: '0 4px 16px rgba(61,139,209,0.35)' }}>
+                ▶ Ôn tập ngay
+              </button>
+              <button onClick={() => setView('vocab')}
+                className="px-6 py-3 rounded-2xl font-semibold transition-all hover:scale-105"
+                style={{ background: 'var(--surface)', color: 'var(--ink)', border: '1px solid var(--border)' }}>
+                📚 Học từ mới
+              </button>
+            </div>
           </div>
 
-          {/* Right: Quote card - takes 2 columns on large screens */}
+          {/* Right: Streak + Goal card */}
           <div className="lg:col-span-2 min-h-[360px]">
-            <QuoteCard />
+            <div className="relative overflow-hidden rounded-3xl soft-shadow h-full flex flex-col"
+              style={{
+                background: streak > 0
+                  ? 'linear-gradient(155deg, #fff7f2 0%, #fff1e8 60%, #fff9f5 100%)'
+                  : 'linear-gradient(155deg, var(--surface) 0%, var(--surface-soft) 60%, var(--surface) 100%)',
+                border: streak > 0 ? '1px solid #ffd5b8' : '1px solid var(--accent-soft)'
+              }}>
+              {/* Decorative */}
+              <div className="absolute -top-4 -right-2 text-[140px] leading-none select-none pointer-events-none"
+                style={{ color: streak > 0 ? '#ff6b2b' : 'var(--accent)', opacity: 0.06, fontWeight: 300 }}>
+                {streak > 0 ? '🔥' : '学'}
+              </div>
+
+              <div className="relative px-6 py-5 flex flex-col h-full">
+                {/* Header row */}
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <div className="text-[10px] tracking-[0.3em]"
+                      style={{ color: streak > 0 ? '#e05a1a' : 'var(--accent)', fontWeight: 600 }}>
+                      {streak > 0 ? '🔥 ĐANG CHÁY' : '⏰ HÔM NAY'}
+                    </div>
+                    <div style={{ fontFamily:'var(--font-display)', fontSize:'13px', fontWeight:500, color:'var(--ink)', marginTop:'2px' }}>
+                      {todayStudied ? 'Đã học hôm nay ✅' : 'Chưa học hôm nay'}
+                    </div>
+                  </div>
+                  <button onClick={onOpenStreak}
+                    className="px-3 py-1.5 rounded-2xl text-xs font-semibold transition-all hover:scale-105"
+                    style={{ background: streak > 0 ? '#ff6b2b' : 'var(--accent)', color: 'white' }}>
+                    Chi tiết
+                  </button>
+                </div>
+
+                {/* Big streak number */}
+                <div className="flex-1 flex flex-col items-center justify-center py-4">
+                  <div style={{ fontSize: '72px', lineHeight: 1, filter: streak > 0 ? 'drop-shadow(0 4px 12px rgba(255,107,43,0.3))' : 'none' }}>
+                    {streak > 0 ? '🔥' : '💤'}
+                  </div>
+                  <div style={{
+                    fontSize: 'clamp(48px, 6vw, 64px)',
+                    fontWeight: 800,
+                    color: streak > 0 ? '#e05a1a' : 'var(--ink)',
+                    lineHeight: 1.1,
+                    marginTop: '4px'
+                  }}>{streak}</div>
+                  <div style={{ fontSize: '15px', color: streak > 0 ? '#e05a1a' : 'var(--muted)', fontWeight: 600, opacity: 0.8 }}>
+                    ngày liên tiếp
+                  </div>
+                  {streak > 0 && (
+                    <div className="mt-2 text-sm" style={{ color: 'var(--muted)' }}>
+                      Kỷ lục: {habit?.bestStreak || streak} ngày
+                    </div>
+                  )}
+                </div>
+
+                {/* Daily goal ring + label */}
+                <div className="mt-2 pt-4" style={{ borderTop: '1px dashed var(--border)' }}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>Mục tiêu hôm nay</span>
+                    <span className="text-sm font-bold" style={{ color: goalProgress >= 100 ? '#10b981' : 'var(--accent)' }}>
+                      {goalProgress}%
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
+                    <div className="h-full rounded-full transition-all duration-700"
+                      style={{
+                        width: `${goalProgress}%`,
+                        background: goalProgress >= 100
+                          ? 'linear-gradient(90deg, #10b981, #34d399)'
+                          : 'linear-gradient(90deg, #ff6b2b, #ff9500)'
+                      }} />
+                  </div>
+                  <div className="flex justify-between mt-1.5">
+                    <span className="text-xs" style={{ color: 'var(--muted)' }}>
+                      {habit?.todayActivity?.words || 0} từ đã học hôm nay
+                    </span>
+                    <span className="text-xs" style={{ color: 'var(--muted)' }}>
+                      {habit?.freezesLeft || 0} freeze 🧊
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
+      {/* Overall progress bar */}
       <div className="mb-16 p-8 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
         <div className="flex justify-between items-baseline mb-3 flex-wrap gap-2">
           <div>
-            <div className="text-xs tracking-widest mb-1" style={{ color:'var(--muted)' }}>TỔNG TIẾN ĐỘ</div>
+            <div className="text-xs tracking-widest mb-1" style={{ color:'var(--muted)' }}>TỔNG TIẾN ĐỘ HSK 1-6</div>
             <div className="text-3xl" style={{ fontFamily:'var(--font-display)', color:'var(--ink)', fontWeight:700 }}>
               {totalLearned} / {totalAll} <span className="text-base font-normal" style={{ color:'var(--muted)' }}>từ đã thuộc</span>
             </div>
@@ -6333,6 +6996,7 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount }) => {
         </div>
       </div>
 
+      {/* HSK Level Cards */}
       <div className="mb-16">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-1 h-8" style={{ background:'var(--accent)' }} />
@@ -6360,6 +7024,7 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount }) => {
         </div>
       </div>
 
+      {/* Features grid */}
       <div>
         <div className="flex items-center gap-3 mb-6">
           <div className="w-1 h-8" style={{ background:'var(--accent)' }} />
@@ -9027,6 +9692,26 @@ function App() {
   const [starred, setStarred] = useState([]);
   const [srsData, setSrsData] = useState({});
   const [quizScores, setQuizScores] = useState([]);
+  const [showStreakModal, setShowStreakModal] = useState(false);
+  const [showMilestone, setShowMilestone] = useState(null); // milestone object
+
+  // === HABIT ENGINE ===
+  const {
+    habit,
+    goalProgress,
+    pendingMilestone,
+    trackActivity,
+    useFreeze,
+    setGoal,
+    markMilestoneSeen,
+  } = useHabit();
+
+  // Hiển thị milestone toast khi có milestone mới
+  useEffect(() => {
+    if (pendingMilestone && !showMilestone) {
+      setShowMilestone(pendingMilestone);
+    }
+  }, [pendingMilestone]);
 
   // Load from localStorage
   useEffect(() => {
@@ -9055,6 +9740,8 @@ function App() {
       persist('hsk:learned', next);
       return next;
     });
+    // Track: đánh dấu thuộc từ = hoạt động học
+    trackActivity('learnWord', 1);
   };
   const toggleStar = (id) => {
     setStarred(prev => {
@@ -9069,6 +9756,8 @@ function App() {
       persist('hsk:srs', next);
       return next;
     });
+    // Track SRS review
+    trackActivity('reviewWord', 1);
   };
   const addQuizScore = (s) => {
     setQuizScores(prev => {
@@ -9076,6 +9765,8 @@ function App() {
       persist('hsk:quiz', next);
       return next;
     });
+    // Track quiz completion
+    trackActivity('quizComplete', 1);
   };
   const toggleDark = () => {
     setDarkMode(d => {
@@ -9084,6 +9775,11 @@ function App() {
       return next;
     });
   };
+
+  // Track: khi vào reading = activity
+  const trackReading = () => trackActivity('readingFinish', 1);
+  // Track: khi vào writing = activity
+  const trackWriting = () => trackActivity('writePractice', 1);
 
   const learnedCount = useMemo(() => {
     const r = {};
@@ -9189,36 +9885,74 @@ function App() {
         .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
       `}</style>
 
-      <Header view={view} setView={setView} darkMode={darkMode} toggleDark={toggleDark} />
+      <Header
+        view={view}
+        setView={setView}
+        darkMode={darkMode}
+        toggleDark={toggleDark}
+        habit={habit}
+        goalProgress={goalProgress}
+        onOpenStreak={() => setShowStreakModal(true)}
+      />
 
       <main>
-        {view === 'home' && <HomeView setView={setView} setSelectedHSK={setSelectedHSK} learnedCount={learnedCount} totalCount={totalCount} />}
+        {view === 'home' && <HomeView
+          setView={setView}
+          setSelectedHSK={setSelectedHSK}
+          learnedCount={learnedCount}
+          totalCount={totalCount}
+          habit={habit}
+          goalProgress={goalProgress}
+          onOpenStreak={() => setShowStreakModal(true)}
+        />}
         {view === 'vocab' && <VocabView selectedHSK={selectedHSK} setSelectedHSK={setSelectedHSK} learned={learned} toggleLearned={toggleLearned} starred={starred} toggleStar={toggleStar} />}
         {view === 'grammar' && <GrammarView />}
-        {view === 'reading' && <ReadingView />}
+        {view === 'reading' && <ReadingView onActivity={trackReading} />}
         {view === 'flashcard' && <FlashcardView srsData={srsData} updateSRS={updateSRS} />}
         {view === 'quiz' && <QuizView toggleLearned={toggleLearned} learned={learned} addQuizScore={addQuizScore} />}
-        {view === 'writing' && <WritingView />}
-        {view === 'progress' && <ProgressView learned={learned} starred={starred} srsData={srsData} quizScores={quizScores} />}
+        {view === 'writing' && <WritingView onActivity={trackWriting} />}
+        {view === 'progress' && <ProgressView learned={learned} starred={starred} srsData={srsData} quizScores={quizScores} habit={habit} />}
       </main>
 
       <footer className="mt-20 py-8 px-6 text-center" style={{ borderTop:'1px solid var(--border)', color:'var(--muted)' }}>
         <div className="text-xs tracking-[0.3em] mb-2">加油 · CỐ LÊN</div>
         <div className="text-sm">Học một chút mỗi ngày — 学一点,每天进步</div>
       </footer>
+
+      {/* Streak Calendar Modal */}
+      {showStreakModal && (
+        <StreakCalendarModal
+          habit={habit}
+          goalProgress={goalProgress}
+          onClose={() => setShowStreakModal(false)}
+          onUseFreeze={() => { useFreeze(); setShowStreakModal(false); }}
+          onSetGoal={(min) => setGoal(min)}
+        />
+      )}
+
+      {/* Milestone Toast */}
+      {showMilestone && (
+        <MilestoneToast
+          milestone={showMilestone}
+          onClose={() => {
+            markMilestoneSeen(showMilestone.key);
+            setShowMilestone(null);
+          }}
+        />
+      )}
     </div>
   );
 }
 
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);
 setTimeout(() => {
-  const loading = document.getElementById('loading');
+  const loading = document.getElementById("loading");
   if (loading) {
-    loading.style.transition = 'opacity 0.5s';
-    loading.style.opacity = '0';
-    setTimeout(() => loading.style.display = 'none', 500);
+    loading.style.transition = "opacity 0.5s";
+    loading.style.opacity = "0";
+    setTimeout(() => loading.style.display = "none", 500);
   }
 }, 100);
 </script>
