@@ -14,11 +14,11 @@
 *{box-sizing:border-box;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 html,body{margin:0;padding:0}html{overflow-y:scroll}
 body{font-family:"Nunito","Noto Sans SC",system-ui,sans-serif;letter-spacing:.01em;overflow-x:hidden}
-::-webkit-scrollbar{width:12px;height:12px}::-webkit-scrollbar-track{background:rgba(148,195,236,.18)}
+::-webkit-scrollbar{width:12px}::-webkit-scrollbar-track{background:rgba(148,195,236,.18)}
 ::-webkit-scrollbar-thumb{background:#94c3ec;border-radius:8px;border:2px solid rgba(148,195,236,.18)}
 ::-webkit-scrollbar-thumb:hover{background:#3d8bd1}
 html{scrollbar-width:thin;scrollbar-color:#94c3ec rgba(148,195,236,.18)}
-.loading-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;background:#eaf3ff;z-index:9999;font-family:"Noto Sans SC",sans-serif;background-image:radial-gradient(circle at 20% 20%,rgba(148,195,236,.3) 0%,transparent 55%),radial-gradient(circle at 80% 80%,rgba(95,168,222,.18) 0%,transparent 55%)}
+.loading-screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px;background:#eaf3ff;z-index:9999;background-image:radial-gradient(circle at 20% 20%,rgba(148,195,236,.3) 0%,transparent 55%),radial-gradient(circle at 80% 80%,rgba(95,168,222,.18) 0%,transparent 55%)}
 .loading-char{font-size:88px;color:#3d8bd1;font-weight:500;animation:pulse 1.8s ease-in-out infinite;text-shadow:0 4px 24px rgba(61,139,209,.22)}
 .loading-text{font-size:13px;color:#5d80a8;letter-spacing:.4em;font-family:"Quicksand",sans-serif;font-weight:500}
 .loading-dots{display:flex;gap:8px;margin-top:8px}
@@ -10527,227 +10527,597 @@ const HoverableText = ({ text, fontSize = '20px', lineHeight = 2 }) => {
   );
 };
 
-// ============ READING SYSTEM ============
+// ============ SMART READING + VOCAB INTEGRATION ============
 
-// Track which readings have been completed (localStorage)
-const READING_PROGRESS_KEY = 'hsk:reading_progress';
-function loadReadingProgress() {
-  try { return JSON.parse(localStorage.getItem(READING_PROGRESS_KEY) || '{}'); } catch { return {}; }
-}
-function saveReadingProgress(data) {
-  try { localStorage.setItem(READING_PROGRESS_KEY, JSON.stringify(data)); } catch {}
+// ── Word Status Engine ──
+// Returns color/status of each word relative to learner's SRS state
+function getWordStatus(wordId, srsData, learned) {
+  if (learned && learned.includes(wordId)) return 'known';
+  const d = srsData && srsData[wordId];
+  if (!d) return 'unknown';       // in SRS but "new" state not reached
+  if (d.state === 'review' && d.nextReview > Date.now()) return 'known';
+  if (d.nextReview <= Date.now()) return 'due';
+  return 'learning';
 }
 
-// ── Inline Word Popup ──
-// Appears when user clicks a character in reading mode
-const InlineWordPopup = ({ char, position, onClose }) => {
+const WORD_STATUS_STYLES = {
+  unknown:  { borderBottom: '2px solid #3d8bd1', color: 'inherit',       title: 'Chưa học' },
+  learning: { borderBottom: '2px solid #f59e0b', color: 'inherit',       title: 'Đang học' },
+  due:      { background: 'rgba(245,158,11,0.12)', color: 'inherit',     title: 'Cần ôn' },
+  known:    { opacity: 0.65,                       color: 'var(--muted)', title: 'Đã thuộc' },
+};
+
+// ── Smart Word Popup (replaces old InlineWordPopup) ──
+const SmartWordPopup = ({ char, position, srsData, updateSRS, learned, toggleLearned, onClose, onSaveWord }) => {
   const [data, setData] = useState(null);
+  const [justSaved, setJustSaved] = useState(false);
+  const [justLearned, setJustLearned] = useState(false);
   const popupRef = useRef(null);
 
+  // Lookup: prefer exact match, then partial
   useEffect(() => {
-    // Find word in ALL_HSK that contains this char
-    for (let level = 1; level <= 6; level++) {
-      const match = (ALL_HSK[level] || []).find(w => w.hanzi === char || w.hanzi.includes(char));
-      if (match) { setData({ ...match, level }); break; }
+    let found = null;
+    for (let level = 1; level <= 6 && !found; level++) {
+      found = (ALL_HSK[level] || []).find(w => w.hanzi === char);
     }
+    if (!found) {
+      for (let level = 1; level <= 6 && !found; level++) {
+        found = (ALL_HSK[level] || []).find(w => w.hanzi.includes(char));
+      }
+    }
+    if (found) setData({ ...found, level: found.id.split('-')[0] });
   }, [char]);
 
-  // Close on click outside
+  // Close on outside click
   useEffect(() => {
     const handler = (e) => { if (popupRef.current && !popupRef.current.contains(e.target)) onClose(); };
-    setTimeout(() => document.addEventListener('mousedown', handler), 50);
-    return () => document.removeEventListener('mousedown', handler);
+    const t = setTimeout(() => document.addEventListener('mousedown', handler), 80);
+    return () => { clearTimeout(t); document.removeEventListener('mousedown', handler); };
   }, [onClose]);
+
+  const srs = data ? srsData?.[data.id] : null;
+  const isLearned = data ? (learned?.includes(data.id) || false) : false;
+  const isInSRS = !!srs;
+  const isDue = srs && srs.nextReview <= Date.now();
+
+  const srsStatusInfo = !data ? null :
+    isLearned ? { label: 'Đã thuộc', color: '#10b981', bg: '#d1fae5' } :
+    isDue     ? { label: 'Đến hạn ôn', color: 'var(--accent)', bg: 'var(--surface-soft)' } :
+    isInSRS   ? { label: `Ôn sau ${Math.ceil(((srs.nextReview||0) - Date.now()) / 86400000)} ngày`, color: '#8b5cf6', bg: '#ede9fe' } :
+                { label: 'Chưa học', color: 'var(--muted)', bg: 'var(--bg)' };
+
+  const handleAddToSRS = () => {
+    if (!data || isInSRS) return;
+    const initState = fsrsUpdateState(null, 3);
+    updateSRS(data.id, initState);
+    onSaveWord && onSaveWord(data);
+    setJustSaved(true);
+    setTimeout(onClose, 1200);
+  };
+
+  const handleToggleLearned = () => {
+    if (!data) return;
+    toggleLearned(data.id);
+    setJustLearned(true);
+    setTimeout(onClose, 900);
+  };
+
+  // Smart position: don't go off screen bottom
+  const topPos = Math.min(
+    position.y + 10,
+    window.innerHeight - 320 + window.scrollY
+  );
 
   if (!char) return null;
 
   return (
     <div ref={popupRef}
-      className="fixed z-[150] soft-shadow-lg rounded-2xl overflow-hidden"
+      className="fixed z-[200] soft-shadow-lg"
       style={{
-        left: Math.min(position.x, window.innerWidth - 280),
-        top: position.y + 8,
-        width: '260px',
+        left: Math.min(Math.max(8, position.x - 130), window.innerWidth - 288),
+        top: topPos,
+        width: '280px',
         background: 'var(--surface)',
         border: '1.5px solid var(--accent-soft)',
+        borderRadius: '20px',
+        overflow: 'hidden',
         animation: 'fadeIn 0.15s ease-out',
       }}>
-      {/* Header */}
-      <div className="px-4 pt-3 pb-2" style={{ background: 'linear-gradient(135deg, var(--surface-soft), var(--surface))' }}>
-        <div className="flex items-center justify-between mb-1">
+
+      {/* Header with gradient */}
+      <div className="px-4 pt-4 pb-3"
+        style={{ background: 'linear-gradient(135deg, var(--surface-soft) 0%, var(--surface) 100%)' }}>
+        <div className="flex items-start justify-between gap-2">
           <button onClick={() => speak(data ? data.hanzi : char)}
-            className="hanzi-text hover:opacity-80 transition-opacity"
-            style={{ fontSize: '32px', fontWeight: 500, color: 'var(--ink)', lineHeight: 1 }}>
-            {data ? data.hanzi : char} <span style={{ fontSize: '14px' }}>🔊</span>
+            className="hanzi-text hover:opacity-75 transition-opacity text-left"
+            style={{ fontSize: data?.hanzi?.length > 2 ? '28px' : '36px', fontWeight: 500, color: 'var(--ink)', lineHeight: 1.1 }}>
+            {data ? data.hanzi : char}
+            <span style={{ fontSize: '13px', marginLeft: '4px' }}>🔊</span>
           </button>
           <button onClick={onClose}
-            className="w-6 h-6 rounded-full flex items-center justify-center text-xs"
+            className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-1 text-xs transition-all hover:scale-110"
             style={{ background: 'var(--bg)', color: 'var(--muted)', border: '1px solid var(--border)' }}>✕</button>
         </div>
+
         {data ? (
           <>
-            <ColoredPinyin pinyin={data.pinyin} size="base" />
-            <div className="text-sm font-semibold mt-1" style={{ color: 'var(--ink)' }}>{data.meaning}</div>
-            <div className="flex items-center gap-1.5 mt-1">
-              <span className="text-[10px] px-1.5 py-0.5 rounded-md" style={{ background: 'var(--bg)', color: 'var(--muted)' }}>{data.type}</span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded-full font-bold" style={{ background: 'var(--accent)', color: 'white' }}>HSK {data.level}</span>
+            <div className="mt-1.5 mb-1"><ColoredPinyin pinyin={data.pinyin} size="base" /></div>
+            <div className="font-semibold text-sm mb-2" style={{ color: 'var(--ink)' }}>{data.meaning}</div>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-md"
+                style={{ background: 'var(--bg)', color: 'var(--muted)', border: '1px solid var(--border)' }}>
+                {data.type}
+              </span>
+              <span className="text-[10px] px-2 py-0.5 rounded-full font-bold"
+                style={{ background: 'var(--accent)', color: 'white' }}>
+                HSK {data.level || data.id?.split('-')[0]}
+              </span>
+              {srsStatusInfo && (
+                <span className="text-[10px] px-2 py-0.5 rounded-full font-semibold"
+                  style={{ background: srsStatusInfo.bg, color: srsStatusInfo.color, border: `1px solid ${srsStatusInfo.color}30` }}>
+                  {srsStatusInfo.label}
+                </span>
+              )}
             </div>
           </>
         ) : (
-          <div className="text-sm" style={{ color: 'var(--muted)' }}>Không tìm thấy trong từ điển</div>
+          <div className="text-sm mt-1" style={{ color: 'var(--muted)' }}>
+            Không tìm thấy "{char}" trong từ điển
+          </div>
         )}
       </div>
+
       {/* Example */}
-      {data?.example && (
-        <div className="px-4 pb-3 pt-2" style={{ borderTop: '1px dashed var(--border)' }}>
-          <div className="text-[10px] tracking-widest mb-1.5" style={{ color: 'var(--accent)', fontWeight: 600 }}>VÍ DỤ</div>
-          <button onClick={() => speak(data.example)}
-            className="text-sm hanzi-text hover:opacity-80 transition-opacity text-left"
-            style={{ color: 'var(--ink)', fontWeight: 500 }}>
-            {data.example} <span style={{ fontSize: '11px' }}>🔊</span>
+      {data && (data.example || data.examples?.[0]) && (
+        <div className="px-4 py-2.5" style={{ borderTop: '1px dashed var(--border)', background: 'var(--bg)' }}>
+          <div className="text-[10px] tracking-widest mb-1.5 font-bold" style={{ color: 'var(--accent)' }}>VÍ DỤ</div>
+          {(() => {
+            const ex = data.examples?.[0] || { hanzi: data.example, pinyin: data.examplePinyin, meaning: data.exampleMeaning };
+            return (
+              <>
+                <button onClick={() => speak(ex.hanzi)}
+                  className="hanzi-text text-sm hover:opacity-75 transition-opacity text-left block"
+                  style={{ color: 'var(--ink)', fontWeight: 500, lineHeight: 1.5 }}>
+                  {ex.hanzi} <span style={{ fontSize: '11px' }}>🔊</span>
+                </button>
+                <div className="text-xs italic mt-0.5" style={{ color: 'var(--muted)' }}>{ex.meaning}</div>
+              </>
+            );
+          })()}
+        </div>
+      )}
+
+      {/* Action buttons */}
+      {data && (
+        <div className="px-3 pb-3 pt-2.5 flex gap-2" style={{ borderTop: '1px solid var(--border)' }}>
+          {/* Add to SRS */}
+          {!isInSRS ? (
+            <button onClick={handleAddToSRS}
+              className="flex-1 py-2 rounded-xl text-xs font-bold transition-all hover:scale-[1.03]"
+              style={{ background: justSaved ? '#d1fae5' : 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: justSaved ? '#065f46' : 'white' }}>
+              {justSaved ? '✓ Đã thêm!' : '+ Thêm vào SRS'}
+            </button>
+          ) : (
+            <button disabled
+              className="flex-1 py-2 rounded-xl text-xs font-semibold"
+              style={{ background: 'var(--surface-soft)', color: 'var(--muted)' }}>
+              ✓ Đang trong SRS
+            </button>
+          )}
+          {/* Toggle Learned */}
+          <button onClick={handleToggleLearned}
+            className="flex-1 py-2 rounded-xl text-xs font-bold transition-all hover:scale-[1.03]"
+            style={{
+              background: justLearned ? '#fef3c7' : isLearned ? '#d1fae5' : 'var(--surface)',
+              color: isLearned ? '#065f46' : 'var(--ink)',
+              border: `1px solid ${isLearned ? '#6ee7b7' : 'var(--border)'}`,
+            }}>
+            {justLearned ? '✓ Cập nhật!' : isLearned ? '✓ Đã thuộc' : '○ Đánh dấu thuộc'}
           </button>
-          <div className="text-xs italic mt-0.5" style={{ color: 'var(--muted)' }}>{data.exampleMeaning}</div>
         </div>
       )}
     </div>
   );
 };
 
-// ── Clickable Sentence Text ──
-const ClickableText = ({ text, fontSize = '22px', lineHeight = 2.2, onWordClick }) => {
+// ── Smart Clickable Text with SRS word highlighting ──
+const SmartText = ({ text, fontSize = '22px', lineHeight = 2.2, srsData, learned, onWordClick }) => {
+  // Segment text into words (CJK chunks) and punctuation
+  const segments = useMemo(() => {
+    const result = [];
+    let i = 0;
+    while (i < text.length) {
+      const ch = text[i];
+      if (/[\u4e00-\u9fff]/.test(ch)) {
+        // Try to find longest matching word in dictionary
+        let longestMatch = null;
+        let longestLen = 0;
+        for (let len = 4; len >= 1; len--) {
+          if (i + len > text.length) continue;
+          const slice = text.slice(i, i + len);
+          let found = null;
+          for (let level = 1; level <= 6 && !found; level++) {
+            found = (ALL_HSK[level] || []).find(w => w.hanzi === slice);
+          }
+          if (found && len > longestLen) {
+            longestMatch = found;
+            longestLen = len;
+          }
+        }
+        if (longestMatch && longestLen > 1) {
+          result.push({ type: 'word', text: longestMatch.hanzi, word: longestMatch, len: longestLen });
+          i += longestLen;
+        } else {
+          // Single char
+          let singleWord = null;
+          for (let level = 1; level <= 6 && !singleWord; level++) {
+            singleWord = (ALL_HSK[level] || []).find(w => w.hanzi === ch);
+          }
+          result.push({ type: 'char', text: ch, word: singleWord, len: 1 });
+          i++;
+        }
+      } else {
+        result.push({ type: 'punct', text: ch });
+        i++;
+      }
+    }
+    return result;
+  }, [text]);
+
   return (
     <span style={{ lineHeight }}>
-      {text.split('').map((char, i) => {
-        const isChinese = /[\u4e00-\u9fff]/.test(char);
-        if (!isChinese) {
-          return <span key={i} style={{ fontSize }}>{char}</span>;
+      {segments.map((seg, i) => {
+        if (seg.type === 'punct') {
+          return <span key={i} style={{ fontSize, color: 'var(--muted)' }}>{seg.text}</span>;
         }
+
+        const wordId = seg.word?.id;
+        const status = wordId ? getWordStatus(wordId, srsData, learned) : 'unknown';
+        const style = WORD_STATUS_STYLES[status] || {};
+
         return (
           <span
             key={i}
-            className="transition-colors cursor-pointer hover:text-blue-500"
+            onClick={(e) => {
+              e.stopPropagation();
+              // Use the matched word hanzi, not single char
+              const clickChar = seg.word ? seg.word.hanzi : seg.text;
+              onWordClick(clickChar, { x: e.clientX, y: e.clientY + window.scrollY });
+            }}
+            title={seg.word ? `${seg.word.hanzi} — ${seg.word.meaning} (${style.title || ''})` : seg.text}
             style={{
               fontSize,
-              color: 'var(--ink)',
+              cursor: 'pointer',
               borderRadius: '3px',
-              padding: '0 1px',
+              padding: '1px 1px',
+              transition: 'background 0.15s, opacity 0.15s',
+              ...style,
             }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'var(--surface-soft)'; e.currentTarget.style.color = 'var(--accent)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--ink)'; }}
-            onClick={e => {
-              e.stopPropagation();
-              onWordClick(char, { x: e.clientX, y: e.clientY + window.scrollY });
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'var(--accent-soft)';
+              e.currentTarget.style.color = 'white';
+              e.currentTarget.style.opacity = '1';
             }}
-          >{char}</span>
+            onMouseLeave={e => {
+              e.currentTarget.style.background = style.background || 'transparent';
+              e.currentTarget.style.color = style.color || 'var(--ink)';
+              e.currentTarget.style.opacity = style.opacity || '1';
+            }}>
+            {seg.text}
+          </span>
         );
       })}
     </span>
   );
 };
 
-// ── Post-Reading Comprehension Check ──
-const PostReadingCheck = ({ reading, onDone }) => {
-  const questions = useMemo(() => {
-    const sentences = reading.sentences;
-    if (sentences.length < 3) return [];
-    const qs = [];
+// ── Word Status Legend ──
+const WordStatusLegend = () => (
+  <div className="flex flex-wrap gap-3 text-xs">
+    {[
+      { status: 'unknown',  label: 'Chưa học',  style: 'border-bottom: 2px solid #3d8bd1; padding-bottom: 1px' },
+      { status: 'learning', label: 'Đang học',  style: 'border-bottom: 2px solid #f59e0b; padding-bottom: 1px' },
+      { status: 'due',      label: 'Cần ôn',    style: 'background: rgba(245,158,11,0.15); padding: 1px 3px; border-radius: 3px' },
+      { status: 'known',    label: 'Đã thuộc',  style: 'opacity: 0.5' },
+    ].map(({ label, style }) => (
+      <div key={label} className="flex items-center gap-1.5">
+        <span className="hanzi-text text-base font-medium" style={{ ...(Object.fromEntries(style.split(';').map(s => { const [k,v] = s.split(':').map(x=>x.trim()); return [k.replace(/-([a-z])/g,(_,c)=>c.toUpperCase()), v]; }).filter(([k])=>k))) }}>
+          汉
+        </span>
+        <span style={{ color: 'var(--muted)' }}>{label}</span>
+      </div>
+    ))}
+  </div>
+);
 
-    // Q1: Vocabulary - pick a hanzi word from the reading
-    const midSentence = sentences[Math.floor(sentences.length / 2)];
-    const hanziWords = midSentence.hanzi.match(/[\u4e00-\u9fff]{2,4}/g) || [];
-    if (hanziWords.length > 0) {
-      const word = hanziWords[0];
-      const wordData = (() => {
-        for (let l = 1; l <= 6; l++) {
-          const found = (ALL_HSK[l]||[]).find(w => w.hanzi === word);
-          if (found) return found;
+// ── Comprehension Score Badge ──
+const ComprehensionBadge = ({ reading, srsData, learned }) => {
+  const score = useMemo(() => {
+    const text = reading.sentences.map(s => s.hanzi).join('');
+    // Collect unique words matched in ALL_HSK
+    const matchedIds = new Set();
+    const totalIds = new Set();
+    let i = 0;
+    while (i < text.length) {
+      if (!/[\u4e00-\u9fff]/.test(text[i])) { i++; continue; }
+      let found = null;
+      for (let len = 4; len >= 1 && !found; len--) {
+        const slice = text.slice(i, i + len);
+        for (let l = 1; l <= 6 && !found; l++) {
+          found = (ALL_HSK[l] || []).find(w => w.hanzi === slice);
         }
-        return null;
-      })();
-      if (wordData) {
-        const distractors = (() => {
-          const result = [];
-          for (let l = 1; l <= 3; l++) {
-            const pool = ALL_HSK[l] || [];
-            const rand = pool.filter(w => w.id !== wordData.id).sort(() => Math.random()-0.5).slice(0,2);
-            result.push(...rand.map(w => w.meaning));
-          }
-          return result.slice(0,3);
-        })();
-        qs.push({
-          type: 'vocab',
-          question: `"${word}" có nghĩa là gì?`,
-          correct: wordData.meaning,
-          choices: [...distractors, wordData.meaning].sort(() => Math.random()-0.5),
-        });
+        if (found) i += len;
       }
+      if (!found) { i++; continue; }
+      totalIds.add(found.id);
+      const status = getWordStatus(found.id, srsData, learned);
+      if (status === 'known') matchedIds.add(found.id);
     }
+    if (totalIds.size === 0) return null;
+    return { known: matchedIds.size, total: totalIds.size, pct: Math.round((matchedIds.size / totalIds.size) * 100) };
+  }, [reading, srsData, learned]);
 
-    // Q2: Comprehension - true/false about content
-    const firstSentence = sentences[0];
-    qs.push({
-      type: 'comprehension',
-      question: 'Câu đầu tiên của bài là:',
-      correct: firstSentence.meaning,
-      choices: [firstSentence.meaning, sentences[sentences.length-1].meaning].sort(() => Math.random()-0.5),
-    });
+  if (!score) return null;
+  const color = score.pct >= 80 ? '#10b981' : score.pct >= 60 ? '#f59e0b' : 'var(--accent)';
+  return (
+    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl"
+      style={{ background: 'var(--surface)', border: `1px solid ${color}40` }}>
+      <span style={{ fontSize: '14px' }}>📊</span>
+      <div>
+        <span style={{ fontWeight: 700, color, fontSize: '14px' }}>{score.pct}%</span>
+        <span className="text-xs ml-1" style={{ color: 'var(--muted)' }}>hiểu được</span>
+      </div>
+      <div className="w-16 h-1.5 rounded-full overflow-hidden ml-1" style={{ background: 'var(--border)' }}>
+        <div className="h-full rounded-full" style={{ width: `${score.pct}%`, background: color }} />
+      </div>
+    </div>
+  );
+};
 
-    return qs.slice(0, 2);
-  }, [reading]);
+// ── Harvest Panel ──
+// Shows bookmarked words from current reading session
+const HarvestPanel = ({ savedWords, srsData, updateSRS, onDismiss }) => {
+  const [reviewing, setReviewing] = useState(false);
+  const [reviewIdx, setReviewIdx] = useState(0);
+  const [flipped, setFlipped] = useState(false);
 
-  const [currentQ, setCurrentQ] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [done, setDone] = useState(false);
+  if (savedWords.length === 0) return null;
 
-  if (questions.length === 0 || done) {
-    return (
-      <div className="p-6 rounded-3xl text-center" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <div className="text-4xl mb-2">✅</div>
-        <div className="font-bold text-lg mb-1" style={{ color: 'var(--ink)' }}>Đã đọc xong bài này!</div>
-        <div className="text-sm mb-4" style={{ color: 'var(--muted)' }}>
-          {Object.values(answers).filter(Boolean).length}/{questions.length} câu đúng
+  if (reviewing) {
+    const word = savedWords[reviewIdx];
+    if (!word) {
+      return (
+        <div className="p-5 rounded-3xl text-center soft-shadow"
+          style={{ background: 'var(--surface)', border: '1.5px solid #10b981' }}>
+          <div className="text-3xl mb-2">🎉</div>
+          <div className="font-bold" style={{ color: 'var(--ink)' }}>Đã ôn xong {savedWords.length} từ!</div>
+          <button onClick={onDismiss} className="mt-3 px-4 py-2 rounded-xl text-sm font-semibold"
+            style={{ background: 'var(--accent)', color: 'white' }}>Đóng</button>
         </div>
-        <button onClick={onDone}
-          className="px-6 py-2.5 rounded-2xl font-semibold"
-          style={{ background: 'var(--accent)', color: 'white' }}>
-          Xem bài đọc khác →
-        </button>
+      );
+    }
+    return (
+      <div className="p-5 rounded-3xl soft-shadow" style={{ background: 'var(--surface)', border: '1.5px solid var(--accent-soft)' }}>
+        <div className="flex items-center justify-between mb-3">
+          <div className="text-xs tracking-widest font-bold" style={{ color: 'var(--accent)' }}>
+            ÔN TỪ VỪA LƯU · {reviewIdx + 1}/{savedWords.length}
+          </div>
+          <button onClick={() => setReviewing(false)}
+            className="text-xs px-2 py-1 rounded-lg" style={{ color: 'var(--muted)' }}>Dừng</button>
+        </div>
+        <div className="text-center py-4 cursor-pointer" onClick={() => setFlipped(f => !f)}>
+          {!flipped ? (
+            <>
+              <div className="hanzi-text mb-2" style={{ fontSize: '52px', color: 'var(--ink)', fontWeight: 500 }}>{word.hanzi}</div>
+              <div className="text-xs" style={{ color: 'var(--muted)' }}>Nhấn để xem nghĩa</div>
+            </>
+          ) : (
+            <>
+              <div className="hanzi-text mb-2" style={{ fontSize: '36px', color: 'var(--ink)', fontWeight: 500 }}>{word.hanzi}</div>
+              <div className="mb-1"><ColoredPinyin pinyin={word.pinyin} size="lg" /></div>
+              <div className="font-semibold" style={{ color: 'var(--ink)' }}>{word.meaning}</div>
+            </>
+          )}
+        </div>
+        {flipped && (
+          <div className="flex gap-2 mt-2">
+            {[
+              { r: 1, label: '😕 Quên', bg: '#fee2e2', color: '#991b1b' },
+              { r: 3, label: '🙂 Ổn', bg: '#d1fae5', color: '#065f46' },
+              { r: 4, label: '😎 Dễ', bg: '#dbeafe', color: '#1e40af' },
+            ].map(({ r, label, bg, color }) => (
+              <button key={r} onClick={() => {
+                const prev = srsData[word.id] || null;
+                updateSRS(word.id, fsrsUpdateState(prev, r));
+                setFlipped(false);
+                setReviewIdx(i => i + 1);
+              }}
+                className="flex-1 py-2 rounded-xl text-xs font-bold"
+                style={{ background: bg, color }}>
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
 
-  const q = questions[currentQ];
-  const answered = answers[currentQ] !== undefined;
+  return (
+    <div className="p-5 rounded-3xl soft-shadow" style={{ background: 'var(--surface)', border: '1.5px solid var(--accent-soft)' }}>
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span style={{ fontSize: '20px' }}>📦</span>
+          <div>
+            <div className="font-bold text-sm" style={{ color: 'var(--ink)' }}>
+              Bạn đã lưu {savedWords.length} từ
+            </div>
+            <div className="text-xs" style={{ color: 'var(--muted)' }}>từ bài đọc này</div>
+          </div>
+        </div>
+        <button onClick={onDismiss}
+          className="w-6 h-6 rounded-full flex items-center justify-center text-xs"
+          style={{ background: 'var(--bg)', color: 'var(--muted)', border: '1px solid var(--border)' }}>✕</button>
+      </div>
 
-  const handleAnswer = (choice) => {
+      {/* Word chips */}
+      <div className="flex flex-wrap gap-1.5 mb-4">
+        {savedWords.map(w => (
+          <div key={w.id} className="flex items-center gap-1 px-2.5 py-1 rounded-xl"
+            style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
+            <span className="hanzi-text text-sm font-medium" style={{ color: 'var(--ink)' }}>{w.hanzi}</span>
+            <span className="text-xs" style={{ color: 'var(--muted)' }}>{w.meaning}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* CTA */}
+      <div className="flex gap-2">
+        <button onClick={() => { setReviewing(true); setReviewIdx(0); setFlipped(false); }}
+          className="flex-1 py-2.5 rounded-2xl text-sm font-bold transition-all hover:scale-[1.02]"
+          style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: 'white' }}>
+          ▶ Ôn {savedWords.length} từ ngay
+        </button>
+        <button onClick={onDismiss}
+          className="px-4 py-2.5 rounded-2xl text-sm font-semibold transition-all"
+          style={{ background: 'var(--surface)', color: 'var(--ink)', border: '1px solid var(--border)' }}>
+          Để sau
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ── Pre-Read Vocab Boost ──
+// Shows unknown words in the article before reading
+const PreReadBoost = ({ reading, srsData, learned, onDismiss, onLearnWord }) => {
+  const unknownWords = useMemo(() => {
+    const text = reading.sentences.map(s => s.hanzi).join('');
+    const found = new Map();
+    let i = 0;
+    while (i < text.length) {
+      if (!/[\u4e00-\u9fff]/.test(text[i])) { i++; continue; }
+      let match = null;
+      for (let len = 4; len >= 2 && !match; len--) {
+        const slice = text.slice(i, i + len);
+        for (let l = 1; l <= 6 && !match; l++) {
+          match = (ALL_HSK[l] || []).find(w => w.hanzi === slice);
+        }
+        if (match) i += len;
+      }
+      if (!match) { i++; continue; }
+      if (!found.has(match.id)) {
+        const status = getWordStatus(match.id, srsData, learned);
+        if (status === 'unknown' || status === 'learning') {
+          found.set(match.id, match);
+        }
+      }
+    }
+    return [...found.values()].slice(0, 8);
+  }, [reading, srsData, learned]);
+
+  if (unknownWords.length === 0) return null;
+
+  return (
+    <div className="mb-6 p-5 rounded-3xl"
+      style={{ background: 'linear-gradient(135deg, var(--surface-soft), var(--surface))', border: '1.5px solid var(--accent-soft)' }}>
+      <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
+        <div className="flex items-center gap-2">
+          <span style={{ fontSize: '20px' }}>💡</span>
+          <div>
+            <div className="font-bold text-sm" style={{ color: 'var(--ink)' }}>
+              Bài này có {unknownWords.length} từ bạn chưa biết
+            </div>
+            <div className="text-xs" style={{ color: 'var(--muted)' }}>
+              Học trước để đọc dễ hơn
+            </div>
+          </div>
+        </div>
+        <button onClick={onDismiss}
+          className="text-xs px-3 py-1.5 rounded-xl font-semibold"
+          style={{ background: 'var(--surface)', color: 'var(--muted)', border: '1px solid var(--border)' }}>
+          Đọc luôn →
+        </button>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        {unknownWords.map(w => (
+          <button key={w.id}
+            onClick={() => { onLearnWord(w); speak(w.hanzi); }}
+            className="p-2.5 rounded-xl text-left transition-all hover:scale-[1.03]"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div className="hanzi-text text-xl font-medium mb-0.5" style={{ color: 'var(--ink)' }}>{w.hanzi}</div>
+            <div className="text-[11px] mb-0.5"><ColoredPinyin pinyin={w.pinyin} size="sm" /></div>
+            <div className="text-xs line-clamp-1" style={{ color: 'var(--muted)' }}>{w.meaning}</div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+
+// ============ READING SYSTEM ============
+const READING_PROGRESS_KEY = 'hsk:reading_progress';
+const loadReadingProgress = () => { try { return JSON.parse(localStorage.getItem(READING_PROGRESS_KEY) || '{}'); } catch { return {}; } };
+const saveReadingProgress = (data) => { try { localStorage.setItem(READING_PROGRESS_KEY, JSON.stringify(data)); } catch {} };
+
+// ── Post-Reading Comprehension Check ──
+const PostReadingCheck = ({ reading, onDone }) => {
+  const questions = useMemo(() => {
+    const sentences = reading.sentences;
+    if (sentences.length < 2) return [];
+    const qs = [];
+    const mid = sentences[Math.floor(sentences.length / 2)];
+    const hanziWords = mid.hanzi.match(/[\u4e00-\u9fff]{2,4}/g) || [];
+    if (hanziWords.length > 0) {
+      const wordData = (() => { for (let l=1;l<=6;l++) { const f=(ALL_HSK[l]||[]).find(w=>w.hanzi===hanziWords[0]); if(f) return f; } return null; })();
+      if (wordData) {
+        const dist = [];
+        for (let l=1;l<=3;l++) { const pool=ALL_HSK[l]||[]; const r=pool.filter(w=>w.id!==wordData.id).sort(()=>Math.random()-0.5).slice(0,2); dist.push(...r.map(w=>w.meaning)); }
+        qs.push({ q: `"${wordData.hanzi}" có nghĩa là gì?`, correct: wordData.meaning, choices: [...dist.slice(0,3), wordData.meaning].sort(()=>Math.random()-0.5) });
+      }
+    }
+    qs.push({ q: 'Câu đầu tiên của bài là:', correct: sentences[0].meaning, choices: [sentences[0].meaning, sentences[sentences.length-1].meaning].sort(()=>Math.random()-0.5) });
+    return qs.slice(0,2);
+  }, [reading]);
+
+  const [qIdx, setQIdx] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [done, setDone] = useState(false);
+
+  if (questions.length === 0 || done) {
+    const correct = Object.values(answers).filter(Boolean).length;
+    return (
+      <div className="p-6 rounded-3xl text-center" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+        <div className="text-4xl mb-2">✅</div>
+        <div className="font-bold text-lg mb-1" style={{ color:'var(--ink)' }}>Đã đọc xong bài này!</div>
+        <div className="text-sm mb-4" style={{ color:'var(--muted)' }}>{correct}/{questions.length} câu đúng</div>
+        <button onClick={onDone} className="px-6 py-2.5 rounded-2xl font-semibold" style={{ background:'var(--accent)', color:'white' }}>Bài đọc khác →</button>
+      </div>
+    );
+  }
+
+  const q = questions[qIdx];
+  const answered = answers[qIdx] !== undefined;
+  const handleAnswer = (c) => {
     if (answered) return;
-    const correct = choice === q.correct;
-    setAnswers(prev => ({ ...prev, [currentQ]: correct }));
-    setTimeout(() => {
-      if (currentQ + 1 < questions.length) setCurrentQ(c => c + 1);
-      else setDone(true);
-    }, 1000);
+    setAnswers(p => ({...p, [qIdx]: c === q.correct}));
+    setTimeout(() => { if (qIdx+1 < questions.length) setQIdx(i=>i+1); else setDone(true); }, 1000);
   };
 
   return (
-    <div className="p-6 rounded-3xl" style={{ background: 'var(--surface)', border: '1.5px solid var(--accent-soft)' }}>
-      <div className="text-[10px] tracking-widest mb-3" style={{ color: 'var(--accent)', fontWeight: 600 }}>
-        KIỂM TRA NHANH · CÂU {currentQ + 1}/{questions.length}
-      </div>
-      <div className="font-semibold mb-4" style={{ color: 'var(--ink)', fontSize: '15px' }}>{q.question}</div>
+    <div className="p-6 rounded-3xl" style={{ background:'var(--surface)', border:'1.5px solid var(--accent-soft)' }}>
+      <div className="text-[10px] tracking-widest mb-3 font-bold" style={{ color:'var(--accent)' }}>KIỂM TRA NHANH · CÂU {qIdx+1}/{questions.length}</div>
+      <div className="font-semibold mb-4" style={{ color:'var(--ink)', fontSize:'15px' }}>{q.q}</div>
       <div className="space-y-2">
-        {q.choices.map((choice, i) => {
-          const isCorrect = choice === q.correct;
-          let bg = 'var(--bg)', color = 'var(--ink)', border = '1px solid var(--border)';
-          if (answered) {
-            if (isCorrect) { bg = '#d1fae5'; color = '#065f46'; border = '2px solid #6ee7b7'; }
-          }
+        {q.choices.map((c,i) => {
+          const isCorrect = c === q.correct;
           return (
-            <button key={i} onClick={() => handleAnswer(choice)} disabled={answered}
-              className="w-full text-left px-4 py-3 rounded-xl transition-all text-sm"
-              style={{ background: bg, color, border, fontWeight: 500, opacity: answered && !isCorrect ? 0.5 : 1 }}>
-              {choice}
-              {answered && isCorrect && <span className="float-right">✓</span>}
+            <button key={i} onClick={() => handleAnswer(c)} disabled={answered}
+              className="w-full text-left px-4 py-3 rounded-xl text-sm transition-all"
+              style={{ background: answered && isCorrect ? '#d1fae5' : 'var(--bg)', color: answered && isCorrect ? '#065f46' : 'var(--ink)', border: `1px solid ${answered && isCorrect ? '#6ee7b7' : 'var(--border)'}`, fontWeight: 500, opacity: answered && !isCorrect ? 0.5 : 1 }}>
+              {c} {answered && isCorrect && <span className="float-right">✓</span>}
             </button>
           );
         })}
@@ -10756,119 +11126,97 @@ const PostReadingCheck = ({ reading, onDone }) => {
   );
 };
 
-// ============ READING VIEW (REBUILT) ============
-const ReadingView = ({ onActivity }) => {
+// ============ READING VIEW ============
+const ReadingView = ({ onActivity, srsData, updateSRS, learned, toggleLearned }) => {
   const [hskLevel, setHskLevel] = useState(1);
   const [selectedReadingId, setSelectedReadingId] = useState(null);
-  const [displayMode, setDisplayMode] = useState('combined'); // 'chinese'|'pinyin'|'meaning'|'combined'
-  const [studyMode, setStudyMode] = useState('full');          // 'full'|'sentence'
+  const [displayMode, setDisplayMode] = useState('combined');
+  const [studyMode, setStudyMode] = useState('full');
   const [currentSentenceIdx, setCurrentSentenceIdx] = useState(0);
-  const [popup, setPopup] = useState(null);                    // { char, x, y }
+  const [popup, setPopup] = useState(null);
   const [readingProgress, setReadingProgress] = useState(loadReadingProgress);
-  const [showCheck, setShowCheck] = useState(false);           // post-reading quiz
-  const [readStart, setReadStart] = useState(null);            // timestamp started
+  const [showCheck, setShowCheck] = useState(false);
+  const [showHarvest, setShowHarvest] = useState(false);
+  const [showPreRead, setShowPreRead] = useState(true);
+  const [savedWords, setSavedWords] = useState([]);
+  const [readStart, setReadStart] = useState(null);
+  const [savedFlash, setSavedFlash] = useState(null);
 
   const levelReadings = readings[`hsk${hskLevel}`] || [];
   const selectedReading = levelReadings.find(r => r.id === selectedReadingId);
 
   useEffect(() => { setSelectedReadingId(null); }, [hskLevel]);
-  useEffect(() => { setCurrentSentenceIdx(0); setShowCheck(false); }, [selectedReadingId, studyMode]);
-
-  // Start timer when opening article
   useEffect(() => {
-    if (selectedReading) setReadStart(Date.now());
-    else setReadStart(null);
+    setCurrentSentenceIdx(0); setShowCheck(false);
+    setSavedWords([]); setShowHarvest(false); setShowPreRead(true);
+  }, [selectedReadingId, studyMode]);
+  useEffect(() => {
+    if (selectedReading) setReadStart(Date.now()); else setReadStart(null);
   }, [selectedReadingId]);
 
-  // Close popup on scroll
   useEffect(() => {
-    const handler = () => setPopup(null);
-    window.addEventListener('scroll', handler, { passive: true });
-    return () => window.removeEventListener('scroll', handler);
+    const h = () => setPopup(null);
+    window.addEventListener('scroll', h, { passive: true });
+    return () => window.removeEventListener('scroll', h);
   }, []);
 
-  // Keyboard: ← → for sentence mode, Escape to close popup
   useEffect(() => {
-    const handleKey = (e) => {
+    const onKey = (e) => {
       if (!selectedReading) return;
-      if (e.key === 'Escape') { setPopup(null); }
+      if (e.key === 'Escape') setPopup(null);
       if (studyMode === 'sentence') {
-        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-          e.preventDefault();
-          setCurrentSentenceIdx(i => Math.min((selectedReading.sentences.length - 1), i + 1));
-        }
-        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-          e.preventDefault();
-          setCurrentSentenceIdx(i => Math.max(0, i - 1));
-        }
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); setCurrentSentenceIdx(i => Math.min(selectedReading.sentences.length-1, i+1)); }
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); setCurrentSentenceIdx(i => Math.max(0, i-1)); }
       }
     };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [selectedReading, studyMode]);
 
-  const handleWordClick = (char, position) => {
-    setPopup({ char, x: position.x, y: position.y });
+  const handleWordClick = (char, pos) => setPopup({ char, x: pos.x, y: pos.y });
+
+  const handleSaveWord = (w) => {
+    setSavedWords(prev => prev.find(x => x.id === w.id) ? prev : [...prev, w]);
+    setSavedFlash(w.hanzi);
+    setTimeout(() => setSavedFlash(null), 1500);
   };
 
   const markComplete = (id) => {
     const elapsed = readStart ? Math.round((Date.now() - readStart) / 1000) : 0;
     const next = { ...readingProgress, [id]: { completedAt: Date.now(), seconds: elapsed } };
-    setReadingProgress(next);
-    saveReadingProgress(next);
+    setReadingProgress(next); saveReadingProgress(next);
     if (onActivity) onActivity();
-    setShowCheck(true);
+    if (savedWords.length > 0) setShowHarvest(true); else setShowCheck(true);
   };
 
-  // Comprehension score: % words in article the user has in SRS (approximate)
-  const comprehensionInfo = useMemo(() => {
-    if (!selectedReading) return null;
-    const text = selectedReading.sentences.map(s => s.hanzi).join('');
-    const allHanzi = [...new Set(text.match(/[\u4e00-\u9fff]/g) || [])];
-    if (allHanzi.length === 0) return null;
-    return { total: allHanzi.length };
-  }, [selectedReading]);
-
-  // ── READING LIST ──
+  // ── READING LIST VIEW ──
   if (!selectedReading) {
     return (
       <div className="max-w-5xl mx-auto px-6 py-8">
-        {/* Header */}
         <div className="mb-8">
-          <div className="text-xs tracking-[0.3em] mb-2" style={{ color: 'var(--accent)' }}>阅读 · BÀI ĐỌC</div>
-          <h1 className="text-3xl mb-4" style={{ fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--ink)' }}>
-            Luyện đọc theo cấp HSK
-          </h1>
-          {/* Level tabs */}
+          <div className="text-xs tracking-[0.3em] mb-2" style={{ color:'var(--accent)' }}>阅读 · BÀI ĐỌC</div>
+          <h1 className="text-3xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Luyện đọc theo cấp HSK</h1>
           <div className="flex gap-2 flex-wrap mb-4">
             {[1,2,3,4,5,6].map(level => {
-              const count = (readings[`hsk${level}`] || []).length;
-              const doneCount = (readings[`hsk${level}`] || []).filter(r => readingProgress[r.id]).length;
+              const count = (readings[`hsk${level}`]||[]).length;
+              const doneCount = (readings[`hsk${level}`]||[]).filter(r => readingProgress[r.id]).length;
               return (
                 <button key={level} onClick={() => setHskLevel(level)}
-                  className="relative px-4 py-2 rounded-2xl transition-all font-semibold text-sm"
-                  style={{ background: hskLevel === level ? 'var(--accent)' : 'var(--surface)', color: hskLevel === level ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>
+                  className="relative px-4 py-2 rounded-2xl font-semibold text-sm transition-all"
+                  style={{ background: hskLevel===level ? 'var(--accent)' : 'var(--surface)', color: hskLevel===level ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>
                   HSK {level}
-                  {doneCount > 0 && doneCount < count && (
-                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center"
-                      style={{ background: '#10b981', color: 'white' }}>{doneCount}</span>
-                  )}
-                  {doneCount === count && count > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center"
-                      style={{ background: '#10b981', color: 'white' }}>✓</span>
-                  )}
+                  {doneCount > 0 && doneCount < count && <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full text-[9px] font-bold flex items-center justify-center" style={{ background:'#10b981', color:'white' }}>{doneCount}</span>}
+                  {doneCount === count && count > 0 && <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full text-[10px] flex items-center justify-center" style={{ background:'#10b981', color:'white' }}>✓</span>}
                 </button>
               );
             })}
           </div>
-
-          {/* Stats row */}
-          <div className="flex items-center gap-4 text-sm" style={{ color:'var(--muted)' }}>
-            <span><strong style={{ color:'var(--ink)' }}>{levelReadings.length}</strong> bài đọc</span>
+          <div className="flex items-center gap-3 text-sm" style={{ color:'var(--muted)' }}>
+            <span><strong style={{ color:'var(--ink)' }}>{levelReadings.length}</strong> bài</span>
             <span>·</span>
-            <span><strong style={{ color:'#10b981' }}>{levelReadings.filter(r => readingProgress[r.id]).length}</strong> đã đọc</span>
+            <span><strong style={{ color:'#10b981' }}>{levelReadings.filter(r=>readingProgress[r.id]).length}</strong> đã đọc</span>
             <span>·</span>
-            <span className="text-xs">Nhấn vào chữ Hán để xem nghĩa từng từ</span>
+            <span className="text-xs">Nhấn vào chữ Hán để xem nghĩa</span>
           </div>
         </div>
 
@@ -10886,42 +11234,24 @@ const ReadingView = ({ onActivity }) => {
                 <button key={reading.id} onClick={() => setSelectedReadingId(reading.id)}
                   className="text-left p-5 rounded-3xl soft-shadow hover:soft-shadow-lg hover:-translate-y-1 transition-all relative overflow-hidden"
                   style={{ background:'var(--surface)', border:`1px solid ${isDone ? '#10b981' : 'var(--border)'}` }}>
-                  {/* Accent bar */}
-                  <div className="absolute top-0 left-0 w-1 h-full rounded-l-3xl"
-                    style={{ background: isDone ? '#10b981' : 'var(--accent)' }} />
-
-                  {isDone && (
-                    <div className="absolute top-3 right-4 text-xs font-bold px-2 py-0.5 rounded-full"
-                      style={{ background: '#d1fae5', color: '#065f46' }}>✓ Đã đọc</div>
-                  )}
-
+                  <div className="absolute top-0 left-0 w-1 h-full rounded-l-3xl" style={{ background: isDone ? '#10b981' : 'var(--accent)' }} />
+                  {isDone && <div className="absolute top-3 right-4 text-xs font-bold px-2 py-0.5 rounded-full" style={{ background:'#d1fae5', color:'#065f46' }}>✓ Đã đọc</div>}
                   <div className="flex items-start gap-3 mb-3 pl-3">
-                    <div className="flex-shrink-0 w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-sm"
-                      style={{ background:'var(--bg)', color:'var(--accent)', border:'1px solid var(--border)' }}>
-                      {String(idx + 1).padStart(2,'0')}
+                    <div className="flex-shrink-0 w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-sm" style={{ background:'var(--bg)', color:'var(--accent)', border:'1px solid var(--border)' }}>
+                      {String(idx+1).padStart(2,'0')}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="mb-1 hanzi-text" style={{ color:'var(--accent-2)', fontWeight:600, fontSize:'24px', lineHeight:1.25 }}>
-                        {reading.title}
-                      </div>
-                      <div className="mb-1.5"><ColoredPinyin pinyin={reading.titlePinyin} size="base" /></div>
-                      <div className="italic flex items-center gap-1.5"
-                        style={{ color:'var(--ink)', fontFamily:'Georgia,"Playfair Display",serif', fontWeight:500, fontSize:'13px' }}>
+                      <div className="mb-1 hanzi-text" style={{ color:'var(--accent-2)', fontWeight:600, fontSize:'24px', lineHeight:1.25 }}>{reading.title}</div>
+                      <div className="mb-1"><ColoredPinyin pinyin={reading.titlePinyin} size="base" /></div>
+                      <div className="italic flex items-center gap-1.5" style={{ color:'var(--ink)', fontFamily:'Georgia,serif', fontWeight:500, fontSize:'13px' }}>
                         <span style={{ color:'var(--accent-soft)' }}>—</span>
                         <span>{reading.titleMeaning}</span>
                       </div>
                     </div>
                   </div>
-
                   <div className="flex items-center justify-between pl-3 text-xs" style={{ color:'var(--accent)' }}>
                     <span>{reading.sentences.length} câu</span>
-                    {prog?.seconds ? (
-                      <span style={{ color:'var(--muted)' }}>
-                        ~{Math.ceil(prog.seconds/60)} phút trước
-                      </span>
-                    ) : (
-                      <span>Đọc bài →</span>
-                    )}
+                    {prog?.seconds ? <span style={{ color:'var(--muted)' }}>~{Math.ceil(prog.seconds/60)} phút</span> : <span>Đọc bài →</span>}
                   </div>
                 </button>
               );
@@ -10935,287 +11265,240 @@ const ReadingView = ({ onActivity }) => {
   // ── ARTICLE VIEW ──
   const totalSentences = selectedReading.sentences.length;
   const isCompleted = !!readingProgress[selectedReading.id];
-  const readingComplete = studyMode === 'sentence'
-    ? currentSentenceIdx >= totalSentences - 1
-    : false;
+  const showChinese = displayMode === 'chinese' || displayMode === 'combined';
+  const showPinyin = displayMode === 'pinyin' || displayMode === 'combined';
+  const showMeaning = displayMode === 'meaning' || displayMode === 'combined';
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-8 relative" onClick={() => setPopup(null)}>
 
-      {/* Inline word popup */}
+      {/* Smart Word Popup */}
       {popup && (
-        <InlineWordPopup
+        <SmartWordPopup
           char={popup.char}
           position={{ x: popup.x, y: popup.y - window.scrollY }}
+          srsData={srsData||{}} updateSRS={updateSRS||(() => {})}
+          learned={learned||[]} toggleLearned={toggleLearned||(() => {})}
           onClose={() => setPopup(null)}
+          onSaveWord={handleSaveWord}
         />
       )}
 
-      {/* Back nav */}
+      {/* Saved word flash */}
+      {savedFlash && (
+        <div className="fixed top-20 right-4 z-[250] px-4 py-2.5 rounded-2xl soft-shadow-lg"
+          style={{ background:'linear-gradient(135deg, var(--accent), var(--accent-2))', color:'white', animation:'fadeIn 0.2s ease-out' }}>
+          <span className="hanzi-text font-bold">{savedFlash}</span>
+          <span className="text-sm ml-2">→ SRS ✓</span>
+        </div>
+      )}
+
+      {/* Top nav */}
       <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
         <button onClick={() => setSelectedReadingId(null)}
           className="px-3 py-1.5 rounded-2xl text-sm font-semibold transition-all hover:scale-105"
           style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)' }}>
-          ← Danh sách bài đọc
+          ← Danh sách
         </button>
-        {isCompleted && (
-          <div className="text-xs px-3 py-1.5 rounded-full font-bold"
-            style={{ background:'#d1fae5', color:'#065f46' }}>✓ Đã đọc xong</div>
-        )}
+        <div className="flex items-center gap-2 flex-wrap">
+          {srsData && <ComprehensionBadge reading={selectedReading} srsData={srsData} learned={learned||[]} />}
+          {savedWords.length > 0 && (
+            <button onClick={() => setShowHarvest(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-bold transition-all hover:scale-105"
+              style={{ background:'var(--accent)', color:'white' }}>
+              📦 {savedWords.length} từ đã lưu
+            </button>
+          )}
+          {isCompleted && <div className="text-xs px-3 py-1.5 rounded-full font-bold" style={{ background:'#d1fae5', color:'#065f46' }}>✓ Đã đọc</div>}
+        </div>
       </div>
 
-      {/* ── TITLE BLOCK ── */}
+      {/* Title card */}
       <div className="mb-6 relative overflow-hidden p-7 rounded-3xl soft-shadow"
         style={{ background:'linear-gradient(135deg, var(--surface) 0%, var(--surface-soft) 70%, var(--surface) 100%)', border:'1px solid var(--accent-soft)' }}>
-        <div className="absolute -top-4 -left-1 select-none pointer-events-none"
-          style={{ fontFamily:'Georgia,"Playfair Display",serif', fontSize:'120px', color:'var(--accent)', opacity:0.07, fontWeight:700, lineHeight:1 }}>"</div>
-        <div className="absolute -bottom-12 -right-2 select-none pointer-events-none hanzi-text"
-          style={{ fontSize:'180px', color:'var(--accent-2)', opacity:0.05, fontWeight:300, lineHeight:1 }}>读</div>
-
+        <div className="absolute -top-4 -left-1 select-none pointer-events-none" style={{ fontFamily:'Georgia,serif', fontSize:'120px', color:'var(--accent)', opacity:.07, fontWeight:700, lineHeight:1 }}>"</div>
+        <div className="absolute -bottom-12 -right-2 select-none pointer-events-none hanzi-text" style={{ fontSize:'180px', color:'var(--accent-2)', opacity:.05, fontWeight:300, lineHeight:1 }}>读</div>
         <div className="relative flex items-center gap-2 mb-4">
-          <div className="px-2.5 py-1 rounded-full text-[10px] tracking-[0.25em] font-bold text-white"
-            style={{ background:'var(--accent)' }}>HSK {hskLevel}</div>
-          <div className="hanzi-text text-sm font-medium" style={{ color:'var(--accent)', letterSpacing:'0.15em' }}>阅读 · BÀI ĐỌC</div>
-          {comprehensionInfo && (
-            <div className="ml-auto text-xs px-2.5 py-1 rounded-full font-semibold"
-              style={{ background:'var(--surface)', color:'var(--muted)', border:'1px solid var(--border)' }}>
-              {comprehensionInfo.total} chữ Hán
-            </div>
-          )}
+          <div className="px-2.5 py-1 rounded-full text-[10px] tracking-[0.25em] font-bold text-white" style={{ background:'var(--accent)' }}>HSK {hskLevel}</div>
+          <div className="hanzi-text text-sm font-medium" style={{ color:'var(--accent)', letterSpacing:'.15em' }}>阅读 · BÀI ĐỌC</div>
+          <div className="ml-auto text-xs px-2.5 py-1 rounded-full font-semibold" style={{ background:'var(--surface)', color:'var(--muted)', border:'1px solid var(--border)' }}>
+            {[...new Set(selectedReading.sentences.map(s=>s.hanzi).join('').match(/[\u4e00-\u9fff]/g)||[])].length} chữ Hán
+          </div>
         </div>
-
-        <h1 className="relative mb-4 hanzi-text"
-          style={{ color:'var(--accent-2)', fontWeight:600, fontSize:'clamp(38px,5.5vw,58px)', lineHeight:1.15, letterSpacing:'0.04em', textShadow:'0 2px 8px rgba(91,155,213,0.12)' }}>
+        <h1 className="relative mb-4 hanzi-text" style={{ color:'var(--accent-2)', fontWeight:600, fontSize:'clamp(38px,5.5vw,58px)', lineHeight:1.15, letterSpacing:'.04em' }}>
           {selectedReading.title}
         </h1>
-        <div className="relative mb-3">
-          <ColoredPinyin pinyin={selectedReading.titlePinyin} size="xl" />
-        </div>
-        <div className="relative italic flex items-center gap-3"
-          style={{ color:'var(--ink)', fontSize:'18px', fontFamily:'Georgia,"Playfair Display","Crimson Text",serif', fontWeight:500 }}>
+        <div className="relative mb-3"><ColoredPinyin pinyin={selectedReading.titlePinyin} size="xl" /></div>
+        <div className="relative italic flex items-center gap-3" style={{ color:'var(--ink)', fontSize:'18px', fontFamily:'Georgia,serif', fontWeight:500 }}>
           <span style={{ color:'var(--accent-soft)' }}>—</span>
           <span>{selectedReading.titleMeaning}</span>
         </div>
       </div>
 
-      {/* ── CONTROLS BAR ── */}
-      <div className="mb-5 p-4 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-        {/* Display mode row */}
-        <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="text-[10px] tracking-widest font-bold" style={{ color:'var(--muted)' }}>CHỮ</span>
-          {[
-            { key:'chinese', label:'汉 Hán', icon:'汉' },
-            { key:'pinyin',  label:'ā Pin', icon:'ā' },
-            { key:'meaning', label:'V Nghĩa', icon:'V' },
-            { key:'combined',label:'✓ Kết hợp', icon:'✓' },
-          ].map(opt => (
-            <button key={opt.key} onClick={() => setDisplayMode(opt.key)}
-              className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
-              style={{ background: displayMode === opt.key ? 'var(--accent)' : 'var(--bg)', color: displayMode === opt.key ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>
-              {opt.label}
-            </button>
-          ))}
-        </div>
+      {/* Pre-read boost */}
+      {showPreRead && srsData && !showCheck && !showHarvest && (
+        <PreReadBoost reading={selectedReading} srsData={srsData} learned={learned||[]}
+          onDismiss={() => setShowPreRead(false)}
+          onLearnWord={(w) => {
+            if (!srsData[w.id] && updateSRS) { updateSRS(w.id, fsrsUpdateState(null, 2)); handleSaveWord(w); }
+            setShowPreRead(false);
+          }} />
+      )}
 
-        {/* Study mode + actions */}
-        <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-[10px] tracking-widest font-bold" style={{ color:'var(--muted)' }}>CHẾ ĐỘ</span>
-          <button onClick={() => setStudyMode('full')}
-            className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
-            style={{ background: studyMode === 'full' ? 'var(--accent-2)' : 'var(--bg)', color: studyMode === 'full' ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>
-            📖 Đoạn văn
-          </button>
-          <button onClick={() => setStudyMode('sentence')}
-            className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
-            style={{ background: studyMode === 'sentence' ? 'var(--accent-2)' : 'var(--bg)', color: studyMode === 'sentence' ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>
-            📑 Từng câu
-          </button>
-          <div className="ml-auto flex gap-2">
-            <button onClick={() => speak(selectedReading.sentences.map(s => s.hanzi).join(' '))}
-              className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all hover:scale-105"
-              style={{ background:'var(--accent)', color:'white' }}>
-              🔊 Nghe cả bài
-            </button>
-            {!isCompleted && (
-              <button onClick={() => markComplete(selectedReading.id)}
-                className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all hover:scale-105"
-                style={{ background:'#10b981', color:'white' }}>
-                ✓ Đánh dấu đã đọc
-              </button>
-            )}
-          </div>
+      {/* Harvest panel */}
+      {showHarvest && (
+        <div className="mb-6">
+          <HarvestPanel savedWords={savedWords} srsData={srsData||{}} updateSRS={updateSRS||(() => {})}
+            onDismiss={() => { setShowHarvest(false); setShowCheck(true); }} />
         </div>
+      )}
 
-        <div className="mt-2 text-xs" style={{ color:'var(--muted)' }}>
-          💡 Nhấn vào bất kỳ chữ Hán nào để xem nghĩa · Phím ← → chuyển câu (chế độ từng câu)
-        </div>
-      </div>
-
-      {/* ── POST-READING CHECK ── */}
+      {/* Post-reading check */}
       {showCheck && (
         <div className="mb-6">
-          <PostReadingCheck
-            reading={selectedReading}
-            onDone={() => { setShowCheck(false); setSelectedReadingId(null); }}
-          />
+          <PostReadingCheck reading={selectedReading} onDone={() => { setShowCheck(false); setSelectedReadingId(null); }} />
+        </div>
+      )}
+
+      {/* Controls */}
+      {!showHarvest && !showCheck && (
+        <div className="mb-5 p-4 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <span className="text-[10px] tracking-widest font-bold" style={{ color:'var(--muted)' }}>CHỮ</span>
+            {[{k:'chinese',l:'汉 Hán'},{k:'pinyin',l:'ā Pin'},{k:'meaning',l:'V Nghĩa'},{k:'combined',l:'✓ Kết hợp'}].map(o => (
+              <button key={o.k} onClick={() => setDisplayMode(o.k)}
+                className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
+                style={{ background: displayMode===o.k ? 'var(--accent)' : 'var(--bg)', color: displayMode===o.k ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>
+                {o.l}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[10px] tracking-widest font-bold" style={{ color:'var(--muted)' }}>CHẾ ĐỘ</span>
+            <button onClick={() => setStudyMode('full')} className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
+              style={{ background: studyMode==='full' ? 'var(--accent-2)' : 'var(--bg)', color: studyMode==='full' ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>
+              📖 Đoạn văn
+            </button>
+            <button onClick={() => setStudyMode('sentence')} className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all"
+              style={{ background: studyMode==='sentence' ? 'var(--accent-2)' : 'var(--bg)', color: studyMode==='sentence' ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>
+              📑 Từng câu
+            </button>
+            <div className="ml-auto flex gap-2 flex-wrap">
+              <button onClick={() => speak(selectedReading.sentences.map(s=>s.hanzi).join(' '))}
+                className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all hover:scale-105"
+                style={{ background:'var(--accent)', color:'white' }}>🔊 Cả bài</button>
+              {!isCompleted && (
+                <button onClick={() => markComplete(selectedReading.id)}
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold transition-all hover:scale-105"
+                  style={{ background:'#10b981', color:'white' }}>✓ Đã đọc xong</button>
+              )}
+            </div>
+          </div>
+          {/* Word status legend */}
+          {srsData && showChinese && (
+            <div className="mt-3 pt-3" style={{ borderTop:'1px dashed var(--border)' }}>
+              <div className="text-[10px] tracking-widest mb-2 font-bold" style={{ color:'var(--muted)' }}>MÀU SẮC TỪ</div>
+              <WordStatusLegend />
+            </div>
+          )}
+          <div className="mt-2 text-xs" style={{ color:'var(--muted)' }}>
+            💡 Nhấn vào chữ Hán để xem nghĩa · Phím <kbd style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'4px', padding:'1px 4px', fontFamily:'monospace' }}>← →</kbd> chuyển câu
+          </div>
         </div>
       )}
 
       {/* ── FULL PARAGRAPH MODE ── */}
-      {!showCheck && studyMode === 'full' && (() => {
-        const showChinese = displayMode === 'chinese' || displayMode === 'combined';
-        const showPinyin  = displayMode === 'pinyin'  || displayMode === 'combined';
-        const showMeaning = displayMode === 'meaning' || displayMode === 'combined';
-
-        return (
-          <div className="p-7 rounded-3xl soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-            {/* Chinese text */}
-            {showChinese && (
-              <div className="mb-4">
-                <div className="flex items-start gap-3 mb-2">
-                  <button onClick={() => speak(selectedReading.sentences.map(s => s.hanzi).join(''))}
-                    className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center transition-all hover:scale-110 mt-1"
-                    style={{ background:'var(--accent)', color:'white', fontSize:'14px' }}>🔊</button>
-                  <div style={{ flex:1, lineHeight:2.4 }}>
-                    {selectedReading.sentences.map((s, i) => (
-                      <span key={i} style={{ marginRight:'4px' }}>
-                        <ClickableText text={s.hanzi} fontSize="22px" lineHeight={2.4} onWordClick={handleWordClick} />
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Pinyin */}
-            {showPinyin && !showChinese && (
-              <div className="mb-4 leading-loose">
-                {selectedReading.sentences.map((s, i) => (
-                  <span key={i} style={{ marginRight:'6px' }}>
-                    <ColoredPinyin pinyin={s.pinyin} size="lg" />
-                  </span>
-                ))}
-              </div>
-            )}
-            {showPinyin && showChinese && (
-              <div className="mb-4 pt-4" style={{ borderTop:'1px dashed var(--border)', paddingLeft:'48px' }}>
-                <div className="text-[10px] tracking-widest mb-2 font-bold" style={{ color:'var(--muted)' }}>PINYIN</div>
-                <div style={{ lineHeight:2 }}>
-                  {selectedReading.sentences.map((s, i) => (
-                    <span key={i} style={{ marginRight:'6px' }}>
-                      <ColoredPinyin pinyin={s.pinyin} size="base" />
+      {!showHarvest && !showCheck && studyMode === 'full' && (
+        <div className="p-7 rounded-3xl soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+          {showChinese && (
+            <div className="mb-4">
+              <div className="flex items-start gap-3">
+                <button onClick={() => speak(selectedReading.sentences.map(s=>s.hanzi).join(''))}
+                  className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center mt-1 hover:scale-110 transition-all"
+                  style={{ background:'var(--accent)', color:'white', fontSize:'14px' }}>🔊</button>
+                <div style={{ flex:1, lineHeight:2.4 }}>
+                  {selectedReading.sentences.map((s,i) => (
+                    <span key={i} style={{ marginRight:'4px' }}>
+                      <SmartText text={s.hanzi} fontSize="22px" lineHeight={2.4} srsData={srsData||{}} learned={learned||[]} onWordClick={handleWordClick} />
                     </span>
                   ))}
                 </div>
               </div>
-            )}
-
-            {/* Vietnamese meaning */}
-            {showMeaning && (
-              <div className={`italic leading-relaxed ${showChinese ? 'mt-4 pt-4' : ''}`}
-                style={{ borderTop: showChinese ? '1px dashed var(--border)' : 'none', color:'var(--muted)', paddingLeft: showChinese ? '48px' : '0' }}>
-                {showChinese && <div className="text-[10px] tracking-widest mb-2 not-italic font-bold" style={{ color:'var(--muted)' }}>NGHĨA TIẾNG VIỆT</div>}
-                {selectedReading.sentences.map(s => s.meaning).join(' ')}
+            </div>
+          )}
+          {showPinyin && !showChinese && (
+            <div className="mb-4 leading-loose">
+              {selectedReading.sentences.map((s,i) => <span key={i} style={{ marginRight:'6px' }}><ColoredPinyin pinyin={s.pinyin} size="lg" /></span>)}
+            </div>
+          )}
+          {showPinyin && showChinese && (
+            <div className="mb-4 pt-4" style={{ borderTop:'1px dashed var(--border)', paddingLeft:'48px' }}>
+              <div className="text-[10px] tracking-widest mb-2 font-bold" style={{ color:'var(--muted)' }}>PINYIN</div>
+              <div style={{ lineHeight:2 }}>
+                {selectedReading.sentences.map((s,i) => <span key={i} style={{ marginRight:'6px' }}><ColoredPinyin pinyin={s.pinyin} size="base" /></span>)}
               </div>
-            )}
+            </div>
+          )}
+          {showMeaning && (
+            <div className={`italic leading-relaxed ${showChinese?'mt-4 pt-4':''}`}
+              style={{ borderTop:showChinese?'1px dashed var(--border)':'none', color:'var(--muted)', paddingLeft:showChinese?'48px':'0' }}>
+              {showChinese && <div className="text-[10px] tracking-widest mb-2 not-italic font-bold" style={{ color:'var(--muted)' }}>NGHĨA TIẾNG VIỆT</div>}
+              {selectedReading.sentences.map(s=>s.meaning).join(' ')}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── SENTENCE MODE ── */}
+      {!showHarvest && !showCheck && studyMode === 'sentence' && (() => {
+        const s = selectedReading.sentences[currentSentenceIdx];
+        return (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-sm" style={{ color:'var(--muted)' }}>Câu <strong style={{ color:'var(--ink)' }}>{currentSentenceIdx+1}</strong> / {totalSentences}</div>
+              <div className="text-xs font-bold" style={{ color:'var(--accent)' }}>{Math.round((currentSentenceIdx+1)/totalSentences*100)}%</div>
+            </div>
+            <div className="h-1.5 rounded-full overflow-hidden mb-5" style={{ background:'var(--bg)' }}>
+              <div className="h-full transition-all duration-500" style={{ width:`${(currentSentenceIdx+1)/totalSentences*100}%`, background:'linear-gradient(90deg, var(--accent-soft), var(--accent))' }} />
+            </div>
+            <div className="p-6 rounded-3xl soft-shadow mb-5" style={{ background:'var(--surface)', border:'1.5px solid var(--accent-soft)' }}>
+              {showChinese && (
+                <div className="mb-3 flex items-start gap-3">
+                  <button onClick={() => speak(s.hanzi)} className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mt-1 hover:scale-110 transition-all" style={{ background:'var(--accent)', color:'white', fontSize:'13px' }}>🔊</button>
+                  <SmartText text={s.hanzi} fontSize="22px" lineHeight={2} srsData={srsData||{}} learned={learned||[]} onWordClick={handleWordClick} />
+                </div>
+              )}
+              {showPinyin && <div className="mb-2" style={{ paddingLeft:showChinese?'44px':'0' }}><ColoredPinyin pinyin={s.pinyin} size="lg" /></div>}
+              {showMeaning && <div className="italic text-base" style={{ color:'var(--ink)', paddingLeft:showChinese?'44px':'0', lineHeight:1.6 }}>{s.meaning}</div>}
+            </div>
+            <div className="flex gap-2 mb-4">
+              <button onClick={() => setCurrentSentenceIdx(i=>Math.max(0,i-1))} disabled={currentSentenceIdx===0}
+                className="flex-1 py-3 rounded-2xl font-semibold transition-all disabled:opacity-40"
+                style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)' }}>← Câu trước</button>
+              {currentSentenceIdx < totalSentences-1 ? (
+                <button onClick={() => setCurrentSentenceIdx(i=>i+1)} className="flex-1 py-3 rounded-2xl font-semibold transition-all hover:scale-[1.02]" style={{ background:'var(--accent)', color:'white' }}>Câu tiếp →</button>
+              ) : (
+                <button onClick={() => markComplete(selectedReading.id)} className="flex-1 py-3 rounded-2xl font-bold transition-all hover:scale-[1.02]" style={{ background:'linear-gradient(135deg, #10b981, #34d399)', color:'white' }}>✓ Hoàn thành!</button>
+              )}
+            </div>
+            <div className="p-3 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+              <div className="text-[10px] tracking-widest mb-2 font-bold" style={{ color:'var(--muted)' }}>NHẢY TỚI CÂU</div>
+              <div className="flex gap-1.5 flex-wrap">
+                {selectedReading.sentences.map((_,i) => (
+                  <button key={i} onClick={() => setCurrentSentenceIdx(i)} className="w-8 h-8 rounded-lg text-xs font-semibold transition-all"
+                    style={{ background: i===currentSentenceIdx?'var(--accent)':i<currentSentenceIdx?'var(--accent-soft)':'var(--bg)', color:i<=currentSentenceIdx?'white':'var(--ink)', border:'1px solid var(--border)' }}>{i+1}</button>
+                ))}
+              </div>
+            </div>
           </div>
         );
       })()}
 
-      {/* ── SENTENCE-BY-SENTENCE MODE ── */}
-      {!showCheck && studyMode === 'sentence' && (
-        <div>
-          {/* Progress */}
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-sm" style={{ color:'var(--muted)' }}>
-              Câu <strong style={{ color:'var(--ink)' }}>{currentSentenceIdx+1}</strong> / {totalSentences}
-            </div>
-            <div className="text-xs font-bold" style={{ color:'var(--accent)' }}>
-              {Math.round((currentSentenceIdx+1)/totalSentences*100)}%
-            </div>
-          </div>
-          <div className="h-1.5 rounded-full overflow-hidden mb-5" style={{ background:'var(--bg)' }}>
-            <div className="h-full transition-all duration-500"
-              style={{ width:`${(currentSentenceIdx+1)/totalSentences*100}%`, background:'linear-gradient(90deg, var(--accent-soft), var(--accent))' }} />
-          </div>
-
-          {/* Current sentence card */}
-          {(() => {
-            const s = selectedReading.sentences[currentSentenceIdx];
-            const showChinese = displayMode === 'chinese' || displayMode === 'combined';
-            const showPinyin  = displayMode === 'pinyin'  || displayMode === 'combined';
-            const showMeaning = displayMode === 'meaning' || displayMode === 'combined';
-            return (
-              <div className="p-6 rounded-3xl soft-shadow mb-5"
-                style={{ background:'var(--surface)', border:'1.5px solid var(--accent-soft)' }}>
-                {showChinese && (
-                  <div className="mb-3 flex items-start gap-3">
-                    <button onClick={() => speak(s.hanzi)}
-                      className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mt-1 transition-all hover:scale-110"
-                      style={{ background:'var(--accent)', color:'white', fontSize:'13px' }}>🔊</button>
-                    <div>
-                      <ClickableText text={s.hanzi} fontSize="22px" lineHeight={2} onWordClick={handleWordClick} />
-                    </div>
-                  </div>
-                )}
-                {showPinyin && (
-                  <div className="mb-2" style={{ paddingLeft: showChinese ? '44px' : '0' }}>
-                    <ColoredPinyin pinyin={s.pinyin} size="lg" />
-                  </div>
-                )}
-                {showMeaning && (
-                  <div className="italic text-base" style={{ color:'var(--ink)', paddingLeft: showChinese ? '44px' : '0', lineHeight:1.6 }}>
-                    {s.meaning}
-                  </div>
-                )}
-              </div>
-            );
-          })()}
-
-          {/* Nav buttons */}
-          <div className="flex gap-2 mb-4">
-            <button onClick={() => setCurrentSentenceIdx(i => Math.max(0, i-1))}
-              disabled={currentSentenceIdx === 0}
-              className="flex-1 py-3 rounded-2xl font-semibold transition-all disabled:opacity-40"
-              style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)' }}>
-              ← Câu trước
-            </button>
-            {currentSentenceIdx < totalSentences - 1 ? (
-              <button onClick={() => setCurrentSentenceIdx(i => i+1)}
-                className="flex-1 py-3 rounded-2xl font-semibold transition-all hover:scale-[1.02]"
-                style={{ background:'var(--accent)', color:'white' }}>
-                Câu tiếp →
-              </button>
-            ) : (
-              <button onClick={() => markComplete(selectedReading.id)}
-                className="flex-1 py-3 rounded-2xl font-bold transition-all hover:scale-[1.02]"
-                style={{ background:'linear-gradient(135deg, #10b981, #34d399)', color:'white' }}>
-                ✓ Hoàn thành bài!
-              </button>
-            )}
-          </div>
-
-          {/* Sentence grid jump */}
-          <div className="p-3 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-            <div className="text-[10px] tracking-widest mb-2 font-bold" style={{ color:'var(--muted)' }}>NHẢY TỚI CÂU</div>
-            <div className="flex gap-1.5 flex-wrap">
-              {selectedReading.sentences.map((_, i) => (
-                <button key={i} onClick={() => setCurrentSentenceIdx(i)}
-                  className="w-8 h-8 rounded-lg text-xs transition-all font-semibold"
-                  style={{ background: i === currentSentenceIdx ? 'var(--accent)' : i < currentSentenceIdx ? 'var(--accent-soft)' : 'var(--bg)', color: i <= currentSentenceIdx ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>
-                  {i+1}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Keyboard hint */}
-      {!showCheck && (
+      {/* Tip */}
+      {!showHarvest && !showCheck && (
         <div className="mt-5 p-3 rounded-2xl flex items-center gap-2 text-xs" style={{ background:'var(--surface-soft)', color:'var(--muted)' }}>
           <span>💡</span>
-          <span>Nhấn vào chữ Hán để xem nghĩa từng từ · Phím <kbd className="px-1 py-0.5 rounded" style={{ background:'var(--surface)',border:'1px solid var(--border)',fontFamily:'monospace' }}>← →</kbd> chuyển câu (chế độ từng câu)</span>
+          <span>Nhấn vào chữ Hán để xem nghĩa và thêm vào SRS · Phím <kbd style={{ background:'var(--surface)', border:'1px solid var(--border)', borderRadius:'4px', padding:'1px 4px', fontFamily:'monospace' }}>← →</kbd> chuyển câu</span>
         </div>
       )}
     </div>
@@ -11223,7 +11506,7 @@ const ReadingView = ({ onActivity }) => {
 };
 
 // ============ PROGRESS VIEW ============
-const ProgressView = ({ learned, starred, srsData, quizScores }) => {
+const ProgressView = ({ learned, starred, srsData, quizScores, habit }) => {
   const stats = useMemo(() => {
     const result = {};
     [1,2,3,4,5,6].forEach(l => {
@@ -11237,48 +11520,79 @@ const ProgressView = ({ learned, starred, srsData, quizScores }) => {
   const totalLearned = Object.values(stats).reduce((a, b) => a + b.learned, 0);
   const totalAll = Object.values(stats).reduce((a, b) => a + b.total, 0);
   const overallPct = totalAll > 0 ? Math.round((totalLearned / totalAll) * 100) : 0;
-
   const srsCount = Object.keys(srsData).length;
   const dueCount = Object.values(srsData).filter(d => d.nextReview <= Date.now()).length;
+
+  const streak = habit?.streak || 0;
+  const xp = habit?.xp || 0;
+  const levelName = LEVEL_NAMES[habit?.level || 0];
+  const bestStreak = habit?.bestStreak || 0;
+
+  // Study history for mini heatmap (last 35 days)
+  const heatmapDays = useMemo(() => {
+    const days = [];
+    const d = new Date();
+    d.setDate(d.getDate() - 34);
+    for (let i = 0; i < 35; i++) {
+      const dateStr = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      const entry = habit?.studyHistory?.[dateStr];
+      days.push({ date: dateStr, day: d.getDate(), studied: !!entry && !entry.freeze, frozen: entry?.freeze, words: entry?.words || 0 });
+      d.setDate(d.getDate() + 1);
+    }
+    return days;
+  }, [habit]);
+
+  const hskColors = { 1:'#10b981', 2:'#3d8bd1', 3:'#8b5cf6', 4:'#f59e0b', 5:'#ef4444', 6:'#374151' };
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-8">
       <div className="mb-8">
         <div className="text-xs tracking-[0.3em] mb-2" style={{ color:'var(--accent)' }}>进度 · TIẾN ĐỘ</div>
-        <h1 className="text-4xl mb-2" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Theo dõi học tập</h1>
-        <p style={{ color:'var(--muted)' }}>Tất cả thống kê được lưu lại giữa các phiên học</p>
+        <h1 className="text-3xl mb-1" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Theo dõi học tập</h1>
+        <p className="text-sm" style={{ color:'var(--muted)' }}>Dữ liệu được lưu tự động trên trình duyệt của bạn</p>
       </div>
 
-      {/* Overall stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      {/* Top stats row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {[
-          { label:'Từ đã thuộc', value: totalLearned, sub:`${overallPct}%` },
-          { label:'Từ đánh dấu', value: starred.length, sub:'★' },
-          { label:'Đang ôn (SRS)', value: srsCount, sub:'thẻ' },
-          { label:'Cần ôn hôm nay', value: dueCount, sub:'thẻ' },
+          { label:'Từ đã thuộc', value: totalLearned, sub:`/ ${totalAll} từ (${overallPct}%)`, color: 'var(--accent)' },
+          { label:'Streak hiện tại', value: `🔥 ${streak}`, sub:`Kỷ lục: ${bestStreak} ngày`, color: '#ff6b2b' },
+          { label:'Đang ôn (SRS)', value: srsCount, sub:`${dueCount} cần ôn hôm nay`, color: '#8b5cf6' },
+          { label:'Level / XP', value: levelName, sub:`${xp.toLocaleString()} XP`, color: 'var(--accent-2)' },
         ].map((s, i) => (
-          <div key={i} className="p-5 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+          <div key={i} className="p-5 rounded-2xl soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
             <div className="text-xs tracking-widest mb-1" style={{ color:'var(--muted)' }}>{s.label.toUpperCase()}</div>
-            <div className="text-3xl" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--accent)' }}>{s.value}</div>
-            <div className="text-sm" style={{ color:'var(--muted)' }}>{s.sub}</div>
+            <div className="text-2xl font-bold mb-1" style={{ color: s.color }}>{s.value}</div>
+            <div className="text-xs" style={{ color:'var(--muted)' }}>{s.sub}</div>
           </div>
         ))}
       </div>
 
-      {/* HSK levels progress */}
-      <div className="p-6 rounded-2xl mb-8" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-        <h2 className="text-xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Tiến độ theo cấp HSK</h2>
-        <div className="space-y-4">
+      {/* Overall progress */}
+      <div className="p-5 rounded-2xl mb-6 soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+        <div className="flex justify-between items-baseline mb-3 flex-wrap gap-2">
+          <div className="text-sm font-semibold" style={{ color:'var(--ink)' }}>Tổng tiến độ HSK 1-6</div>
+          <div className="text-2xl font-bold" style={{ color:'var(--accent)' }}>{overallPct}%</div>
+        </div>
+        <div className="h-2 rounded-full overflow-hidden" style={{ background:'var(--bg)' }}>
+          <div className="h-full transition-all" style={{ width:`${overallPct}%`, background:'linear-gradient(90deg, var(--accent), var(--accent-soft))' }} />
+        </div>
+      </div>
+
+      {/* Per-level breakdown */}
+      <div className="p-5 rounded-2xl mb-6 soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+        <div className="text-xs tracking-widest mb-4 font-bold" style={{ color:'var(--muted)' }}>TIẾN ĐỘ THEO CẤP</div>
+        <div className="space-y-3">
           {[1,2,3,4,5,6].map(l => {
             const s = stats[l];
             return (
-              <div key={l}>
-                <div className="flex justify-between mb-1">
-                  <span style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>HSK {l}</span>
-                  <span className="text-sm" style={{ color:'var(--muted)' }}>{s.learned}/{s.total} ({s.pct}%)</span>
+              <div key={l} className="flex items-center gap-3">
+                <div className="font-bold text-sm w-12" style={{ color: hskColors[l] }}>HSK {l}</div>
+                <div className="flex-1 h-2 rounded-full overflow-hidden" style={{ background:'var(--surface-soft)' }}>
+                  <div className="h-full rounded-full transition-all" style={{ width:`${s.pct}%`, background: hskColors[l] }} />
                 </div>
-                <div className="h-3 rounded-full overflow-hidden" style={{ background:'var(--bg)' }}>
-                  <div className="h-full transition-all duration-700" style={{ width:`${s.pct}%`, background:`linear-gradient(90deg, var(--accent), var(--accent-2))` }} />
+                <div className="text-xs font-semibold w-20 text-right" style={{ color:'var(--ink)' }}>
+                  {s.learned} / {s.total}
                 </div>
               </div>
             );
@@ -11286,26 +11600,68 @@ const ProgressView = ({ learned, starred, srsData, quizScores }) => {
         </div>
       </div>
 
-      {/* Quiz history */}
-      {quizScores.length > 0 && (
-        <div className="p-6 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-          <h2 className="text-xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Lịch sử Quiz</h2>
-          <div className="space-y-2">
-            {quizScores.slice(-10).reverse().map((q, i) => {
-              const pct = Math.round((q.score / q.total) * 100);
+      {/* 35-day heatmap */}
+      <div className="p-5 rounded-2xl mb-6 soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+        <div className="text-xs tracking-widest mb-3 font-bold" style={{ color:'var(--muted)' }}>LỊCH HỌC 35 NGÀY GẦN ĐÂY</div>
+        <div className="grid grid-cols-7 gap-1 mb-1">
+          {['T2','T3','T4','T5','T6','T7','CN'].map(d => (
+            <div key={d} className="text-center text-[10px]" style={{ color:'var(--muted)' }}>{d}</div>
+          ))}
+        </div>
+        <div className="grid grid-cols-7 gap-1">
+          {heatmapDays.map((d, i) => (
+            <div key={i}
+              title={d.studied ? `${d.date}: ${d.words} từ` : d.frozen ? `${d.date}: Freeze 🧊` : d.date}
+              className="aspect-square rounded-lg"
+              style={{
+                background: d.studied ? 'linear-gradient(135deg, #ff6b2b, #ff9500)'
+                  : d.frozen ? 'linear-gradient(135deg, #60a5fa, #93c5fd)'
+                  : 'var(--surface-soft)',
+                border: d.date === todayStr() ? '2px solid var(--accent)' : 'none',
+              }} />
+          ))}
+        </div>
+        <div className="flex gap-3 mt-2 text-xs" style={{ color:'var(--muted)' }}>
+          <span>🔥 Đã học</span><span>🧊 Freeze</span><span>□ Không học</span>
+        </div>
+      </div>
+
+      {/* SRS retention chart */}
+      {srsCount > 0 && (
+        <div className="p-5 rounded-2xl mb-6 soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+          <div className="text-xs tracking-widest mb-4 font-bold" style={{ color:'var(--muted)' }}>SRS STATS</div>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { label: 'Tổng thẻ', value: srsCount },
+              { label: 'Cần ôn hôm nay', value: dueCount },
+              { label: 'Đã thuộc (review)', value: Object.values(srsData).filter(d => d.state === 'review' && d.nextReview > Date.now()).length },
+            ].map(({ label, value }) => (
+              <div key={label} className="p-3 rounded-xl text-center" style={{ background:'var(--surface-soft)' }}>
+                <div className="text-2xl font-bold mb-0.5" style={{ color:'var(--accent)' }}>{value}</div>
+                <div className="text-xs" style={{ color:'var(--muted)' }}>{label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Starred words */}
+      {starred.length > 0 && (
+        <div className="p-5 rounded-2xl soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+          <div className="text-xs tracking-widest mb-3 font-bold" style={{ color:'var(--muted)' }}>★ TỪ YÊU THÍCH ({starred.length})</div>
+          <div className="flex flex-wrap gap-2">
+            {starred.slice(0, 40).map(id => {
+              let w = null;
+              for (let l = 1; l <= 6; l++) { w = (ALL_HSK[l]||[]).find(x => x.id === id); if (w) break; }
+              if (!w) return null;
               return (
-                <div key={i} className="flex justify-between items-center p-3 rounded-2xl" style={{ background:'var(--bg)' }}>
-                  <div>
-                    <div style={{ fontFamily:'var(--font-display)', color:'var(--ink)' }}>HSK {q.level}</div>
-                    <div className="text-xs" style={{ color:'var(--muted)' }}>{new Date(q.date).toLocaleDateString('vi-VN')} {new Date(q.date).toLocaleTimeString('vi-VN', {hour:'2-digit',minute:'2-digit'})}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-lg" style={{ fontFamily:'var(--font-display)', fontWeight:700, color: pct >= 80 ? '#10b981' : pct >= 60 ? '#f59e0b' : '#dc2626' }}>{q.score}/{q.total}</div>
-                    <div className="text-xs" style={{ color:'var(--muted)' }}>{pct}%</div>
-                  </div>
+                <div key={id} className="px-3 py-1.5 rounded-xl" style={{ background:'var(--bg)', border:'1px solid var(--border)' }}>
+                  <span className="hanzi-text text-sm font-medium" style={{ color:'var(--ink)' }}>{w.hanzi}</span>
+                  <span className="text-xs ml-1.5" style={{ color:'var(--muted)' }}>{w.meaning}</span>
                 </div>
               );
             })}
+            {starred.length > 40 && <div className="text-xs self-center" style={{ color:'var(--muted)' }}>+{starred.length - 40} từ khác</div>}
           </div>
         </div>
       )}
@@ -11539,7 +11895,7 @@ function App() {
         />}
         {view === 'vocab' && <VocabView selectedHSK={selectedHSK} setSelectedHSK={setSelectedHSK} learned={learned} toggleLearned={toggleLearned} starred={starred} toggleStar={toggleStar} srsData={srsData} updateSRS={updateSRS} />}
         {view === 'grammar' && <GrammarView />}
-        {view === 'reading' && <ReadingView onActivity={trackReading} />}
+        {view === 'reading' && <ReadingView onActivity={trackReading} srsData={srsData} updateSRS={updateSRS} learned={learned} toggleLearned={toggleLearned} />}
         {view === 'flashcard' && <FlashcardView srsData={srsData} updateSRS={updateSRS} />}
         {view === 'quiz' && <QuizView toggleLearned={toggleLearned} learned={learned} addQuizScore={addQuizScore} />}
         {view === 'writing' && <WritingView onActivity={trackWriting} />}
