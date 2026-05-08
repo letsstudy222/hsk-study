@@ -10532,21 +10532,119 @@ const ListeningView = ({ srsData, trackActivity }) => {
   );
 };
 
-const WritingView = () => {
+// ============ WRITING / HANZI PRACTICE SYSTEM ============
+
+// ── Radical data: common radicals với nghĩa ──
+const RADICAL_MEANINGS = {
+  '人':'người','亻':'người','口':'miệng','日':'mặt trời/ngày','月':'mặt trăng/tháng',
+  '水':'nước','氵':'nước','火':'lửa','灬':'lửa','木':'gỗ/cây','土':'đất','山':'núi',
+  '女':'nữ/phụ nữ','子':'con','心':'tâm/lòng','忄':'tâm/lòng','手':'tay','扌':'tay',
+  '目':'mắt','耳':'tai','足':'chân','走':'đi','言':'lời nói','讠':'lời nói',
+  '金':'kim loại','钅':'kim loại','食':'ăn/thức ăn','饣':'ăn/thức ăn','草':'cỏ/thực vật',
+  '艹':'cỏ/thực vật','虫':'sâu/côn trùng','鱼':'cá','鸟':'chim','马':'ngựa',
+  '门':'cửa','宀':'mái nhà','广':'mái hiên','力':'sức mạnh','刀':'dao','刂':'dao',
+  '大':'lớn','小':'nhỏ','中':'giữa','上':'trên','下':'dưới','左':'trái','右':'phải',
+  '工':'thợ/làm việc','王':'vua','石':'đá','贝':'vỏ sò/tiền bạc','见':'nhìn thấy',
+  '页':'trang','风':'gió','雨':'mưa','田':'ruộng','白':'trắng','示':'thần linh/chỉ',
+};
+
+// ── Confusion pairs: chữ dễ nhầm ──
+const CONFUSION_PAIRS = {
+  '大':['太','犬'],'太':['大','犬'],'己':['已','巳'],'已':['己','巳'],
+  '在':['再','存'],'再':['在','两'],'土':['士','土'],'士':['土'],
+  '木':['本','末','朴'],'本':['末','木'],'末':['本','木'],
+  '日':['目','白','曰'],'目':['日','曰'],'白':['日','百'],
+  '人':['入','八'],'入':['人','八'],'八':['人','入'],
+  '马':['鸟','乌'],'鸟':['马','乌'],'乌':['鸟','马'],
+};
+
+// ── Radical Decomposition Panel ──
+const RadicalPanel = ({ char }) => {
+  const radicals = useMemo(() => {
+    const found = [];
+    for (const [r, meaning] of Object.entries(RADICAL_MEANINGS)) {
+      if (char.includes(r) && r !== char) found.push({ r, meaning });
+    }
+    return found.slice(0, 4);
+  }, [char]);
+
+  const confusion = CONFUSION_PAIRS[char] || [];
+
+  if (radicals.length === 0 && confusion.length === 0) return null;
+
+  return (
+    <div className="space-y-3">
+      {radicals.length > 0 && (
+        <div className="p-3.5 rounded-2xl" style={{ background: 'var(--bg)', border: '1px solid var(--border)' }}>
+          <div className="text-[10px] tracking-widest mb-2 font-bold" style={{ color: 'var(--accent)' }}>🧩 BỘ THỦ (RADICAL)</div>
+          <div className="flex flex-wrap gap-2">
+            {radicals.map(({ r, meaning }) => (
+              <div key={r} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl"
+                style={{ background: 'var(--surface)', border: '1px solid var(--accent-soft)' }}>
+                <span className="hanzi-text font-medium" style={{ fontSize: '20px', color: 'var(--accent-2)' }}>{r}</span>
+                <span className="text-xs" style={{ color: 'var(--muted)' }}>{meaning}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {confusion.length > 0 && (
+        <div className="p-3.5 rounded-2xl" style={{ background: '#fef3c7', border: '1px solid #fde68a' }}>
+          <div className="text-[10px] tracking-widest mb-2 font-bold" style={{ color: '#92400e' }}>⚠️ DỄ NHẦM VỚI</div>
+          <div className="flex gap-2 flex-wrap">
+            {confusion.map(c => (
+              <button key={c} onClick={() => speak(c)}
+                className="hanzi-text font-medium px-3 py-1.5 rounded-xl hover:scale-110 transition-all"
+                style={{ fontSize: '22px', background: 'white', color: '#92400e', border: '1px solid #fde68a' }}>
+                {c}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── Stroke Progress Bar ──
+const StrokeProgressBar = ({ current, total, mode }) => {
+  if (total === 0 || mode !== 'quiz') return null;
+  const pct = total > 0 ? Math.min(100, Math.round((current / total) * 100)) : 0;
+  return (
+    <div className="mb-3">
+      <div className="flex justify-between text-xs mb-1" style={{ color: 'var(--muted)' }}>
+        <span>Nét {current} / {total}</span>
+        <span style={{ color: pct === 100 ? '#10b981' : 'var(--accent)', fontWeight: 600 }}>
+          {pct === 100 ? '✓ Hoàn thành!' : `${pct}%`}
+        </span>
+      </div>
+      <div className="h-2 rounded-full overflow-hidden" style={{ background: 'var(--surface-soft)' }}>
+        <div className="h-full rounded-full transition-all duration-300"
+          style={{ width: `${pct}%`, background: pct === 100 ? 'linear-gradient(90deg, #10b981, #34d399)' : 'linear-gradient(90deg, var(--accent), var(--accent-2))' }} />
+      </div>
+    </div>
+  );
+};
+
+// ── WritingView (Rebuilt) ──
+const WritingView = ({ onActivity }) => {
   const [hskLevel, setHskLevel] = useState(1);
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [charIdx, setCharIdx] = useState(0); // index of character within word (for multi-char words)
-  const [mode, setMode] = useState('animate'); // 'animate' | 'quiz' | 'practice'
+  const [charIdx, setCharIdx] = useState(0);
+  const [mode, setMode] = useState('animate'); // 'animate' | 'quiz' | 'recall' | 'practice'
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [strokeCount, setStrokeCount] = useState(0);
   const [currentStroke, setCurrentStroke] = useState(0);
-  // Bảng chọn từ vựng
   const [showSelector, setShowSelector] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sessionCount, setSessionCount] = useState(0); // words practiced this session
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [showRecallAnswer, setShowRecallAnswer] = useState(false);
+  const [recallRating, setRecallRating] = useState(null); // 'easy'|'hard'|'forgot'
+
   const writerContainerRef = useRef(null);
   const writerRef = useRef(null);
-
   const practiceCanvasRef = useRef(null);
   const isDrawing = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
@@ -10555,28 +10653,31 @@ const WritingView = () => {
   const currentWord = words[currentIdx];
   const currentChar = currentWord ? currentWord.hanzi[charIdx] : '';
 
-  // Lọc từ vựng cho bảng chọn theo từ khóa
   const filteredWords = useMemo(() => {
     if (!searchQuery.trim()) return words;
-    const q = searchQuery.toLowerCase().trim();
-    return words.filter(w =>
-      w.hanzi.includes(q) ||
-      w.pinyin.toLowerCase().includes(q) ||
-      w.meaning.toLowerCase().includes(q)
-    );
+    const q = searchQuery.toLowerCase();
+    return words.filter(w => w.hanzi.includes(q) || w.pinyin.toLowerCase().includes(q) || w.meaning.toLowerCase().includes(q));
   }, [words, searchQuery]);
 
-  // Reset character index when word changes + auto-speak
+  // Reset char index + auto-speak on word change
   useEffect(() => {
     setCharIdx(0);
+    setQuizCompleted(false);
+    setShowRecallAnswer(false);
+    setRecallRating(null);
     if (!currentWord) return;
     const t = setTimeout(() => speak(currentWord.hanzi), 300);
     return () => clearTimeout(t);
   }, [currentIdx, hskLevel]);
 
-  // Initialize / re-initialize HanziWriter when char or mode changes
+  // Reset quiz state on char change
   useEffect(() => {
-    if (!currentChar) return;
+    setQuizCompleted(false);
+  }, [charIdx]);
+
+  // Initialize HanziWriter
+  useEffect(() => {
+    if (!currentChar || mode === 'practice' || mode === 'recall') return;
     let cancelled = false;
     setLoading(true);
     setError(null);
@@ -10586,88 +10687,68 @@ const WritingView = () => {
       try {
         const HanziWriter = await loadHanziWriter();
         if (cancelled) return;
-
-        // Clean up previous writer
-        if (writerContainerRef.current) {
-          writerContainerRef.current.innerHTML = '';
-        }
-
-        // Create unique ID for this writer
+        if (writerContainerRef.current) writerContainerRef.current.innerHTML = '';
         const containerId = `hw-${Date.now()}`;
-        if (writerContainerRef.current) {
-          writerContainerRef.current.id = containerId;
-        }
-
-        const isDark = document.documentElement.style.getPropertyValue('--bg') === '#0f1a2e';
-        const accentColor = '#5b9bd5';
-        const accentSoft = '#a8c8e8';
-        const inkColor = isDark ? '#e8f1fc' : '#1e3a5f';
+        if (writerContainerRef.current) writerContainerRef.current.id = containerId;
 
         const writer = HanziWriter.create(containerId, currentChar, {
-          width: 280,
-          height: 280,
-          padding: 12,
+          width: 260,
+          height: 260,
+          padding: 14,
           showOutline: true,
           showCharacter: mode === 'animate',
-          strokeColor: inkColor,
-          outlineColor: '#d6e4f0',
-          radicalColor: accentColor,
-          highlightColor: accentColor,
-          drawingColor: accentColor,
-          strokeAnimationSpeed: 0.5,
-          delayBetweenStrokes: 600,
+          strokeColor: 'var(--ink)',
+          outlineColor: 'var(--border)',
+          radicalColor: 'var(--accent)',
+          highlightColor: 'var(--accent)',
+          drawingColor: 'var(--accent)',
+          strokeAnimationSpeed: mode === 'animate' ? 0.8 : 1,
+          delayBetweenStrokes: mode === 'animate' ? 500 : 300,
           drawingFadeDuration: 300,
-          showHintAfterMisses: 2,
+          showHintAfterMisses: 3,
         });
 
         writerRef.current = writer;
 
-        // Get stroke count
-        HanziWriter.loadCharacterData(currentChar).then(charData => {
-          if (cancelled) return;
-          setStrokeCount(charData.strokes.length);
+        HanziWriter.loadCharacterData(currentChar).then(data => {
+          if (!cancelled && data?.strokes) setStrokeCount(data.strokes.length);
         }).catch(() => {});
 
-        // Auto-start based on mode
+        setLoading(false);
+
         if (mode === 'animate') {
           setTimeout(() => {
             if (!cancelled && writerRef.current) {
-              writerRef.current.animateCharacter({
-                onComplete: () => {
-                  if (!cancelled) setCurrentStroke(0);
-                }
-              });
+              writerRef.current.animateCharacter({ onComplete: () => { if (!cancelled) setCurrentStroke(0); } });
             }
           }, 400);
         } else if (mode === 'quiz') {
           setTimeout(() => {
             if (!cancelled && writerRef.current) {
               writerRef.current.quiz({
-                onCorrectStroke: ({ strokeNum }) => {
-                  if (!cancelled) setCurrentStroke(strokeNum + 1);
-                },
+                onCorrectStroke: ({ strokeNum }) => { if (!cancelled) setCurrentStroke(strokeNum + 1); },
                 onComplete: () => {
-                  if (!cancelled) setCurrentStroke(strokeCount);
-                }
+                  if (!cancelled) {
+                    setCurrentStroke(strokeCount);
+                    setQuizCompleted(true);
+                    setSessionCount(c => c + 1);
+                    if (onActivity) onActivity();
+                  }
+                },
+                onMistake: () => {},
               });
             }
           }, 400);
         }
-
-        setLoading(false);
       } catch (e) {
-        if (!cancelled) {
-          console.error('HanziWriter error:', e);
-          setError('Không thể tải dữ liệu chữ. Vui lòng kiểm tra kết nối mạng.');
-          setLoading(false);
-        }
+        if (!cancelled) { setError('Không thể tải HanziWriter. Kiểm tra kết nối mạng.'); setLoading(false); }
       }
     })();
 
     return () => { cancelled = true; };
   }, [currentChar, mode]);
 
-  // Practice canvas (free drawing)
+  // Practice canvas setup
   useEffect(() => {
     if (mode !== 'practice') return;
     const c = practiceCanvasRef.current;
@@ -10678,8 +10759,6 @@ const WritingView = () => {
     c.height = rect.height * ratio;
     const ctx = c.getContext('2d');
     ctx.scale(ratio, ratio);
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
     drawPracticeGrid();
   }, [mode, currentIdx, charIdx, hskLevel]);
 
@@ -10691,50 +10770,46 @@ const WritingView = () => {
     const w = c.width / ratio, h = c.height / ratio;
     ctx.clearRect(0, 0, c.width, c.height);
     ctx.save();
-    // Grid lines (米 pattern)
-    ctx.strokeStyle = 'rgba(91, 155, 213, 0.2)';
+    ctx.strokeStyle = 'rgba(61,139,209,0.18)';
     ctx.lineWidth = 1;
     ctx.setLineDash([4, 4]);
     ctx.beginPath();
-    ctx.moveTo(w/2, 0); ctx.lineTo(w/2, h);
-    ctx.moveTo(0, h/2); ctx.lineTo(w, h/2);
-    ctx.moveTo(0, 0); ctx.lineTo(w, h);
-    ctx.moveTo(w, 0); ctx.lineTo(0, h);
+    ctx.moveTo(w/2,0); ctx.lineTo(w/2,h);
+    ctx.moveTo(0,h/2); ctx.lineTo(w,h/2);
+    ctx.moveTo(0,0); ctx.lineTo(w,h);
+    ctx.moveTo(w,0); ctx.lineTo(0,h);
     ctx.stroke();
     ctx.setLineDash([]);
-    ctx.strokeStyle = 'rgba(91, 155, 213, 0.5)';
+    ctx.strokeStyle = 'rgba(61,139,209,0.45)';
     ctx.lineWidth = 2;
-    ctx.strokeRect(1, 1, w-2, h-2);
-    // Light hint character
-    ctx.fillStyle = 'rgba(168, 200, 232, 0.25)';
-    ctx.font = `${Math.min(w, h) * 0.78}px "Noto Sans SC", sans-serif`;
+    ctx.strokeRect(1,1,w-2,h-2);
+    ctx.fillStyle = 'rgba(148,195,236,0.18)';
+    ctx.font = `${Math.min(w,h)*0.78}px "Noto Sans SC",sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(currentChar, w/2, h/2 + 4);
+    ctx.fillText(currentChar, w/2, h/2+4);
     ctx.restore();
   };
 
   const getPos = (e) => {
     const c = practiceCanvasRef.current;
     const rect = c.getBoundingClientRect();
-    const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-    const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
-    return { x, y };
+    return {
+      x: (e.touches ? e.touches[0].clientX : e.clientX) - rect.left,
+      y: (e.touches ? e.touches[0].clientY : e.clientY) - rect.top,
+    };
   };
-
-  const startDraw = (e) => {
-    e.preventDefault();
-    isDrawing.current = true;
-    lastPos.current = getPos(e);
-  };
+  const startDraw = (e) => { e.preventDefault(); isDrawing.current = true; lastPos.current = getPos(e); };
   const draw = (e) => {
     if (!isDrawing.current) return;
     e.preventDefault();
     const c = practiceCanvasRef.current;
     const ctx = c.getContext('2d');
     const pos = getPos(e);
-    ctx.strokeStyle = '#1e3a5f';
+    ctx.strokeStyle = 'var(--ink)';
     ctx.lineWidth = 8;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
     ctx.beginPath();
     ctx.moveTo(lastPos.current.x, lastPos.current.y);
     ctx.lineTo(pos.x, pos.y);
@@ -10743,123 +10818,94 @@ const WritingView = () => {
   };
   const stopDraw = () => { isDrawing.current = false; };
 
-  const handleAnimate = () => {
-    if (writerRef.current && !loading) {
-      writerRef.current.animateCharacter({
-        onComplete: () => setCurrentStroke(strokeCount)
-      });
-    }
+  const nextWord = () => {
+    setCurrentIdx(i => Math.min(words.length-1, i+1));
+    setMode('animate');
   };
+  const prevWord = () => { setCurrentIdx(i => Math.max(0, i-1)); };
 
-  const handleQuiz = () => {
-    setMode('quiz');
-  };
+  // Keyboard navigation
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      if (e.key === 'ArrowRight') nextWord();
+      if (e.key === 'ArrowLeft') prevWord();
+      if (e.code === 'Space' && currentWord) { e.preventDefault(); speak(currentWord.hanzi); }
+      if (e.key === 'a' || e.key === 'A') setMode('animate');
+      if (e.key === 'q' || e.key === 'Q') setMode('quiz');
+      if (e.key === 'r' || e.key === 'R') { setMode('recall'); setShowRecallAnswer(false); setRecallRating(null); }
+      if (e.key === 'p' || e.key === 'P') setMode('practice');
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [currentWord]);
 
   if (!currentWord) return null;
 
+  const MODES = [
+    { id:'animate', label:'▶ Xem mẫu', key:'A', color:'var(--accent)' },
+    { id:'quiz',    label:'✍️ Kiểm tra nét', key:'Q', color:'#8b5cf6' },
+    { id:'recall',  label:'🧠 Nhớ lại', key:'R', color:'#f59e0b' },
+    { id:'practice',label:'🖊 Viết tự do', key:'P', color:'#10b981' },
+  ];
+
   return (
     <div className="max-w-5xl mx-auto px-6 py-8">
+      {/* Header */}
       <div className="mb-6">
         <div className="text-xs tracking-[0.3em] mb-2" style={{ color:'var(--accent)' }}>书写 · LUYỆN VIẾT</div>
-        <h1 className="text-3xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Tập viết chữ Hán</h1>
-        <div className="flex gap-2 flex-wrap mb-3 items-center">
+        <div className="flex items-end justify-between flex-wrap gap-3 mb-4">
+          <h1 className="text-3xl" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>
+            Tập viết chữ Hán
+          </h1>
+          {sessionCount > 0 && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-2xl"
+              style={{ background: 'linear-gradient(135deg, #10b981, #34d399)', color: 'white' }}>
+              <span className="text-sm font-bold">✓ {sessionCount} chữ hôm nay</span>
+            </div>
+          )}
+        </div>
+
+        {/* Level tabs + selector toggle */}
+        <div className="flex gap-2 flex-wrap items-center mb-4">
           {[1,2,3,4,5,6].map(l => (
-            <button key={l} onClick={() => { setHskLevel(l); setCurrentIdx(0); setSearchQuery(''); }} className="px-3 py-1.5 rounded-2xl text-sm transition-all"
-              style={{ background: hskLevel === l ? 'var(--accent)' : 'var(--surface)', color: hskLevel === l ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>HSK {l}</button>
+            <button key={l} onClick={() => { setHskLevel(l); setCurrentIdx(0); setSearchQuery(''); }}
+              className="px-3 py-1.5 rounded-2xl text-sm transition-all font-semibold"
+              style={{ background: hskLevel===l ? 'var(--accent)' : 'var(--surface)', color: hskLevel===l ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>
+              HSK {l}
+            </button>
           ))}
-          <button
-            onClick={() => setShowSelector(!showSelector)}
-            className="px-3 py-1.5 rounded-2xl text-sm transition-all ml-auto flex items-center gap-1.5"
-            style={{
-              background: showSelector ? 'var(--accent-2)' : 'var(--surface)',
-              color: showSelector ? 'white' : 'var(--ink)',
-              border:'1px solid var(--border)',
-              fontWeight: 500
-            }}>
-            <span>📚</span>
-            {showSelector ? 'Đóng bảng chọn' : 'Chọn từ luyện viết'}
+          <button onClick={() => setShowSelector(!showSelector)}
+            className="ml-auto px-3 py-1.5 rounded-2xl text-sm transition-all flex items-center gap-1.5"
+            style={{ background: showSelector ? 'var(--accent-2)' : 'var(--surface)', color: showSelector ? 'white' : 'var(--ink)', border:'1px solid var(--border)', fontWeight:500 }}>
+            📚 {showSelector ? 'Đóng' : 'Chọn từ'}
           </button>
         </div>
 
         {/* Word selector panel */}
         {showSelector && (
-          <div className="p-4 rounded-3xl mb-3 soft-shadow" style={{ background: 'var(--surface)', border: '1px solid var(--accent-soft)' }}>
-            <div className="flex items-center justify-between mb-3 flex-wrap gap-2">
-              <div className="text-xs tracking-widest" style={{ color: 'var(--muted)', fontWeight: 600 }}>
-                CHỌN TỪ ĐỂ LUYỆN VIẾT
-              </div>
-              <div className="text-xs" style={{ color: 'var(--accent)' }}>
-                HSK {hskLevel} · {filteredWords.length} từ
-              </div>
-            </div>
-
-            {/* Search input */}
+          <div className="p-4 rounded-3xl mb-4 soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--accent-soft)' }}>
             <div className="relative mb-3">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Tìm theo chữ Hán, pinyin hoặc nghĩa Việt..."
-                className="w-full px-4 py-2.5 pl-10 rounded-2xl text-sm transition-all focus:outline-none"
-                style={{
-                  background: 'var(--bg)',
-                  color: 'var(--ink)',
-                  border: '1px solid var(--border)',
-                  fontFamily: 'inherit'
-                }}
-              />
-              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-base" style={{ color: 'var(--muted)' }}>🔍</span>
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center transition-all hover:scale-110"
-                  style={{ background: 'var(--border)', color: 'var(--ink)', fontSize: '11px' }}
-                  title="Xóa"
-                >✕</button>
-              )}
+              <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                placeholder="Tìm từ để luyện viết..."
+                className="w-full px-4 py-2.5 pl-10 rounded-2xl text-sm outline-none"
+                style={{ background:'var(--bg)', color:'var(--ink)', border:'1px solid var(--border)' }} />
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2" style={{ color:'var(--muted)' }}>🔍</span>
             </div>
-
-            {/* Word grid */}
-            {filteredWords.length === 0 ? (
-              <div className="py-8 text-center" style={{ color: 'var(--muted)' }}>
-                <div className="text-3xl mb-2 hanzi-text" style={{ color: 'var(--accent-soft)' }}>空</div>
-                <div className="text-sm">Không tìm thấy từ nào</div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 max-h-72 overflow-y-auto pr-1"
-                style={{ scrollbarWidth: 'thin' }}>
-                {filteredWords.map((w) => {
-                  // Tìm index gốc trong words array
-                  const realIdx = words.findIndex(x => x.id === w.id);
-                  const isCurrent = realIdx === currentIdx;
-                  return (
-                    <button
-                      key={w.id}
-                      onClick={() => {
-                        setCurrentIdx(realIdx);
-                        setCharIdx(0);
-                        setShowSelector(false);
-                        setSearchQuery('');
-                      }}
-                      className="text-left p-2.5 rounded-xl transition-all hover:scale-[1.03] hover:soft-shadow"
-                      style={{
-                        background: isCurrent ? 'var(--accent-soft)' : 'var(--bg)',
-                        border: `1px solid ${isCurrent ? 'var(--accent)' : 'var(--border)'}`,
-                        color: 'var(--ink)'
-                      }}>
-                      <div className="text-xl hanzi-text mb-0.5" style={{ fontWeight: 500, color: isCurrent ? 'white' : 'var(--ink)' }}>{w.hanzi}</div>
-                      <div className="text-xs mb-0.5" style={{ color: isCurrent ? 'white' : 'var(--accent)', opacity: isCurrent ? 0.95 : 1 }}>{w.pinyin}</div>
-                      <div className="text-xs line-clamp-1" style={{ color: isCurrent ? 'white' : 'var(--muted)', opacity: isCurrent ? 0.9 : 1 }}>{w.meaning}</div>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Tip */}
-            <div className="mt-3 text-xs flex items-center gap-2" style={{ color: 'var(--muted)' }}>
-              <span>💡</span>
-              <span>Mẹo: Tìm từ bằng chữ Hán (你好), pinyin (nihao), hoặc nghĩa tiếng Việt (xin chào)</span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 max-h-64 overflow-y-auto">
+              {filteredWords.map(w => {
+                const realIdx = words.findIndex(x => x.id === w.id);
+                const isCurrent = realIdx === currentIdx;
+                return (
+                  <button key={w.id} onClick={() => { setCurrentIdx(realIdx); setCharIdx(0); setShowSelector(false); setMode('animate'); }}
+                    className="text-left p-2.5 rounded-xl transition-all hover:scale-[1.03]"
+                    style={{ background: isCurrent ? 'var(--accent)' : 'var(--bg)', border:`1px solid ${isCurrent ? 'var(--accent)' : 'var(--border)'}`, color: isCurrent ? 'white' : 'var(--ink)' }}>
+                    <div className="text-xl hanzi-text mb-0.5" style={{ fontWeight:500 }}>{w.hanzi}</div>
+                    <div className="text-xs opacity-80">{w.pinyin}</div>
+                    <div className="text-xs line-clamp-1 opacity-70">{w.meaning}</div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
@@ -10869,150 +10915,261 @@ const WritingView = () => {
       <div className="p-5 rounded-3xl mb-5 soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <div className="text-xs tracking-widest mb-1" style={{ color:'var(--muted)' }}>TỪ {currentIdx + 1} / {words.length}</div>
+            <div className="text-xs tracking-widest mb-1" style={{ color:'var(--muted)' }}>
+              TỪ {currentIdx+1}/{words.length}
+            </div>
             <div className="flex items-baseline gap-3 flex-wrap">
-              <button onClick={() => speak(currentWord.hanzi)} className="text-3xl hover:opacity-70 transition hanzi-text" style={{ color:'var(--ink)', fontWeight:500 }}>{currentWord.hanzi}</button>
+              <button onClick={() => speak(currentWord.hanzi)} className="hanzi-text text-3xl hover:opacity-70 transition-opacity"
+                style={{ color:'var(--ink)', fontWeight:500 }}>{currentWord.hanzi} <span style={{ fontSize:'16px' }}>🔊</span></button>
               <ColoredPinyin pinyin={currentWord.pinyin} size="lg" />
               <span style={{ color:'var(--muted)' }}>—</span>
               <span style={{ color:'var(--ink)' }}>{currentWord.meaning}</span>
+              <span className="text-xs px-2 py-0.5 rounded-md" style={{ background:'var(--surface-soft)', color:'var(--muted)' }}>{currentWord.type}</span>
             </div>
           </div>
-          {/* Character selector for multi-char words */}
+          {/* Char selector for multi-char words */}
           {currentWord.hanzi.length > 1 && (
             <div className="flex gap-2 items-center">
-              <span className="text-xs" style={{ color:'var(--muted)' }}>Chọn chữ:</span>
+              <span className="text-xs" style={{ color:'var(--muted)' }}>Chữ:</span>
               {currentWord.hanzi.split('').map((ch, i) => (
                 <button key={i} onClick={() => setCharIdx(i)}
-                  className="w-10 h-10 rounded-2xl hanzi-text transition-all"
-                  style={{
-                    background: charIdx === i ? 'var(--accent)' : 'var(--bg)',
-                    color: charIdx === i ? 'white' : 'var(--ink)',
-                    border: '1px solid var(--border)',
-                    fontSize: '20px', fontWeight: 500
-                  }}>{ch}</button>
+                  className="w-10 h-10 rounded-2xl hanzi-text transition-all hover:scale-110"
+                  style={{ background: charIdx===i ? 'var(--accent)' : 'var(--bg)', color: charIdx===i ? 'white' : 'var(--ink)', border:'1px solid var(--border)', fontSize:'20px', fontWeight:500 }}>
+                  {ch}
+                </button>
               ))}
             </div>
           )}
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-5">
-        {/* HanziWriter Display */}
-        <div className="p-6 rounded-3xl soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-          <div className="flex justify-between items-center mb-3">
-            <div className="text-xs tracking-widest" style={{ color:'var(--muted)' }}>
-              {mode === 'animate' && 'XEM THỨ TỰ NÉT BÚT'}
-              {mode === 'quiz' && 'KIỂM TRA: HÃY VIẾT THEO THỨ TỰ'}
-              {mode === 'practice' && 'XEM CHỮ MẪU'}
+      {/* Main 2-column layout */}
+      <div className="grid md:grid-cols-2 gap-5 mb-6">
+
+        {/* LEFT: HanziWriter / Recall / Practice */}
+        <div className="p-5 rounded-3xl soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+          {/* Mode selector */}
+          <div className="grid grid-cols-4 gap-1.5 mb-4">
+            {MODES.map(m => (
+              <button key={m.id}
+                onClick={() => { setMode(m.id); if (m.id === 'recall') { setShowRecallAnswer(false); setRecallRating(null); } }}
+                className="py-2 rounded-xl text-xs font-semibold transition-all relative"
+                style={{ background: mode===m.id ? m.color : 'var(--bg)', color: mode===m.id ? 'white' : 'var(--ink)', border:`1px solid ${mode===m.id ? m.color : 'var(--border)'}` }}
+                title={`Phím ${m.key}`}>
+                {m.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Stroke count + progress (for quiz mode) */}
+          <div className="flex items-center justify-between mb-2">
+            <div className="text-[10px] tracking-widest font-bold" style={{ color:'var(--muted)' }}>
+              {mode==='animate' && '▶ ANIMATION THỨ TỰ NÉT'}
+              {mode==='quiz'    && '✍️ VIẾT THEO THỨ TỰ NÉT BÚT'}
+              {mode==='recall'  && '🧠 NHÌN NGHĨA → VIẾT KHÔNG CÓ HƯỚNG DẪN'}
+              {mode==='practice'&& '🖊 VIẾT TỰ DO TRÊN CANVAS'}
             </div>
             {strokeCount > 0 && (
-              <div className="text-xs px-3 py-1 rounded-full" style={{ background:'var(--bg)', color:'var(--accent)', fontWeight:600 }}>
+              <div className="text-xs px-2.5 py-1 rounded-full font-bold"
+                style={{ background:'var(--surface-soft)', color:'var(--accent)', border:'1px solid var(--border)' }}>
                 {strokeCount} nét
               </div>
             )}
           </div>
 
-          <div className="relative flex items-center justify-center mb-4" style={{ minHeight:'300px' }}>
-            {loading && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="hanzi-text mb-2" style={{ color:'var(--accent)', fontSize:'48px', animation:'pulse 1.5s infinite' }}>笔</div>
-                  <div className="text-sm" style={{ color:'var(--muted)' }}>Đang tải dữ liệu nét bút...</div>
-                </div>
+          <StrokeProgressBar current={currentStroke} total={strokeCount} mode={mode} />
+
+          {/* Canvas area */}
+          <div className="relative flex items-center justify-center mb-3"
+            style={{ minHeight:'270px', background:'var(--bg)', borderRadius:'16px', overflow:'hidden' }}>
+
+            {/* HanziWriter container */}
+            {(mode === 'animate' || mode === 'quiz') && (
+              <>
+                {loading && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                    <div className="hanzi-text text-5xl" style={{ color:'var(--accent)', animation:'pulse 1.5s infinite' }}>笔</div>
+                    <div className="text-sm" style={{ color:'var(--muted)' }}>Đang tải dữ liệu nét bút...</div>
+                  </div>
+                )}
+                {error && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
+                    <div className="text-3xl">⚠️</div>
+                    <div className="text-sm" style={{ color:'var(--muted)' }}>{error}</div>
+                    <button onClick={() => setError(null)} className="text-xs px-3 py-1.5 rounded-xl" style={{ background:'var(--accent)', color:'white' }}>Thử lại</button>
+                  </div>
+                )}
+                <div ref={writerContainerRef} style={{ display: loading||error ? 'none' : 'flex', alignItems:'center', justifyContent:'center' }} />
+              </>
+            )}
+
+            {/* Practice canvas (free draw) */}
+            {mode === 'practice' && (
+              <canvas ref={practiceCanvasRef}
+                onMouseDown={startDraw} onMouseMove={draw} onMouseUp={stopDraw} onMouseLeave={stopDraw}
+                onTouchStart={startDraw} onTouchMove={draw} onTouchEnd={stopDraw}
+                style={{ width:'100%', height:'270px', cursor:'crosshair', borderRadius:'16px', display:'block', touchAction:'none' }} />
+            )}
+
+            {/* Recall mode: show meaning, hide character */}
+            {mode === 'recall' && (
+              <div className="w-full h-full flex flex-col items-center justify-center p-6">
+                {!showRecallAnswer ? (
+                  <>
+                    <div className="text-center mb-6">
+                      <div className="text-xs tracking-widest mb-3 font-bold" style={{ color:'var(--accent)' }}>VIẾT CHỮ HÁN CÓ NGHĨA:</div>
+                      <div className="text-2xl font-bold mb-2" style={{ color:'var(--ink)' }}>{currentWord.meaning}</div>
+                      <ColoredPinyin pinyin={currentWord.pinyin} size="lg" />
+                    </div>
+                    <div className="text-center p-6 rounded-2xl w-full"
+                      style={{ background:'var(--surface-soft)', border:'2px dashed var(--border)', minHeight:'80px' }}>
+                      <div className="text-sm" style={{ color:'var(--muted)' }}>Viết chữ Hán vào giấy/bảng, rồi nhấn "Xem đáp án"</div>
+                    </div>
+                    <button onClick={() => setShowRecallAnswer(true)}
+                      className="mt-4 px-6 py-2.5 rounded-2xl font-bold transition-all hover:scale-105"
+                      style={{ background:'linear-gradient(135deg, #f59e0b, #fbbf24)', color:'white' }}>
+                      👁 Xem đáp án
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-center mb-4">
+                      <div className="text-xs tracking-widest mb-2 font-bold" style={{ color:'var(--muted)' }}>ĐÁP ÁN</div>
+                      <button onClick={() => speak(currentChar)} className="hanzi-text hover:opacity-75 transition-opacity"
+                        style={{ fontSize:'88px', color:'var(--ink)', fontWeight:500, lineHeight:1 }}>
+                        {currentChar} <span style={{ fontSize:'16px' }}>🔊</span>
+                      </button>
+                    </div>
+                    <div className="text-xs tracking-widest mb-3 font-bold" style={{ color:'var(--muted)' }}>BẠN VIẾT ĐÚNG KHÔNG?</div>
+                    <div className="flex gap-2 w-full">
+                      {[
+                        { r:'forgot', label:'😕 Quên', bg:'#fee2e2', color:'#991b1b' },
+                        { r:'hard', label:'🤔 Sai', bg:'#fef3c7', color:'#92400e' },
+                        { r:'easy', label:'😊 Đúng!', bg:'#d1fae5', color:'#065f46' },
+                      ].map(({ r, label, bg, color }) => (
+                        <button key={r}
+                          onClick={() => {
+                            setRecallRating(r);
+                            setSessionCount(c => c+1);
+                            if (onActivity) onActivity();
+                            setTimeout(() => { nextWord(); setMode('recall'); setShowRecallAnswer(false); setRecallRating(null); }, 600);
+                          }}
+                          className="flex-1 py-2.5 rounded-2xl text-sm font-bold transition-all hover:scale-[1.03]"
+                          style={{ background: recallRating===r ? bg : 'var(--surface)', color: recallRating===r ? color : 'var(--ink)', border:`1px solid ${bg}` }}>
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
             )}
-            {error && (
-              <div className="text-center p-4">
-                <div className="text-4xl mb-2">⚠️</div>
-                <div className="text-sm" style={{ color:'var(--muted)' }}>{error}</div>
-              </div>
-            )}
-            <div ref={writerContainerRef} style={{ display: loading || error ? 'none' : 'block' }} />
           </div>
 
-          {/* Mode buttons */}
-          <div className="grid grid-cols-3 gap-2">
-            <button onClick={() => setMode('animate')}
-              className="py-2.5 rounded-2xl text-sm transition-all"
-              style={{ background: mode === 'animate' ? 'var(--accent)' : 'var(--bg)', color: mode === 'animate' ? 'white' : 'var(--ink)', border:'1px solid var(--border)', fontWeight:500 }}>
-              ▶ Xem mẫu
-            </button>
-            <button onClick={handleQuiz}
-              className="py-2.5 rounded-2xl text-sm transition-all"
-              style={{ background: mode === 'quiz' ? 'var(--accent)' : 'var(--bg)', color: mode === 'quiz' ? 'white' : 'var(--ink)', border:'1px solid var(--border)', fontWeight:500 }}>
-              ✍️ Kiểm tra
-            </button>
-            <button onClick={() => setMode('practice')}
-              className="py-2.5 rounded-2xl text-sm transition-all"
-              style={{ background: mode === 'practice' ? 'var(--accent)' : 'var(--bg)', color: mode === 'practice' ? 'white' : 'var(--ink)', border:'1px solid var(--border)', fontWeight:500 }}>
-              🖊 Viết tự do
-            </button>
-          </div>
+          {/* Mode-specific action buttons */}
           {mode === 'animate' && !loading && !error && (
-            <button onClick={handleAnimate} className="w-full mt-2 py-2 rounded-2xl text-sm" style={{ background:'var(--accent-soft)', color:'var(--ink)', fontWeight:500 }}>
-              🔄 Xem lại
-            </button>
-          )}
-        </div>
-
-        {/* Practice / Info Panel */}
-        <div className="p-6 rounded-3xl soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-          <div className="text-xs tracking-widest mb-3" style={{ color:'var(--muted)' }}>
-            {mode === 'practice' ? 'VIẾT THỬ TRÊN GIẤY' : 'HƯỚNG DẪN VIẾT'}
-          </div>
-
-          {mode === 'practice' ? (
-            <>
-              <div className="mb-3 mx-auto" style={{ width:'280px', height:'280px', maxWidth:'100%' }}>
-                <canvas ref={practiceCanvasRef}
-                  onMouseDown={startDraw} onMouseMove={draw} onMouseUp={stopDraw} onMouseLeave={stopDraw}
-                  onTouchStart={startDraw} onTouchMove={draw} onTouchEnd={stopDraw}
-                  style={{ width:'100%', height:'100%', background:'#fff', cursor:'crosshair', borderRadius:'12px', display:'block', touchAction:'none' }} />
-              </div>
-              <button onClick={drawPracticeGrid} className="w-full py-2.5 rounded-2xl text-sm" style={{ background:'var(--bg)', color:'var(--ink)', border:'1px solid var(--border)', fontWeight:500 }}>
-                🗑 Xóa và viết lại
+            <div className="flex gap-2">
+              <button onClick={() => writerRef.current?.animateCharacter({ onComplete: () => setCurrentStroke(0) })}
+                className="flex-1 py-2 rounded-2xl text-sm font-semibold transition-all hover:scale-[1.02]"
+                style={{ background:'var(--accent-soft)', color:'var(--ink)' }}>
+                🔄 Xem lại animation
               </button>
-            </>
-          ) : (
-            <div className="space-y-3">
-              <div className="p-4 rounded-2xl" style={{ background:'var(--bg)' }}>
-                <div className="text-xs mb-2" style={{ color:'var(--muted)' }}>📌 NGUYÊN TẮC VIẾT CƠ BẢN</div>
-                <ul className="text-sm space-y-1.5" style={{ color:'var(--ink)' }}>
-                  <li>• Trên trước, dưới sau (上 → 下)</li>
-                  <li>• Trái trước, phải sau (左 → 右)</li>
-                  <li>• Ngang trước, dọc sau (横 → 竖)</li>
-                  <li>• Ngoài trước, trong sau (外 → 内)</li>
-                  <li>• Đóng khung sau cùng (口 đóng cuối)</li>
-                </ul>
-              </div>
-              <div className="p-4 rounded-2xl" style={{ background:'var(--bg)' }}>
-                <div className="text-xs mb-2" style={{ color:'var(--muted)' }}>💡 MẸO HỌC TỐT</div>
-                <ul className="text-sm space-y-1.5" style={{ color:'var(--ink)' }}>
-                  <li>• Nhấn <strong>"Xem mẫu"</strong> để xem animation thứ tự nét</li>
-                  <li>• Nhấn <strong>"Kiểm tra"</strong> để tự viết theo, hệ thống sẽ chấm</li>
-                  <li>• Nhấn <strong>"Viết tự do"</strong> để luyện viết bằng chuột/cảm ứng</li>
-                  <li>• Viết sai 2 lần sẽ tự động hiện gợi ý</li>
-                </ul>
-              </div>
-              <button onClick={() => speak(currentChar)} className="w-full py-2.5 rounded-2xl text-sm" style={{ background:'var(--accent)', color:'white', fontWeight:500 }}>
-                🔊 Phát âm chữ này
+              <button onClick={() => setMode('quiz')}
+                className="flex-1 py-2 rounded-2xl text-sm font-semibold transition-all hover:scale-[1.02]"
+                style={{ background:'linear-gradient(135deg, #8b5cf6, #a78bfa)', color:'white' }}>
+                ✍️ Thử viết ngay →
               </button>
             </div>
           )}
+          {mode === 'quiz' && quizCompleted && (
+            <div className="text-center p-3 rounded-2xl" style={{ background:'#d1fae5', border:'1px solid #6ee7b7' }}>
+              <div className="font-bold" style={{ color:'#065f46' }}>🎉 Viết xong {strokeCount} nét! Tiếp theo →</div>
+              <button onClick={nextWord} className="mt-2 px-5 py-1.5 rounded-xl text-sm font-bold"
+                style={{ background:'#10b981', color:'white' }}>Từ tiếp theo →</button>
+            </div>
+          )}
+          {mode === 'practice' && (
+            <button onClick={drawPracticeGrid} className="w-full py-2 rounded-2xl text-sm font-semibold transition-all hover:scale-[1.02]"
+              style={{ background:'var(--bg)', color:'var(--ink)', border:'1px solid var(--border)' }}>
+              🗑 Xóa canvas
+            </button>
+          )}
+        </div>
+
+        {/* RIGHT: Info + Radical + Rules + Confusion */}
+        <div className="space-y-4">
+          {/* Character detail */}
+          <div className="p-5 rounded-3xl soft-shadow" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+            <div className="text-[10px] tracking-widest mb-3 font-bold" style={{ color:'var(--muted)' }}>THÔNG TIN CHỮ</div>
+            <div className="flex items-center gap-4 mb-4">
+              <div className="hanzi-text" style={{ fontSize:'56px', color:'var(--accent-2)', fontWeight:500, lineHeight:1 }}>{currentChar}</div>
+              <div>
+                <ColoredPinyin pinyin={currentWord.pinyin} size="xl" />
+                <div className="font-bold mt-1" style={{ color:'var(--ink)', fontSize:'16px' }}>{currentWord.meaning}</div>
+                {strokeCount > 0 && <div className="text-xs mt-0.5" style={{ color:'var(--muted)' }}>{strokeCount} nét bút</div>}
+              </div>
+            </div>
+
+            {/* Example sentence */}
+            {currentWord.example && (
+              <div className="p-3 rounded-xl mb-3" style={{ background:'var(--bg)', border:'1px solid var(--border)' }}>
+                <div className="text-[10px] tracking-widest mb-1.5 font-bold" style={{ color:'var(--accent)' }}>VÍ DỤ</div>
+                <button onClick={() => speak(currentWord.example)} className="hanzi-text text-sm hover:opacity-75 transition-opacity text-left"
+                  style={{ color:'var(--ink)', fontWeight:500, lineHeight:1.6 }}>
+                  {currentWord.example} <span style={{ fontSize:'11px' }}>🔊</span>
+                </button>
+                <div className="text-xs italic mt-0.5" style={{ color:'var(--muted)' }}>{currentWord.exampleMeaning}</div>
+              </div>
+            )}
+
+            {/* Radical decomposition + confusion pairs */}
+            <RadicalPanel char={currentChar} />
+          </div>
+
+          {/* Stroke rules */}
+          <div className="p-4 rounded-2xl" style={{ background:'var(--surface-soft)', border:'1px solid var(--border)' }}>
+            <div className="text-[10px] tracking-widest mb-2.5 font-bold" style={{ color:'var(--muted)' }}>📌 NGUYÊN TẮC THỨ TỰ NÉT</div>
+            <div className="grid grid-cols-2 gap-1.5 text-xs" style={{ color:'var(--ink)' }}>
+              {[
+                ['⬆️→⬇️','Trên trước, dưới sau'],
+                ['⬅️→➡️','Trái trước, phải sau'],
+                ['➖→|','Ngang trước, dọc sau'],
+                ['□→○','Ngoài trước, trong sau'],
+              ].map(([icon, rule]) => (
+                <div key={rule} className="flex items-center gap-1.5 py-1">
+                  <span style={{ fontSize:'12px' }}>{icon}</span>
+                  <span style={{ color:'var(--muted)', lineHeight:1.3 }}>{rule}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Keyboard shortcut reminder */}
+          <div className="p-3.5 rounded-2xl text-xs" style={{ background:'var(--surface)', border:'1px solid var(--border)', color:'var(--muted)' }}>
+            <div className="font-bold mb-1.5" style={{ color:'var(--ink)' }}>⌨️ Phím tắt</div>
+            <div className="grid grid-cols-2 gap-1">
+              {[['Space','Phát âm'],['A','Xem mẫu'],['Q','Kiểm tra nét'],['R','Nhớ lại'],['P','Viết tự do'],['← →','Chuyển từ']].map(([k,v]) => (
+                <div key={k} className="flex items-center gap-1.5">
+                  <kbd style={{ background:'var(--surface-soft)', border:'1px solid var(--border)', borderRadius:'4px', padding:'1px 5px', fontFamily:'monospace', fontSize:'10px' }}>{k}</kbd>
+                  <span>{v}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="flex gap-3 mt-6 justify-center items-center">
-        <button onClick={() => setCurrentIdx(i => Math.max(0, i - 1))} disabled={currentIdx === 0}
-          className="px-6 py-2.5 rounded-2xl transition-all"
-          style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)', opacity: currentIdx === 0 ? 0.4 : 1, fontWeight:500 }}>
+      {/* Navigation footer */}
+      <div className="flex gap-3 justify-center items-center">
+        <button onClick={prevWord} disabled={currentIdx===0}
+          className="px-6 py-2.5 rounded-2xl transition-all font-semibold"
+          style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)', opacity:currentIdx===0?0.4:1 }}>
           ← Từ trước
         </button>
-        <span className="text-sm" style={{ color:'var(--muted)' }}>{currentIdx + 1} / {words.length}</span>
-        <button onClick={() => setCurrentIdx(i => Math.min(words.length - 1, i + 1))} disabled={currentIdx >= words.length - 1}
-          className="px-6 py-2.5 rounded-2xl transition-all"
-          style={{ background:'var(--accent)', color:'white', opacity: currentIdx >= words.length - 1 ? 0.4 : 1, fontWeight:500 }}>
+        <span className="text-sm font-semibold" style={{ color:'var(--muted)' }}>{currentIdx+1} / {words.length}</span>
+        <button onClick={nextWord} disabled={currentIdx>=words.length-1}
+          className="px-6 py-2.5 rounded-2xl transition-all font-semibold"
+          style={{ background:'var(--accent)', color:'white', opacity:currentIdx>=words.length-1?0.4:1 }}>
           Từ sau →
         </button>
       </div>
@@ -11020,7 +11177,6 @@ const WritingView = () => {
   );
 };
 
-// ============ READING VIEW ============
 // Lookup từ vựng theo hanzi - tìm nghĩa nhanh
 const buildVocabIndex = () => {
   const index = {};
