@@ -6033,13 +6033,18 @@ const getToneColor = (pinyin) => {
 
 const TONE_COLORS = { 1:'var(--tone-1)', 2:'var(--tone-2)', 3:'var(--tone-3)', 4:'var(--tone-4)', 0:'var(--ink)' };
 
-const speak = (text) => {
-  if (!('speechSynthesis' in window)) return;
+const speak = (text, rate = 0.85, onEnd = null) => {
+  if (!('speechSynthesis' in window)) { onEnd && onEnd(); return; }
   window.speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'zh-CN'; u.rate = 0.85;
+  u.lang = 'zh-CN';
+  u.rate = rate;
+  if (onEnd) u.onend = onEnd;
   window.speechSynthesis.speak(u);
 };
+
+const speakPromise = (text, rate = 0.85) =>
+  new Promise(resolve => speak(text, rate, resolve));
 
 // ============ HABIT ENGINE ============
 // Toàn bộ logic Streak, Daily Goal, Freeze, Milestone
@@ -6607,6 +6612,7 @@ const Header = ({ view, setView, darkMode, toggleDark, habit, goalProgress, onOp
     { id:'reading', label:'阅读', viLabel:'Bài đọc' },
     { id:'flashcard', label:'卡片', viLabel:'Flashcard' },
     { id:'quiz', label:'测验', viLabel:'Quiz' },
+    { id:'listening', label:'听力', viLabel:'Nghe' },
     { id:'writing', label:'书写', viLabel:'Viết' },
     { id:'progress', label:'进度', viLabel:'Tiến độ' },
   ];
@@ -9843,6 +9849,689 @@ const loadHanziWriter = () => {
   });
 };
 
+// ============ LISTENING & DICTATION SYSTEM ============
+
+// ── Pinyin normalizer: strip tones for comparison ──
+const stripTones = (s) => s.toLowerCase()
+  .replace(/[āáǎà]/g, 'a').replace(/[ēéěè]/g, 'e').replace(/[īíǐì]/g, 'i')
+  .replace(/[ōóǒò]/g, 'o').replace(/[ūúǔù]/g, 'u').replace(/[ǖǘǚǜ]/g, 'v')
+  .replace(/\s+/g, ' ').trim();
+
+// Compare user input to correct pinyin (lenient: ignore tones, spacing)
+const pinyinMatch = (input, correct) => {
+  const normalIn = stripTones(input);
+  const normalCor = stripTones(correct);
+  if (normalIn === normalCor) return 'exact';
+  if (normalIn.replace(/\s/g,'') === normalCor.replace(/\s/g,'')) return 'close';
+  return 'wrong';
+};
+
+// ── Speed config ──
+const SPEEDS = [
+  { id: 'slow',   label: '🐢 Chậm',    rate: 0.6,  color: '#10b981' },
+  { id: 'normal', label: '▶ Bình thường', rate: 0.85, color: 'var(--accent)' },
+  { id: 'fast',   label: '⚡ Nhanh',   rate: 1.1,  color: '#f59e0b' },
+];
+
+// ── Build exercise pool from ALL_HSK ──
+const buildExercises = (hskLevel, srsData, mode) => {
+  const words = ALL_HSK[hskLevel] || [];
+  const shuffled = [...words].sort(() => Math.random() - 0.5);
+  if (mode === 'dictation' || mode === 'mcq') return shuffled.slice(0, 20);
+  // sentence mode: use example sentences
+  return shuffled.filter(w => w.example).slice(0, 15);
+};
+
+// ── MCQ Choices generator ──
+const buildMCQChoices = (correct, level, field) => {
+  const pool = ALL_HSK[level] || [];
+  const distractors = pool
+    .filter(w => w[field] !== correct[field])
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 3)
+    .map(w => ({ text: w[field], id: w.id }));
+  const choices = [
+    { text: correct[field], id: correct.id, isCorrect: true },
+    ...distractors,
+  ].sort(() => Math.random() - 0.5);
+  return choices;
+};
+
+// ── Animated Sound Wave ──
+const SoundWave = ({ playing, size = 32 }) => {
+  const bars = 5;
+  return (
+    <div className="flex items-center justify-center gap-0.5" style={{ height: size, width: size * 1.2 }}>
+      {Array.from({ length: bars }).map((_, i) => (
+        <div key={i}
+          style={{
+            width: Math.floor(size / 8),
+            background: 'currentColor',
+            borderRadius: '2px',
+            height: playing
+              ? `${Math.floor(size * (0.3 + 0.7 * Math.abs(Math.sin(i * 1.3))))}px`
+              : `${Math.floor(size * 0.25)}px`,
+            animation: playing ? `soundBar 0.6s ease-in-out ${i * 0.1}s infinite alternate` : 'none',
+            transition: 'height 0.2s',
+          }}
+        />
+      ))}
+    </div>
+  );
+};
+
+// ── Session Result Screen ──
+const ListeningSessionEnd = ({ stats, mode, onContinue, onReset }) => {
+  const pct = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
+  const icon = pct >= 80 ? '🏆' : pct >= 60 ? '👍' : '📖';
+  const msg = pct >= 80 ? 'Xuất sắc! Tai nghe của bạn rất tốt.'
+    : pct >= 60 ? 'Tốt! Tiếp tục luyện tập thêm nhé.'
+    : 'Cố lên! Đây là kỹ năng cần luyện nhiều.';
+  return (
+    <div className="max-w-md mx-auto text-center py-10 px-4">
+      <div className="text-6xl mb-4">{icon}</div>
+      <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>
+        Session hoàn thành!
+      </h2>
+      <p className="text-sm mb-8" style={{ color: 'var(--muted)' }}>{msg}</p>
+
+      <div className="grid grid-cols-3 gap-3 mb-6 max-w-xs mx-auto">
+        {[
+          { label: 'Câu đúng', value: stats.correct, color: '#10b981' },
+          { label: 'Chính xác', value: `${pct}%`, color: pct >= 70 ? '#10b981' : '#f59e0b' },
+          { label: 'Tổng câu', value: stats.total, color: 'var(--accent)' },
+        ].map(s => (
+          <div key={s.label} className="p-3 rounded-2xl"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div style={{ fontSize: '22px', fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
+            <div className="text-xs mt-1" style={{ color: 'var(--muted)' }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Accuracy bar */}
+      <div className="h-3 rounded-full overflow-hidden mb-2 max-w-xs mx-auto" style={{ background: 'var(--surface-soft)' }}>
+        <div className="h-full rounded-full transition-all"
+          style={{ width: `${pct}%`, background: pct >= 70 ? 'linear-gradient(90deg,#10b981,#34d399)' : 'linear-gradient(90deg,#f59e0b,#fbbf24)' }} />
+      </div>
+      <p className="text-xs mb-8" style={{ color: 'var(--muted)' }}>
+        {stats.skipped > 0 && `${stats.skipped} câu đã bỏ qua`}
+      </p>
+
+      <div className="flex gap-3 justify-center flex-wrap">
+        <button onClick={onContinue}
+          className="px-6 py-3 rounded-2xl font-bold text-base transition-all hover:scale-105"
+          style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: 'white', boxShadow: '0 4px 16px rgba(61,139,209,0.35)' }}>
+          🔁 Luyện tiếp
+        </button>
+        <button onClick={onReset}
+          className="px-5 py-3 rounded-2xl font-semibold transition-all hover:scale-[1.02]"
+          style={{ background: 'var(--surface)', color: 'var(--ink)', border: '1px solid var(--border)' }}>
+          Chọn lại
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ============ LISTENING VIEW ============
+const ListeningView = ({ srsData, trackActivity }) => {
+  const [hskLevel, setHskLevel] = useState(1);
+  const [mode, setMode] = useState(null); // null=setup | 'dictation'|'mcq'|'speed'|'sentence'
+  const [speed, setSpeed] = useState('normal');
+  const [exercises, setExercises] = useState([]);
+  const [idx, setIdx] = useState(0);
+  const [phase, setPhase] = useState('listen'); // 'listen'|'answer'|'result'
+  const [playing, setPlaying] = useState(false);
+  const [userInput, setUserInput] = useState('');
+  const [result, setResult] = useState(null); // null|'correct'|'wrong'|'close'
+  const [selectedChoice, setSelectedChoice] = useState(null);
+  const [sessionStats, setSessionStats] = useState({ correct: 0, wrong: 0, skipped: 0, total: 0 });
+  const [sessionDone, setSessionDone] = useState(false);
+  const [playCount, setPlayCount] = useState(0);
+  const [mcqChoices, setMCQChoices] = useState([]);
+  const [speedResults, setSpeedResults] = useState({}); // { slow: bool, normal: bool, fast: bool }
+  const inputRef = useRef(null);
+  const rateForMode = SPEEDS.find(s => s.id === speed)?.rate || 0.85;
+
+  const word = exercises[idx] || null;
+
+  // Build MCQ choices when word changes
+  useEffect(() => {
+    if (!word || mode !== 'mcq') return;
+    setMCQChoices(buildMCQChoices(word, hskLevel, 'meaning'));
+  }, [word?.id, mode]);
+
+  // Auto-focus input for dictation
+  useEffect(() => {
+    if (mode === 'dictation' && phase === 'answer' && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
+  }, [phase, mode]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handler = (e) => {
+      if (!mode || sessionDone) return;
+      if (e.target.tagName === 'INPUT') return;
+      if (e.code === 'Space') { e.preventDefault(); if (phase === 'listen') playAudio(); }
+      if (e.key === 'Enter' && phase === 'listen') { e.preventDefault(); setPhase('answer'); }
+      if (result && (e.key === 'ArrowRight' || e.key === 'Enter')) { e.preventDefault(); advance(); }
+      if (e.key === 'Escape') { setMode(null); }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [mode, phase, result, sessionDone]);
+
+  const playAudio = () => {
+    if (!word || playing) return;
+    const text = (mode === 'sentence') ? word.example : word.hanzi;
+    setPlaying(true);
+    setPlayCount(c => c + 1);
+    speak(text, rateForMode, () => setPlaying(false));
+  };
+
+  const startSession = (selectedMode) => {
+    const pool = buildExercises(hskLevel, srsData, selectedMode);
+    if (pool.length === 0) return;
+    setMode(selectedMode);
+    setExercises(pool);
+    setIdx(0);
+    setPhase('listen');
+    setResult(null);
+    setUserInput('');
+    setSelectedChoice(null);
+    setSessionStats({ correct: 0, wrong: 0, skipped: 0, total: 0 });
+    setSessionDone(false);
+    setPlayCount(0);
+    setSpeedResults({});
+    // Auto-play after a short delay
+    setTimeout(() => {
+      const text = selectedMode === 'sentence' ? pool[0]?.example : pool[0]?.hanzi;
+      if (text) { setPlaying(true); speak(text, rateForMode, () => setPlaying(false)); }
+    }, 600);
+  };
+
+  const advance = () => {
+    const nextIdx = idx + 1;
+    setResult(null);
+    setUserInput('');
+    setSelectedChoice(null);
+    setPhase('listen');
+    setPlayCount(0);
+    setSpeedResults({});
+    if (nextIdx >= exercises.length) {
+      setSessionDone(true);
+    } else {
+      setIdx(nextIdx);
+      // Auto-play next
+      setTimeout(() => {
+        const text = mode === 'sentence' ? exercises[nextIdx]?.example : exercises[nextIdx]?.hanzi;
+        if (text) { setPlaying(true); speak(text, rateForMode, () => setPlaying(false)); }
+      }, 400);
+    }
+  };
+
+  const handleSkip = () => {
+    setSessionStats(s => ({ ...s, skipped: s.skipped + 1, total: s.total + 1 }));
+    advance();
+  };
+
+  // ── Dictation submit ──
+  const handleDictationSubmit = () => {
+    if (!userInput.trim() || !word) return;
+    const match = pinyinMatch(userInput.trim(), word.pinyin);
+    const isCorrect = match !== 'wrong';
+    setResult(isCorrect ? (match === 'exact' ? 'correct' : 'close') : 'wrong');
+    setSessionStats(s => ({
+      ...s,
+      correct: s.correct + (isCorrect ? 1 : 0),
+      wrong: s.wrong + (isCorrect ? 0 : 1),
+      total: s.total + 1,
+    }));
+    if (trackActivity) trackActivity('learnWord', 1);
+  };
+
+  // ── MCQ submit ──
+  const handleMCQSelect = (choice) => {
+    if (result) return;
+    setSelectedChoice(choice.id);
+    const isCorrect = choice.isCorrect;
+    setResult(isCorrect ? 'correct' : 'wrong');
+    setSessionStats(s => ({
+      ...s,
+      correct: s.correct + (isCorrect ? 1 : 0),
+      wrong: s.wrong + (isCorrect ? 0 : 1),
+      total: s.total + 1,
+    }));
+    if (trackActivity) trackActivity('learnWord', 1);
+  };
+
+  // ── Speed training ──
+  const handleSpeedPlay = (speedId, rate) => {
+    if (speedResults[speedId] !== undefined) return;
+    setPlaying(true);
+    speak(word.hanzi, rate, () => {
+      setPlaying(false);
+      setSpeedResults(p => ({ ...p, [speedId]: true }));
+    });
+  };
+  const allSpeedsDone = SPEEDS.every(s => speedResults[s.id]);
+
+  // ── Session done ──
+  if (sessionDone && mode) {
+    return (
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        <div className="text-xs tracking-[0.3em] mb-2" style={{ color: 'var(--accent)' }}>听力 · LUYỆN NGHE</div>
+        <ListeningSessionEnd
+          stats={sessionStats}
+          mode={mode}
+          onContinue={() => startSession(mode)}
+          onReset={() => setMode(null)}
+        />
+      </div>
+    );
+  }
+
+  // ── Setup screen ──
+  if (!mode) {
+    return (
+      <div className="max-w-2xl mx-auto px-6 py-8">
+        <div className="mb-8">
+          <div className="text-xs tracking-[0.3em] mb-2" style={{ color: 'var(--accent)' }}>听力 · LUYỆN NGHE</div>
+          <h1 className="text-3xl mb-1" style={{ fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--ink)' }}>
+            Luyện nghe tiếng Trung
+          </h1>
+          <p className="text-sm mb-8" style={{ color: 'var(--muted)' }}>
+            Phát triển kỹ năng nghe qua 4 chế độ luyện tập khác nhau
+          </p>
+
+          {/* HSK Level selector */}
+          <div className="flex gap-2 flex-wrap mb-8">
+            {[1,2,3,4,5,6].map(l => (
+              <button key={l} onClick={() => setHskLevel(l)}
+                className="relative px-4 py-2 rounded-2xl font-semibold text-sm transition-all"
+                style={{ background: hskLevel===l ? 'var(--accent)' : 'var(--surface)', color: hskLevel===l ? 'white' : 'var(--ink)', border: '1px solid var(--border)' }}>
+                HSK {l}
+              </button>
+            ))}
+          </div>
+
+          {/* Mode cards */}
+          <div className="space-y-3 mb-8">
+            {[
+              {
+                id: 'dictation',
+                icon: '✍️',
+                title: 'Nghe — Gõ Pinyin',
+                desc: 'Nghe từ và gõ lại pinyin. Luyện phân biệt thanh điệu và âm tiết.',
+                color: 'var(--accent)',
+                gradient: 'linear-gradient(135deg, var(--accent), var(--accent-2))',
+                recommended: true,
+                badge: '听写',
+              },
+              {
+                id: 'mcq',
+                icon: '🎯',
+                title: 'Nghe — Chọn Nghĩa',
+                desc: 'Nghe từ và chọn nghĩa tiếng Việt đúng trong 4 đáp án.',
+                color: '#8b5cf6',
+                gradient: 'linear-gradient(135deg, #8b5cf6, #a78bfa)',
+                badge: '选择',
+              },
+              {
+                id: 'speed',
+                icon: '⚡',
+                title: 'Tốc Độ Nghe',
+                desc: 'Luyện tai với 3 tốc độ: Chậm → Bình thường → Nhanh.',
+                color: '#f59e0b',
+                gradient: 'linear-gradient(135deg, #f59e0b, #fbbf24)',
+                badge: '速度',
+              },
+              {
+                id: 'sentence',
+                icon: '📜',
+                title: 'Nghe Câu Ví Dụ',
+                desc: 'Nghe câu ví dụ hoàn chỉnh, chọn nghĩa tiếng Việt đúng.',
+                color: '#10b981',
+                gradient: 'linear-gradient(135deg, #10b981, #34d399)',
+                badge: '例句',
+              },
+            ].map(m => (
+              <div key={m.id}
+                className="relative p-5 rounded-3xl cursor-pointer transition-all hover:scale-[1.01] soft-shadow"
+                style={{ background: 'var(--surface)', border: '1.5px solid var(--border)' }}
+                onClick={() => startSession(m.id)}>
+                {m.recommended && (
+                  <div className="absolute -top-2.5 right-5 px-2.5 py-0.5 rounded-full text-[10px] font-bold text-white"
+                    style={{ background: m.color }}>KHUYẾN NGHỊ</div>
+                )}
+                <div className="flex items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0"
+                    style={{ background: m.gradient }}>
+                    {m.icon}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="font-bold text-base" style={{ color: 'var(--ink)' }}>{m.title}</span>
+                      <span className="hanzi-text text-xs px-1.5 py-0.5 rounded-md" style={{ background: m.gradient, color: 'white' }}>{m.badge}</span>
+                    </div>
+                    <p className="text-xs" style={{ color: 'var(--muted)', lineHeight: 1.5 }}>{m.desc}</p>
+                  </div>
+                  <div className="text-xl flex-shrink-0" style={{ color: 'var(--muted)' }}>→</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* TTS availability check */}
+          {!('speechSynthesis' in window) && (
+            <div className="p-4 rounded-2xl" style={{ background: '#fee2e2', border: '1px solid #fecaca' }}>
+              <p className="text-sm font-semibold" style={{ color: '#991b1b' }}>
+                ⚠️ Trình duyệt của bạn không hỗ trợ đọc tiếng Trung. Hãy thử Chrome hoặc Edge.
+              </p>
+            </div>
+          )}
+
+          {/* Tips */}
+          <div className="mt-6 p-4 rounded-2xl text-sm" style={{ background: 'var(--surface-soft)', color: 'var(--muted)', border: '1px solid var(--border)' }}>
+            <div className="font-semibold mb-2" style={{ color: 'var(--ink)' }}>💡 Mẹo luyện nghe hiệu quả:</div>
+            <ul className="space-y-1 text-xs" style={{ listStyle: 'none', padding: 0 }}>
+              <li>• Bắt đầu với HSK 1-2 để làm quen với 4 thanh điệu</li>
+              <li>• Nghe 2-3 lần trước khi trả lời — không cần vội</li>
+              <li>• Chế độ "Tốc Độ Nghe" giúp tai quen với nhịp độ native speaker</li>
+              <li>• Phím <kbd style={{ background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'3px',padding:'1px 5px',fontFamily:'monospace' }}>Space</kbd> phát âm, <kbd style={{ background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'3px',padding:'1px 5px',fontFamily:'monospace' }}>Enter</kbd> xác nhận, <kbd style={{ background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'3px',padding:'1px 5px',fontFamily:'monospace' }}>→</kbd> tiếp theo</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ── Active exercise screen ──
+  const progressPct = exercises.length > 0 ? (idx / exercises.length) * 100 : 0;
+  const modeConfig = {
+    dictation: { title: 'Nghe — Gõ Pinyin', icon: '✍️', color: 'var(--accent)' },
+    mcq:       { title: 'Nghe — Chọn Nghĩa', icon: '🎯', color: '#8b5cf6' },
+    speed:     { title: 'Tốc Độ Nghe', icon: '⚡', color: '#f59e0b' },
+    sentence:  { title: 'Nghe Câu Ví Dụ', icon: '📜', color: '#10b981' },
+  }[mode];
+
+  return (
+    <div className="max-w-xl mx-auto px-4 py-6">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <button onClick={() => setMode(null)}
+          className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-xl transition-all hover:scale-105"
+          style={{ background: 'var(--surface)', color: 'var(--muted)', border: '1px solid var(--border)' }}>
+          ← Thoát
+        </button>
+        <div className="flex items-center gap-2">
+          <span style={{ fontSize: '16px' }}>{modeConfig.icon}</span>
+          <span className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>{modeConfig.title}</span>
+        </div>
+        <div className="text-sm font-semibold" style={{ color: 'var(--muted)' }}>
+          {idx + 1}/{exercises.length}
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="h-1.5 rounded-full overflow-hidden mb-6" style={{ background: 'var(--surface-soft)' }}>
+        <div className="h-full rounded-full transition-all duration-500"
+          style={{ width: `${progressPct}%`, background: `linear-gradient(90deg, ${modeConfig.color}, ${modeConfig.color}aa)` }} />
+      </div>
+
+      {/* Session mini-stats */}
+      {sessionStats.total > 0 && (
+        <div className="flex justify-center gap-4 mb-4 text-xs" style={{ color: 'var(--muted)' }}>
+          <span style={{ color: '#10b981', fontWeight: 600 }}>✓ {sessionStats.correct}</span>
+          <span style={{ color: '#ef4444', fontWeight: 600 }}>✗ {sessionStats.wrong}</span>
+          {sessionStats.skipped > 0 && <span>⏭ {sessionStats.skipped}</span>}
+        </div>
+      )}
+
+      {word && (
+        <>
+          {/* ═══════════════════════════════════════════
+              MAIN PLAYER CARD
+          ═══════════════════════════════════════════ */}
+          <div className="rounded-3xl soft-shadow-lg mb-5 overflow-hidden"
+            style={{ background: 'linear-gradient(145deg, var(--surface), var(--surface-soft))', border: '1.5px solid var(--border)' }}>
+
+            {/* HSK badge */}
+            <div className="flex items-center justify-between px-6 pt-5 pb-2">
+              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold"
+                style={{ background: 'var(--surface-soft)', color: 'var(--accent)', border: '1px solid var(--border)' }}>
+                HSK {hskLevel}
+              </span>
+              <span className="text-xs" style={{ color: 'var(--muted)' }}>
+                {mode === 'sentence' ? '例句 · Câu ví dụ' : '词语 · Từ vựng'}
+              </span>
+            </div>
+
+            {/* Play button area */}
+            <div className="flex flex-col items-center justify-center px-6 py-6">
+              <button
+                onClick={playAudio}
+                disabled={playing}
+                className="relative flex flex-col items-center gap-4 transition-all hover:scale-[1.04] active:scale-95"
+                style={{ cursor: playing ? 'default' : 'pointer' }}>
+
+                {/* Big play circle */}
+                <div className="w-28 h-28 rounded-full flex items-center justify-center soft-shadow transition-all"
+                  style={{
+                    background: playing
+                      ? `linear-gradient(135deg, ${modeConfig.color}, ${modeConfig.color}cc)`
+                      : 'linear-gradient(135deg, var(--accent), var(--accent-2))',
+                    boxShadow: playing ? `0 8px 32px ${modeConfig.color}60` : '0 8px 24px rgba(61,139,209,0.35)',
+                    color: 'white',
+                  }}>
+                  <SoundWave playing={playing} size={44} />
+                </div>
+
+                <div className="text-sm font-semibold" style={{ color: 'var(--muted)' }}>
+                  {playing ? 'Đang phát...' : playCount === 0 ? '▶ Nhấn để nghe' : `🔄 Nghe lại (${playCount} lần)`}
+                </div>
+              </button>
+
+              {/* Speed indicator for current mode */}
+              {mode !== 'speed' && (
+                <div className="flex items-center gap-1.5 mt-4">
+                  {SPEEDS.map(s => (
+                    <button key={s.id}
+                      onClick={() => setSpeed(s.id)}
+                      className="px-2.5 py-1 rounded-xl text-xs transition-all"
+                      style={{
+                        background: speed === s.id ? s.color : 'var(--surface)',
+                        color: speed === s.id ? 'white' : 'var(--muted)',
+                        border: `1px solid ${speed === s.id ? s.color : 'var(--border)'}`,
+                        fontWeight: speed === s.id ? 700 : 400,
+                      }}>
+                      {s.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Result reveal (after answer) */}
+            {result && (
+              <div className="px-6 pb-5 pt-1" style={{ borderTop: '1px dashed var(--border)' }}>
+                <div className="text-center mb-3">
+                  <div className="text-xs tracking-widest mb-2 font-bold" style={{ color: 'var(--muted)' }}>ĐÁP ÁN ĐÚNG</div>
+                  <button onClick={() => speak(mode === 'sentence' ? word.example : word.hanzi)}
+                    className="hanzi-text text-4xl hover:opacity-75 transition-opacity"
+                    style={{ color: 'var(--ink)', fontWeight: 500, lineHeight: 1 }}>
+                    {mode === 'sentence' ? word.example : word.hanzi} 🔊
+                  </button>
+                  <div className="mt-2"><ColoredPinyin pinyin={mode === 'sentence' ? word.examplePinyin : word.pinyin} size="lg" /></div>
+                  <div className="mt-1 font-semibold" style={{ color: 'var(--ink)' }}>
+                    {mode === 'sentence' ? word.exampleMeaning : word.meaning}
+                  </div>
+                </div>
+
+                {/* Correct/Wrong feedback */}
+                <div className={`py-2.5 px-4 rounded-2xl text-sm font-bold text-center mb-3`}
+                  style={{
+                    background: result === 'correct' ? '#d1fae5' : result === 'close' ? '#fef3c7' : '#fee2e2',
+                    color: result === 'correct' ? '#065f46' : result === 'close' ? '#92400e' : '#991b1b',
+                  }}>
+                  {result === 'correct' ? '🎉 Chính xác!' : result === 'close' ? '👌 Gần đúng (thanh điệu có thể sai)' : '❌ Sai rồi — xem lại đáp án'}
+                </div>
+
+                <button onClick={advance}
+                  className="w-full py-3 rounded-2xl font-bold text-base transition-all hover:scale-[1.02]"
+                  style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: 'white' }}>
+                  Câu tiếp → <span className="text-xs opacity-70 ml-1">(Enter / →)</span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* ═══════════════════════════════════════════
+              MODE-SPECIFIC INPUT AREA
+          ═══════════════════════════════════════════ */}
+
+          {/* ── DICTATION mode ── */}
+          {mode === 'dictation' && !result && (
+            <div>
+              <div className="text-xs tracking-widest mb-3 text-center font-bold" style={{ color: 'var(--muted)' }}>
+                GÕ PINYIN CỦA TỪ VỪA NGHE
+              </div>
+              <div className="relative mb-3">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={userInput}
+                  onChange={e => setUserInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && userInput.trim()) handleDictationSubmit(); }}
+                  placeholder={phase === 'listen' ? 'Nghe xong nhấn Enter để trả lời...' : 'Gõ pinyin vào đây (vd: wǒ ài nǐ hoặc wo ai ni)'}
+                  className="w-full px-5 py-4 rounded-2xl text-center text-lg font-semibold outline-none transition-all"
+                  style={{ background: 'var(--surface)', color: 'var(--ink)', border: '2px solid var(--accent-soft)', letterSpacing: '0.05em' }}
+                />
+              </div>
+              <div className="text-xs text-center mb-4" style={{ color: 'var(--muted)' }}>
+                Gõ có hoặc không có dấu thanh đều được (wǒ = wo)
+              </div>
+              <div className="flex gap-2">
+                <button onClick={handleDictationSubmit}
+                  disabled={!userInput.trim()}
+                  className="flex-1 py-3 rounded-2xl font-bold text-base transition-all hover:scale-[1.02] disabled:opacity-40"
+                  style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: 'white' }}>
+                  Kiểm tra ✓
+                </button>
+                <button onClick={handleSkip}
+                  className="px-5 py-3 rounded-2xl font-semibold text-sm transition-all hover:scale-[1.02]"
+                  style={{ background: 'var(--surface)', color: 'var(--muted)', border: '1px solid var(--border)' }}>
+                  Bỏ qua
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ── MCQ mode ── */}
+          {(mode === 'mcq' || mode === 'sentence') && !result && (
+            <div>
+              <div className="text-xs tracking-widest mb-3 text-center font-bold" style={{ color: 'var(--muted)' }}>
+                {mode === 'mcq' ? 'NGHĨA CỦA TỪ VỪA NGHE LÀ GÌ?' : 'CÂU VỪA NGHE CÓ NGHĨA GÌ?'}
+              </div>
+              <div className="grid grid-cols-1 gap-2.5 mb-3">
+                {(mode === 'mcq' ? mcqChoices : buildMCQChoices(word, hskLevel, 'exampleMeaning')).map((choice, i) => (
+                  <button key={i}
+                    onClick={() => handleMCQSelect(choice)}
+                    className="w-full text-left px-4 py-3.5 rounded-2xl transition-all font-medium flex items-center gap-3"
+                    style={{ background: 'var(--surface)', color: 'var(--ink)', border: '1.5px solid var(--border)', fontSize: '14px' }}
+                    onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.background = 'var(--surface-soft)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--surface)'; }}>
+                    <span className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
+                      style={{ background: 'var(--surface-soft)', color: 'var(--accent)' }}>
+                      {['A','B','C','D'][i]}
+                    </span>
+                    <span>{mode === 'mcq' ? choice.text : choice.text}</span>
+                  </button>
+                ))}
+              </div>
+              <button onClick={handleSkip}
+                className="w-full py-2.5 rounded-2xl font-semibold text-sm transition-all"
+                style={{ background: 'var(--surface)', color: 'var(--muted)', border: '1px solid var(--border)' }}>
+                Bỏ qua ⏭
+              </button>
+            </div>
+          )}
+
+          {/* ── SPEED TRAINING mode ── */}
+          {mode === 'speed' && !result && (
+            <div>
+              <div className="text-xs tracking-widest mb-4 text-center font-bold" style={{ color: 'var(--muted)' }}>
+                NGHE TỪ Ở 3 TỐC ĐỘ KHÁC NHAU
+              </div>
+              <div className="space-y-2.5 mb-5">
+                {SPEEDS.map(s => (
+                  <button key={s.id}
+                    onClick={() => handleSpeedPlay(s.id, s.rate)}
+                    disabled={playing}
+                    className="w-full p-4 rounded-2xl flex items-center gap-4 transition-all hover:scale-[1.01]"
+                    style={{
+                      background: speedResults[s.id] ? s.color + '15' : 'var(--surface)',
+                      border: `1.5px solid ${speedResults[s.id] ? s.color : 'var(--border)'}`,
+                      opacity: playing ? 0.7 : 1,
+                    }}>
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                      style={{ background: s.color + '20', color: s.color }}>
+                      {speedResults[s.id] ? '✓' : '▶'}
+                    </div>
+                    <div className="flex-1 text-left">
+                      <div className="font-bold text-sm" style={{ color: 'var(--ink)' }}>{s.label}</div>
+                      <div className="text-xs" style={{ color: 'var(--muted)' }}>
+                        {s.id === 'slow' ? 'Phát âm rõ ràng từng âm tiết' : s.id === 'normal' ? 'Tốc độ học tiêu chuẩn' : 'Gần với tốc độ người bản ngữ'}
+                      </div>
+                    </div>
+                    {speedResults[s.id] && (
+                      <div className="text-xs font-bold px-2 py-1 rounded-full"
+                        style={{ background: s.color + '20', color: s.color }}>Đã nghe ✓</div>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {allSpeedsDone ? (
+                <div>
+                  <div className="p-4 rounded-2xl text-center mb-3" style={{ background: '#d1fae5', border: '1px solid #6ee7b7' }}>
+                    <div className="font-bold" style={{ color: '#065f46' }}>✅ Đã nghe đủ 3 tốc độ!</div>
+                  </div>
+                  <button onClick={() => {
+                    setResult('correct');
+                    setSessionStats(s => ({ ...s, correct: s.correct + 1, total: s.total + 1 }));
+                  }}
+                    className="w-full py-3 rounded-2xl font-bold transition-all hover:scale-[1.02]"
+                    style={{ background: 'linear-gradient(135deg, #10b981, #34d399)', color: 'white' }}>
+                    Xem đáp án và tiếp tục →
+                  </button>
+                </div>
+              ) : (
+                <div className="text-xs text-center" style={{ color: 'var(--muted)' }}>
+                  Nghe cả 3 tốc độ để tiếp tục
+                </div>
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Keyboard hint */}
+      <div className="mt-5 text-xs text-center" style={{ color: 'var(--muted)' }}>
+        <kbd style={{ background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'4px',padding:'1px 6px',fontFamily:'monospace' }}>Space</kbd> phát âm
+        &nbsp;·&nbsp;
+        <kbd style={{ background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'4px',padding:'1px 6px',fontFamily:'monospace' }}>Enter</kbd> xác nhận
+        &nbsp;·&nbsp;
+        <kbd style={{ background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'4px',padding:'1px 6px',fontFamily:'monospace' }}>→</kbd> tiếp theo
+        &nbsp;·&nbsp;
+        <kbd style={{ background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'4px',padding:'1px 6px',fontFamily:'monospace' }}>Esc</kbd> thoát
+      </div>
+    </div>
+  );
+};
+
 const WritingView = () => {
   const [hskLevel, setHskLevel] = useState(1);
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -11869,6 +12558,9 @@ function App() {
         .soft-shadow-lg { box-shadow: 0 10px 40px rgba(61, 139, 209, 0.14), 0 2px 6px rgba(61, 139, 209, 0.08); }
         .line-clamp-1 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; }
         .line-clamp-2 { overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        @keyframes soundBar { from { opacity: 0.6; transform: scaleY(0.4); } to { opacity: 1; transform: scaleY(1); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(16px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
       `}</style>
 
       <Header
@@ -11898,6 +12590,7 @@ function App() {
         {view === 'reading' && <ReadingView onActivity={trackReading} srsData={srsData} updateSRS={updateSRS} learned={learned} toggleLearned={toggleLearned} />}
         {view === 'flashcard' && <FlashcardView srsData={srsData} updateSRS={updateSRS} />}
         {view === 'quiz' && <QuizView toggleLearned={toggleLearned} learned={learned} addQuizScore={addQuizScore} />}
+        {view === 'listening' && <ListeningView srsData={srsData} trackActivity={trackActivity} />}
         {view === 'writing' && <WritingView onActivity={trackWriting} />}
         {view === 'progress' && <ProgressView learned={learned} starred={starred} srsData={srsData} quizScores={quizScores} habit={habit} />}
       </main>
