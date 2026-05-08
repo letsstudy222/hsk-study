@@ -9708,133 +9708,811 @@ const FlashcardView = ({ srsData, updateSRS }) => {
 };
 
 // ============ QUIZ VIEW ============
-const QuizView = ({ toggleLearned, learned, addQuizScore }) => {
-  const [hskLevel, setHskLevel] = useState(1);
-  const [questions, setQuestions] = useState([]);
-  const [currentQ, setCurrentQ] = useState(0);
-  const [score, setScore] = useState(0);
-  const [selectedAns, setSelectedAns] = useState(null);
-  const [showResult, setShowResult] = useState(false);
-  const [finished, setFinished] = useState(false);
+// ============ QUIZ & ACTIVE RECALL SYSTEM ============
 
-  const generateQuiz = (level) => {
-    const words = ALL_HSK[level] || [];
-    if (words.length < 4) return [];
-    const shuffled = [...words].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, Math.min(10, words.length)).map(w => {
-      const wrongs = words.filter(x => x.id !== w.id).sort(() => Math.random() - 0.5).slice(0, 3);
-      const options = [...wrongs.map(x => x.meaning), w.meaning].sort(() => Math.random() - 0.5);
-      return { word: w, options, correct: w.meaning };
-    });
+// ── Quiz Type Config ──
+const QUIZ_TYPES = [
+  {
+    id: 'mcq',
+    label: 'Trắc nghiệm',
+    icon: '🎯',
+    badge: '4 đáp án',
+    color: 'var(--accent)',
+    gradient: 'linear-gradient(135deg, var(--accent), var(--accent-2))',
+    desc: 'Chọn nghĩa tiếng Việt đúng trong 4 lựa chọn',
+    difficulty: 1,
+    recommended: true,
+  },
+  {
+    id: 'hanzi_mcq',
+    label: 'Chọn chữ Hán',
+    icon: '汉',
+    badge: 'Nhận diện',
+    color: '#8b5cf6',
+    gradient: 'linear-gradient(135deg, #8b5cf6, #a78bfa)',
+    desc: 'Nghe/đọc nghĩa tiếng Việt → chọn chữ Hán đúng',
+    difficulty: 2,
+  },
+  {
+    id: 'cloze',
+    label: 'Điền vào chỗ trống',
+    icon: '✍️',
+    badge: 'Cloze test',
+    color: '#f59e0b',
+    gradient: 'linear-gradient(135deg, #f59e0b, #fbbf24)',
+    desc: 'Điền từ còn thiếu vào câu ví dụ',
+    difficulty: 3,
+  },
+  {
+    id: 'pinyin',
+    label: 'Gõ Pinyin',
+    icon: 'ā',
+    badge: 'Tự nhớ',
+    color: '#10b981',
+    gradient: 'linear-gradient(135deg, #10b981, #34d399)',
+    desc: 'Xem chữ Hán → gõ pinyin từ trí nhớ',
+    difficulty: 3,
+  },
+  {
+    id: 'meaning',
+    label: 'Dịch nghĩa',
+    icon: '🇻🇳',
+    badge: 'Dịch thuật',
+    color: '#ef4444',
+    gradient: 'linear-gradient(135deg, #ef4444, #f87171)',
+    desc: 'Xem chữ Hán → gõ nghĩa tiếng Việt',
+    difficulty: 4,
+  },
+  {
+    id: 'sentence',
+    label: 'Xếp câu',
+    icon: '🔤',
+    badge: 'Sentence builder',
+    color: '#06b6d4',
+    gradient: 'linear-gradient(135deg, #06b6d4, #22d3ee)',
+    desc: 'Xếp các từ thành câu hoàn chỉnh',
+    difficulty: 4,
+  },
+];
+
+// ── Question Generators ──
+const generateMCQ = (word, pool) => {
+  const distractors = pool.filter(w => w.id !== word.id).sort(() => Math.random() - 0.5).slice(0, 3);
+  return {
+    type: 'mcq', word,
+    prompt: word.hanzi,
+    promptPinyin: word.pinyin,
+    correct: word.meaning,
+    options: [...distractors.map(w => w.meaning), word.meaning].sort(() => Math.random() - 0.5),
   };
+};
 
-  const startQuiz = (level) => {
-    setHskLevel(level);
-    setQuestions(generateQuiz(level));
-    setCurrentQ(0); setScore(0); setSelectedAns(null); setShowResult(false); setFinished(false);
+const generateHanziMCQ = (word, pool) => {
+  const distractors = pool.filter(w => w.id !== word.id).sort(() => Math.random() - 0.5).slice(0, 3);
+  return {
+    type: 'hanzi_mcq', word,
+    prompt: word.meaning,
+    promptSub: word.pinyin,
+    correct: word.hanzi,
+    options: [...distractors.map(w => w.hanzi), word.hanzi].sort(() => Math.random() - 0.5),
   };
+};
 
-  useEffect(() => { startQuiz(1); }, []);
-
-  // Tự động phát âm khi câu hỏi mới xuất hiện
-  useEffect(() => {
-    if (!questions[currentQ] || finished || showResult) return;
-    const t = setTimeout(() => speak(questions[currentQ].word.hanzi), 300);
-    return () => clearTimeout(t);
-  }, [currentQ, questions, finished]);
-
-  const handleAnswer = (option) => {
-    if (showResult) return;
-    setSelectedAns(option);
-    setShowResult(true);
-    if (option === questions[currentQ].correct) {
-      setScore(s => s + 1);
-      const wid = questions[currentQ].word.id;
-      if (!learned.includes(wid)) toggleLearned(wid);
-    }
-  };
-
-  const next = () => {
-    if (currentQ + 1 >= questions.length) {
-      setFinished(true);
-      addQuizScore({ level: hskLevel, score, total: questions.length, date: Date.now() });
-    } else {
-      setCurrentQ(c => c + 1); setSelectedAns(null); setShowResult(false);
-    }
-  };
-
-  if (finished) {
-    const pct = Math.round((score / questions.length) * 100);
-    return (
-      <div className="max-w-2xl mx-auto px-6 py-12 text-center">
-        <div className="text-7xl mb-4" style={{ fontFamily:'var(--font-display)', color:'var(--accent)' }}>{pct >= 80 ? '优' : pct >= 60 ? '良' : '加'}</div>
-        <div className="text-3xl mb-2" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Kết quả</div>
-        <div className="text-6xl mb-6" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--accent)' }}>{score}/{questions.length}</div>
-        <div className="mb-8" style={{ color:'var(--muted)' }}>
-          {pct >= 80 ? 'Xuất sắc! 太棒了!' : pct >= 60 ? 'Tốt lắm! Tiếp tục cố gắng nhé.' : 'Hãy ôn tập thêm và thử lại.'}
-        </div>
-        <button onClick={() => startQuiz(hskLevel)} className="px-6 py-3 rounded-2xl" style={{ background:'var(--accent)', color:'white' }}>Làm lại</button>
-      </div>
-    );
+const generateCloze = (word, pool) => {
+  const ex = (word.examples && word.examples[0]) || { hanzi: word.example, pinyin: word.examplePinyin, meaning: word.exampleMeaning };
+  if (!ex?.hanzi || !ex.hanzi.includes(word.hanzi)) {
+    // Fallback to MCQ if cloze not possible
+    return generateMCQ(word, pool);
   }
+  const blanked = ex.hanzi.replace(word.hanzi, '___');
+  const distractors = pool.filter(w => w.id !== word.id).sort(() => Math.random() - 0.5).slice(0, 3);
+  return {
+    type: 'cloze', word,
+    prompt: blanked,
+    promptSub: ex.meaning,
+    correct: word.hanzi,
+    options: [...distractors.map(w => w.hanzi), word.hanzi].sort(() => Math.random() - 0.5),
+  };
+};
 
-  if (!questions.length) return <div className="p-12 text-center" style={{ color:'var(--muted)' }}>Đang tải...</div>;
-  const q = questions[currentQ];
+const generatePinyinInput = (word) => ({
+  type: 'pinyin', word,
+  prompt: word.hanzi,
+  promptSub: word.meaning,
+  correct: word.pinyin,
+  inputMode: true,
+});
+
+const generateMeaningInput = (word) => ({
+  type: 'meaning', word,
+  prompt: word.hanzi,
+  promptPinyin: word.pinyin,
+  correct: word.meaning,
+  inputMode: true,
+});
+
+const generateSentenceBuilder = (word, pool) => {
+  const ex = (word.examples && word.examples[0]) || { hanzi: word.example, meaning: word.exampleMeaning };
+  if (!ex?.hanzi || ex.hanzi.length < 4) return generateMCQ(word, pool);
+  // Segment into 3-5 parts (split by words or chars)
+  const chars = ex.hanzi.match(/[\u4e00-\u9fff]{1,3}/g) || [];
+  if (chars.length < 3) return generateMCQ(word, pool);
+  const parts = chars.slice(0, 6);
+  return {
+    type: 'sentence', word,
+    prompt: ex.meaning,
+    correct: ex.hanzi,
+    parts: [...parts].sort(() => Math.random() - 0.5),
+    correctOrder: parts,
+  };
+};
+
+const buildQuizSession = (level, quizType, count = 10, srsData = {}) => {
+  const pool = ALL_HSK[level] || [];
+  if (pool.length < 4) return [];
+
+  // Prioritize due/weak words
+  const now = Date.now();
+  const sorted = [...pool].sort((a, b) => {
+    const da = srsData[a.id], db = srsData[b.id];
+    if (!da && !db) return Math.random() - 0.5;
+    if (!da) return -1; // never reviewed = higher priority
+    if (!db) return 1;
+    const overdueA = da.nextReview <= now ? 1 : 0;
+    const overdueB = db.nextReview <= now ? 1 : 0;
+    return overdueB - overdueA || Math.random() - 0.5;
+  });
+
+  const selected = sorted.slice(0, Math.min(count, pool.length));
+  return selected.map(w => {
+    switch (quizType) {
+      case 'mcq':       return generateMCQ(w, pool);
+      case 'hanzi_mcq': return generateHanziMCQ(w, pool);
+      case 'cloze':     return generateCloze(w, pool);
+      case 'pinyin':    return generatePinyinInput(w);
+      case 'meaning':   return generateMeaningInput(w);
+      case 'sentence':  return generateSentenceBuilder(w, pool);
+      default:          return generateMCQ(w, pool);
+    }
+  }).filter(Boolean);
+};
+
+// ── Error Analysis ──
+const ErrorAnalysis = ({ errors, onDismiss }) => {
+  if (!errors || errors.length === 0) return null;
+  return (
+    <div className="mt-5 p-5 rounded-3xl soft-shadow" style={{ background: 'var(--surface)', border: '1.5px solid #fecaca' }}>
+      <div className="text-[10px] tracking-widest mb-4 font-bold" style={{ color: '#ef4444' }}>
+        ❌ CÂU TRẢ LỜI SAI — XEM LẠI ĐỂ GHI NHỚ
+      </div>
+      <div className="space-y-3">
+        {errors.map((e, i) => (
+          <div key={i} className="p-3.5 rounded-2xl" style={{ background: '#fef2f2', border: '1px solid #fecaca' }}>
+            <div className="flex items-start justify-between gap-3 mb-2">
+              <div className="flex items-center gap-2">
+                <button onClick={() => speak(e.word.hanzi)} className="hanzi-text font-medium hover:opacity-75 transition-opacity"
+                  style={{ fontSize: '24px', color: '#ef4444', lineHeight: 1 }}>
+                  {e.word.hanzi} <span style={{ fontSize: '13px' }}>🔊</span>
+                </button>
+                <div>
+                  <ColoredPinyin pinyin={e.word.pinyin} size="sm" />
+                  <div className="font-semibold text-sm" style={{ color: '#991b1b' }}>{e.word.meaning}</div>
+                </div>
+              </div>
+            </div>
+            <div className="text-xs space-y-1">
+              <div style={{ color: '#991b1b' }}>
+                <span className="font-bold">Bạn trả lời:</span> "{e.userAnswer}"
+              </div>
+              <div style={{ color: '#065f46' }}>
+                <span className="font-bold">Đáp án đúng:</span> "{e.correct}"
+              </div>
+              {e.word.example && (
+                <div className="mt-2 pt-2 italic" style={{ borderTop: '1px dashed #fecaca', color: '#7f1d1d' }}>
+                  <button onClick={() => speak(e.word.example)} className="hover:opacity-75 hanzi-text">
+                    {e.word.example} 🔊
+                  </button>
+                  <div>{e.word.exampleMeaning}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+      <button onClick={onDismiss} className="mt-4 w-full py-2.5 rounded-2xl text-sm font-semibold"
+        style={{ background: 'var(--surface-soft)', color: 'var(--ink)', border: '1px solid var(--border)' }}>
+        Đã hiểu, đóng lại
+      </button>
+    </div>
+  );
+};
+
+// ── Quiz Result Screen ──
+const QuizResult = ({ score, total, quizType, errors, hskLevel, onRetry, onNewType, onChangeLevel }) => {
+  const [showErrors, setShowErrors] = useState(false);
+  const pct = total > 0 ? Math.round((score / total) * 100) : 0;
+  const grade = pct >= 90 ? { char: '优', label: 'Xuất sắc! 太棒了!', color: '#10b981' }
+    : pct >= 70 ? { char: '良', label: 'Tốt lắm! 很不错!', color: '#f59e0b' }
+    : pct >= 50 ? { char: '可', label: 'Tạm được, cố thêm nhé.', color: '#f59e0b' }
+    : { char: '差', label: 'Cần ôn thêm nhiều. 继续加油!', color: '#ef4444' };
 
   return (
     <div className="max-w-2xl mx-auto px-6 py-8">
-      <div className="mb-6">
-        <div className="text-xs tracking-[0.3em] mb-2" style={{ color:'var(--accent)' }}>测验 · QUIZ</div>
-        <h1 className="text-3xl mb-4" style={{ fontFamily:'var(--font-display)', fontWeight:600, color:'var(--ink)' }}>Trắc nghiệm</h1>
-        <div className="flex gap-2 flex-wrap mb-4">
-          {[1,2,3,4,5,6].map(l => (
-            <button key={l} onClick={() => startQuiz(l)} className="px-3 py-1.5 rounded-2xl text-sm"
-              style={{ background: hskLevel === l ? 'var(--accent)' : 'var(--surface)', color: hskLevel === l ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>HSK {l}</button>
-          ))}
+      {/* Grade */}
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center justify-center w-24 h-24 rounded-full mb-4"
+          style={{ background: `${grade.color}20`, border: `3px solid ${grade.color}` }}>
+          <span className="hanzi-text" style={{ fontSize: '44px', color: grade.color, fontWeight: 600, lineHeight: 1 }}>
+            {grade.char}
+          </span>
         </div>
-        <div className="flex justify-between text-sm mb-2" style={{ color:'var(--muted)' }}>
-          <span>Câu {currentQ + 1} / {questions.length}</span>
-          <span>Điểm: {score}</span>
-        </div>
-        <div className="h-1 rounded-full overflow-hidden" style={{ background:'var(--surface)' }}>
-          <div className="h-full transition-all" style={{ width:`${((currentQ + 1) / questions.length) * 100}%`, background:'var(--accent)' }} />
-        </div>
+        <h2 className="text-2xl font-bold mb-1" style={{ color: 'var(--ink)', fontFamily: 'var(--font-display)' }}>
+          Kết quả Quiz
+        </h2>
+        <p className="text-sm" style={{ color: 'var(--muted)' }}>{grade.label}</p>
       </div>
 
-      <div className="p-8 rounded-2xl mb-6 text-center" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-        <div className="text-xs tracking-widest mb-3" style={{ color:'var(--muted)' }}>NGHĨA CỦA TỪ NÀY LÀ?</div>
-        <button onClick={() => speak(q.word.hanzi)} className="text-7xl mb-3" style={{ fontFamily:'var(--font-display)', color:'var(--ink)', fontWeight:700 }}>{q.word.hanzi}</button>
-        <div className="mb-2"><ColoredPinyin pinyin={q.word.pinyin} size="xl" /></div>
-        <button onClick={() => speak(q.word.hanzi)} className="text-sm" style={{ color:'var(--accent)' }}>🔊 Phát âm</button>
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-3 mb-6">
+        {[
+          { label: 'Đúng', value: score, color: '#10b981' },
+          { label: 'Chính xác', value: `${pct}%`, color: grade.color },
+          { label: 'Sai', value: total - score, color: '#ef4444' },
+        ].map(s => (
+          <div key={s.label} className="p-4 rounded-2xl text-center soft-shadow"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <div style={{ fontSize: '28px', fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.value}</div>
+            <div className="text-xs mt-1" style={{ color: 'var(--muted)' }}>{s.label}</div>
+          </div>
+        ))}
       </div>
 
-      <div className="grid gap-3 mb-6">
-        {q.options.map((opt, i) => {
-          const isCorrect = opt === q.correct;
-          const isSelected = opt === selectedAns;
-          let bg = 'var(--surface)', col = 'var(--ink)', bd = 'var(--border)';
-          if (showResult) {
-            if (isCorrect) { bg = '#10b981'; col = 'white'; bd = '#10b981'; }
-            else if (isSelected) { bg = '#dc2626'; col = 'white'; bd = '#dc2626'; }
-          }
-          return (
-            <button key={i} onClick={() => handleAnswer(opt)} disabled={showResult}
-              className="p-4 rounded-2xl text-left transition-all"
-              style={{ background: bg, color: col, border:`1px solid ${bd}` }}>
-              <span className="text-xs mr-3 opacity-60">{String.fromCharCode(65 + i)}.</span>{opt}
-            </button>
-          );
-        })}
+      {/* Accuracy bar */}
+      <div className="h-3 rounded-full overflow-hidden mb-6" style={{ background: 'var(--surface-soft)' }}>
+        <div className="h-full rounded-full transition-all duration-700"
+          style={{ width: `${pct}%`, background: pct >= 70 ? 'linear-gradient(90deg,#10b981,#34d399)' : 'linear-gradient(90deg,#f59e0b,#fbbf24)' }} />
       </div>
 
-      {showResult && (
-        <button onClick={next} className="w-full py-3 rounded-2xl" style={{ background:'var(--accent)', color:'white', fontFamily:'var(--font-display)', fontWeight:600 }}>
-          {currentQ + 1 >= questions.length ? 'Xem kết quả' : 'Câu tiếp theo →'}
+      {/* Action buttons */}
+      <div className="flex gap-3 mb-4 flex-wrap">
+        <button onClick={onRetry}
+          className="flex-1 py-3 rounded-2xl font-bold transition-all hover:scale-[1.02]"
+          style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: 'white', minWidth: '120px' }}>
+          🔁 Làm lại
         </button>
+        <button onClick={onNewType}
+          className="flex-1 py-3 rounded-2xl font-semibold transition-all hover:scale-[1.02]"
+          style={{ background: 'var(--surface)', color: 'var(--ink)', border: '1px solid var(--border)', minWidth: '120px' }}>
+          Đổi loại quiz
+        </button>
+      </div>
+
+      {/* Error analysis button */}
+      {errors.length > 0 && (
+        <button onClick={() => setShowErrors(!showErrors)}
+          className="w-full py-3 rounded-2xl font-semibold text-sm transition-all"
+          style={{ background: '#fef2f2', color: '#991b1b', border: '1px solid #fecaca' }}>
+          {showErrors ? '▲ Ẩn' : `❌ Xem ${errors.length} câu sai`}
+        </button>
+      )}
+
+      {showErrors && (
+        <ErrorAnalysis errors={errors} onDismiss={() => setShowErrors(false)} />
       )}
     </div>
   );
 };
+
+// ── Sentence Builder component ──
+const SentenceBuilder = ({ parts, correctOrder, onSubmit }) => {
+  const [selected, setSelected] = useState([]);
+  const [remaining, setRemaining] = useState([...parts]);
+
+  const handleSelect = (part, idx) => {
+    setSelected(s => [...s, part]);
+    setRemaining(r => { const n = [...r]; n.splice(idx, 1); return n; });
+  };
+
+  const handleDeselect = (part, idx) => {
+    setRemaining(r => [...r, part]);
+    setSelected(s => { const n = [...s]; n.splice(idx, 1); return n; });
+  };
+
+  const handleSubmit = () => {
+    const answer = selected.join('');
+    onSubmit(answer);
+  };
+
+  return (
+    <div>
+      {/* Answer zone */}
+      <div className="min-h-14 p-3 rounded-2xl mb-4 flex flex-wrap gap-2 items-center"
+        style={{ background: 'var(--bg)', border: '2px dashed var(--accent-soft)' }}>
+        {selected.length === 0 && (
+          <span className="text-sm" style={{ color: 'var(--muted)' }}>Nhấn từ bên dưới để xếp thành câu...</span>
+        )}
+        {selected.map((part, i) => (
+          <button key={i} onClick={() => handleDeselect(part, i)}
+            className="hanzi-text px-3 py-1.5 rounded-xl font-medium transition-all hover:scale-105"
+            style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: 'white', fontSize: '18px' }}>
+            {part}
+          </button>
+        ))}
+      </div>
+
+      {/* Word bank */}
+      <div className="flex flex-wrap gap-2 mb-4 justify-center">
+        {remaining.map((part, i) => (
+          <button key={i} onClick={() => handleSelect(part, i)}
+            className="hanzi-text px-3 py-1.5 rounded-xl font-medium transition-all hover:scale-105"
+            style={{ background: 'var(--surface)', color: 'var(--ink)', border: '1.5px solid var(--border)', fontSize: '18px' }}>
+            {part}
+          </button>
+        ))}
+      </div>
+
+      <div className="flex gap-2">
+        <button onClick={handleSubmit} disabled={selected.length === 0}
+          className="flex-1 py-3 rounded-2xl font-bold transition-all hover:scale-[1.02] disabled:opacity-40"
+          style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: 'white' }}>
+          Kiểm tra ✓
+        </button>
+        <button onClick={() => { setSelected([]); setRemaining([...parts]); }}
+          className="px-4 py-3 rounded-2xl font-semibold text-sm"
+          style={{ background: 'var(--surface)', color: 'var(--muted)', border: '1px solid var(--border)' }}>
+          Reset
+        </button>
+      </div>
+    </div>
+  );
+};
+
+// ── Main QuizView ──
+const QuizView = ({ toggleLearned, learned, addQuizScore, srsData }) => {
+  const [phase, setPhase] = useState('setup'); // 'setup' | 'quiz' | 'result'
+  const [hskLevel, setHskLevel] = useState(1);
+  const [quizType, setQuizType] = useState('mcq');
+  const [questionCount, setQuestionCount] = useState(10);
+  const [questions, setQuestions] = useState([]);
+  const [currentQ, setCurrentQ] = useState(0);
+  const [score, setScore] = useState(0);
+  const [selectedAns, setSelectedAns] = useState(null);
+  const [userInput, setUserInput] = useState('');
+  const [sentenceAnswer, setSentenceAnswer] = useState(null);
+  const [showResult, setShowResult] = useState(false);
+  const [errors, setErrors] = useState([]);
+  const [sessionErrors, setSessionErrors] = useState([]);
+  const inputRef = useRef(null);
+
+  const currentQuestion = questions[currentQ];
+
+  // Auto-speak on new question
+  useEffect(() => {
+    if (!currentQuestion || phase !== 'quiz' || showResult) return;
+    if (currentQuestion.type !== 'hanzi_mcq' && currentQuestion.type !== 'sentence') {
+      const t = setTimeout(() => speak(currentQuestion.word.hanzi), 300);
+      return () => clearTimeout(t);
+    }
+  }, [currentQ, questions, phase]);
+
+  // Auto-focus input
+  useEffect(() => {
+    if (currentQuestion?.inputMode && !showResult && inputRef.current) {
+      setTimeout(() => inputRef.current?.focus(), 150);
+    }
+  }, [currentQ, showResult, currentQuestion]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      if (phase !== 'quiz') return;
+      // MCQ: 1-4 keys
+      if (currentQuestion?.type === 'mcq' || currentQuestion?.type === 'hanzi_mcq' || currentQuestion?.type === 'cloze') {
+        const n = parseInt(e.key);
+        if (n >= 1 && n <= 4 && !showResult && currentQuestion.options?.[n-1]) {
+          handleAnswer(currentQuestion.options[n - 1]);
+        }
+      }
+      // After result: Enter/→ to advance
+      if (showResult && (e.key === 'Enter' || e.key === 'ArrowRight')) {
+        e.preventDefault(); advance();
+      }
+      // Space to speak
+      if (e.code === 'Space' && !showResult) {
+        e.preventDefault(); speak(currentQuestion?.word?.hanzi || '');
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [phase, currentQuestion, showResult]);
+
+  const startQuiz = () => {
+    const qs = buildQuizSession(hskLevel, quizType, questionCount, srsData || {});
+    if (qs.length === 0) return;
+    setQuestions(qs);
+    setCurrentQ(0); setScore(0);
+    setSelectedAns(null); setUserInput('');
+    setSentenceAnswer(null);
+    setShowResult(false);
+    setSessionErrors([]);
+    setPhase('quiz');
+  };
+
+  const handleAnswer = (answer) => {
+    if (showResult || !currentQuestion) return;
+    setSelectedAns(answer);
+    setShowResult(true);
+
+    const correct = currentQuestion.correct;
+    let isCorrect = false;
+
+    if (currentQuestion.type === 'pinyin') {
+      isCorrect = pinyinMatch(answer, correct) !== 'wrong';
+    } else if (currentQuestion.type === 'meaning') {
+      // Lenient: contains correct answer or vice versa
+      const ansLow = answer.toLowerCase().trim();
+      const corLow = correct.toLowerCase().trim();
+      isCorrect = ansLow === corLow || corLow.includes(ansLow) || ansLow.includes(corLow);
+    } else if (currentQuestion.type === 'sentence') {
+      isCorrect = answer === correct || answer.replace(/\s/g,'') === correct.replace(/\s/g,'');
+    } else {
+      isCorrect = answer === correct;
+    }
+
+    if (isCorrect) {
+      setScore(s => s + 1);
+    } else {
+      const errEntry = {
+        word: currentQuestion.word,
+        userAnswer: answer,
+        correct: currentQuestion.correct,
+        type: currentQuestion.type,
+      };
+      setSessionErrors(prev => [...prev, errEntry]);
+    }
+  };
+
+  const handleInputSubmit = () => {
+    if (!userInput.trim()) return;
+    handleAnswer(userInput.trim());
+  };
+
+  const advance = () => {
+    const nextIdx = currentQ + 1;
+    if (nextIdx >= questions.length) {
+      // Finish
+      addQuizScore({ level: hskLevel, score, total: questions.length, date: Date.now() });
+      setErrors(sessionErrors);
+      setPhase('result');
+    } else {
+      setCurrentQ(nextIdx);
+      setSelectedAns(null);
+      setUserInput('');
+      setSentenceAnswer(null);
+      setShowResult(false);
+    }
+  };
+
+  // ── SETUP SCREEN ──
+  if (phase === 'setup') {
+    return (
+      <div className="max-w-2xl mx-auto px-6 py-8">
+        <div className="mb-8">
+          <div className="text-xs tracking-[0.3em] mb-2" style={{ color: 'var(--accent)' }}>测验 · KIỂM TRA</div>
+          <h1 className="text-3xl mb-1" style={{ fontFamily: 'var(--font-display)', fontWeight: 600, color: 'var(--ink)' }}>
+            Quiz & Active Recall
+          </h1>
+          <p className="text-sm mb-8" style={{ color: 'var(--muted)' }}>
+            Chọn loại quiz phù hợp với cấp độ học của bạn
+          </p>
+
+          {/* HSK Level */}
+          <div className="flex gap-2 flex-wrap mb-6">
+            {[1,2,3,4,5,6].map(l => (
+              <button key={l} onClick={() => setHskLevel(l)}
+                className="relative px-4 py-2 rounded-2xl font-semibold text-sm transition-all"
+                style={{ background: hskLevel===l ? 'var(--accent)' : 'var(--surface)', color: hskLevel===l ? 'white' : 'var(--ink)', border: '1px solid var(--border)' }}>
+                HSK {l}
+              </button>
+            ))}
+          </div>
+
+          {/* Quiz type cards */}
+          <div className="space-y-2.5 mb-6">
+            {QUIZ_TYPES.map(t => (
+              <div key={t.id}
+                onClick={() => setQuizType(t.id)}
+                className="relative p-4 rounded-2xl cursor-pointer transition-all hover:scale-[1.01]"
+                style={{
+                  background: quizType === t.id ? 'var(--surface-soft)' : 'var(--surface)',
+                  border: `2px solid ${quizType === t.id ? t.color : 'var(--border)'}`,
+                  boxShadow: quizType === t.id ? `0 4px 16px ${t.color}20` : 'none',
+                }}>
+                {t.recommended && (
+                  <div className="absolute -top-2.5 right-4 px-2.5 py-0.5 rounded-full text-[10px] font-bold text-white"
+                    style={{ background: t.color }}>KHUYẾN NGHỊ</div>
+                )}
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 text-xl font-bold"
+                    style={{ background: t.gradient, color: 'white', fontFamily: t.icon === 'ā' ? 'Quicksand' : 'Noto Sans SC' }}>
+                    {t.icon}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="font-bold text-sm" style={{ color: 'var(--ink)' }}>{t.label}</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-bold"
+                        style={{ background: t.color + '20', color: t.color }}>
+                        {t.badge}
+                      </span>
+                      {/* Difficulty dots */}
+                      <div className="flex gap-0.5 ml-auto">
+                        {[1,2,3,4].map(d => (
+                          <div key={d} className="w-1.5 h-1.5 rounded-full"
+                            style={{ background: d <= t.difficulty ? t.color : 'var(--border)' }} />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-xs" style={{ color: 'var(--muted)', lineHeight: 1.4 }}>{t.desc}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Question count */}
+          <div className="flex items-center gap-3 mb-6 p-4 rounded-2xl"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+            <span className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>Số câu hỏi:</span>
+            {[5, 10, 15, 20].map(n => (
+              <button key={n} onClick={() => setQuestionCount(n)}
+                className="px-3 py-1.5 rounded-xl text-sm font-bold transition-all"
+                style={{ background: questionCount === n ? 'var(--accent)' : 'var(--bg)', color: questionCount === n ? 'white' : 'var(--ink)', border: `1px solid ${questionCount === n ? 'var(--accent)' : 'var(--border)'}` }}>
+                {n}
+              </button>
+            ))}
+          </div>
+
+          <button onClick={startQuiz}
+            className="w-full py-4 rounded-2xl font-bold text-lg transition-all hover:scale-[1.02] active:scale-[0.98]"
+            style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: 'white', boxShadow: '0 6px 24px rgba(61,139,209,0.4)' }}>
+            ▶ Bắt đầu Quiz ({questionCount} câu)
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // ── RESULT SCREEN ──
+  if (phase === 'result') {
+    return (
+      <QuizResult
+        score={score} total={questions.length}
+        quizType={quizType} errors={errors}
+        hskLevel={hskLevel}
+        onRetry={() => startQuiz()}
+        onNewType={() => setPhase('setup')}
+        onChangeLevel={(l) => { setHskLevel(l); setPhase('setup'); }}
+      />
+    );
+  }
+
+  // ── ACTIVE QUIZ ──
+  if (!currentQuestion) return <div className="p-12 text-center" style={{ color: 'var(--muted)' }}>Đang tải...</div>;
+
+  const progressPct = questions.length > 0 ? (currentQ / questions.length) * 100 : 0;
+  const typeConfig = QUIZ_TYPES.find(t => t.id === currentQuestion.type) || QUIZ_TYPES[0];
+
+  // Result state helpers
+  const isCorrectAnswer = (opt) => {
+    if (!showResult) return false;
+    return opt === currentQuestion.correct;
+  };
+  const isWrongSelected = (opt) => {
+    if (!showResult) return false;
+    return opt === selectedAns && opt !== currentQuestion.correct;
+  };
+
+  return (
+    <div className="max-w-xl mx-auto px-4 py-6">
+      {/* Top bar */}
+      <div className="flex items-center justify-between mb-3">
+        <button onClick={() => { setPhase('setup'); }}
+          className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-xl transition-all hover:scale-105"
+          style={{ background: 'var(--surface)', color: 'var(--muted)', border: '1px solid var(--border)' }}>
+          ← Thoát
+        </button>
+        <div className="flex items-center gap-1.5">
+          <span style={{ fontSize: '16px' }}>{typeConfig.icon}</span>
+          <span className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>{typeConfig.label}</span>
+        </div>
+        <div className="text-sm font-semibold" style={{ color: 'var(--muted)' }}>
+          {currentQ + 1}/{questions.length}
+        </div>
+      </div>
+
+      {/* Progress bar */}
+      <div className="h-1.5 rounded-full overflow-hidden mb-3" style={{ background: 'var(--surface-soft)' }}>
+        <div className="h-full rounded-full transition-all duration-500"
+          style={{ width: `${progressPct}%`, background: `linear-gradient(90deg, ${typeConfig.color}, ${typeConfig.color}cc)` }} />
+      </div>
+
+      {/* Mini score bar */}
+      <div className="flex justify-between text-xs mb-4" style={{ color: 'var(--muted)' }}>
+        <span style={{ color: '#10b981', fontWeight: 600 }}>✓ {score} đúng</span>
+        <span style={{ color: '#ef4444', fontWeight: 600 }}>✗ {sessionErrors.length} sai</span>
+        <span>Phím <kbd style={{ background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'3px',padding:'1px 5px',fontFamily:'monospace' }}>1-4</kbd> chọn · <kbd style={{ background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'3px',padding:'1px 5px',fontFamily:'monospace' }}>→</kbd> tiếp</span>
+      </div>
+
+      {/* Question card */}
+      <div className="rounded-3xl soft-shadow-lg mb-5 overflow-hidden"
+        style={{ background: 'linear-gradient(145deg, var(--surface), var(--surface-soft))', border: '1.5px solid var(--border)' }}>
+
+        {/* Question prompt */}
+        <div className="px-6 pt-6 pb-4 text-center">
+          <div className="text-[10px] tracking-widest mb-3 font-bold" style={{ color: 'var(--muted)' }}>
+            {currentQuestion.type === 'mcq'       && 'NGHĨA TIẾNG VIỆT CỦA TỪ NÀY LÀ GÌ?'}
+            {currentQuestion.type === 'hanzi_mcq' && 'CHỮ HÁN CÓ NGHĨA NÀY LÀ GÌ?'}
+            {currentQuestion.type === 'cloze'     && 'ĐIỀN TỪ CÒN THIẾU VÀO CHỖ TRỐNG'}
+            {currentQuestion.type === 'pinyin'    && 'GÕ PINYIN CỦA TỪ NÀY'}
+            {currentQuestion.type === 'meaning'   && 'GÕ NGHĨA TIẾNG VIỆT CỦA TỪ NÀY'}
+            {currentQuestion.type === 'sentence'  && 'XẾP CÁC TỪ THÀNH CÂU HÀN LÂM ĐÚNG'}
+          </div>
+
+          {/* Main prompt */}
+          {(currentQuestion.type === 'mcq' || currentQuestion.type === 'pinyin' || currentQuestion.type === 'meaning') && (
+            <>
+              <button onClick={() => speak(currentQuestion.word.hanzi)}
+                className="hanzi-text hover:opacity-75 transition-opacity block mx-auto mb-3"
+                style={{
+                  fontSize: currentQuestion.word.hanzi.length <= 2 ? 'clamp(60px,12vw,80px)' : 'clamp(40px,8vw,56px)',
+                  color: 'var(--ink)', fontWeight: 500, lineHeight: 1
+                }}>
+                {currentQuestion.prompt} <span style={{ fontSize: '16px' }}>🔊</span>
+              </button>
+              {currentQuestion.promptPinyin && currentQuestion.type !== 'pinyin' && (
+                <ColoredPinyin pinyin={currentQuestion.promptPinyin} size="xl" />
+              )}
+              {currentQuestion.promptSub && (
+                <div className="text-base mt-1" style={{ color: 'var(--muted)' }}>{currentQuestion.promptSub}</div>
+              )}
+            </>
+          )}
+
+          {currentQuestion.type === 'hanzi_mcq' && (
+            <>
+              <div className="text-2xl font-bold mb-2" style={{ color: 'var(--ink)' }}>{currentQuestion.prompt}</div>
+              {currentQuestion.promptSub && <ColoredPinyin pinyin={currentQuestion.promptSub} size="lg" />}
+            </>
+          )}
+
+          {currentQuestion.type === 'cloze' && (
+            <>
+              <div className="hanzi-text text-2xl mb-2 font-medium" style={{ color: 'var(--ink)' }}>
+                {currentQuestion.prompt}
+              </div>
+              <div className="text-sm italic" style={{ color: 'var(--muted)' }}>{currentQuestion.promptSub}</div>
+            </>
+          )}
+
+          {currentQuestion.type === 'sentence' && (
+            <div className="text-base font-semibold mb-2" style={{ color: 'var(--ink)' }}>
+              "{currentQuestion.prompt}"
+            </div>
+          )}
+        </div>
+
+        {/* Result reveal */}
+        {showResult && (
+          <div className="px-6 pb-5 pt-2" style={{ borderTop: '1px dashed var(--border)' }}>
+            <div className="text-center mb-3">
+              <div className="text-[10px] tracking-widest mb-2 font-bold" style={{ color: 'var(--muted)' }}>ĐÁP ÁN ĐÚNG</div>
+              <button onClick={() => speak(currentQuestion.word.hanzi)}
+                className="hanzi-text hover:opacity-75 transition-opacity"
+                style={{ fontSize: '32px', color: 'var(--accent-2)', fontWeight: 500 }}>
+                {currentQuestion.word.hanzi} 🔊
+              </button>
+              <div className="mt-1"><ColoredPinyin pinyin={currentQuestion.word.pinyin} size="base" /></div>
+              <div className="font-semibold mt-0.5" style={{ color: 'var(--ink)', fontSize: '15px' }}>
+                {currentQuestion.word.meaning}
+              </div>
+            </div>
+
+            {/* Correct/wrong badge */}
+            <div className="py-2 px-4 rounded-2xl text-sm font-bold text-center mb-3"
+              style={{
+                background: selectedAns === currentQuestion.correct || (currentQuestion.inputMode && pinyinMatch(selectedAns||'', currentQuestion.correct) !== 'wrong') ? '#d1fae5' : '#fee2e2',
+                color: selectedAns === currentQuestion.correct || (currentQuestion.inputMode && pinyinMatch(selectedAns||'', currentQuestion.correct) !== 'wrong') ? '#065f46' : '#991b1b',
+              }}>
+              {selectedAns === currentQuestion.correct ? '🎉 Chính xác!' : '❌ Sai rồi, xem lại đáp án!'}
+            </div>
+
+            <button onClick={advance}
+              className="w-full py-3 rounded-2xl font-bold text-base transition-all hover:scale-[1.02]"
+              style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: 'white' }}>
+              {currentQ + 1 >= questions.length ? 'Xem kết quả →' : 'Câu tiếp → (Enter / →)'}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Answer area */}
+      {!showResult && (
+        <>
+          {/* MCQ / HanziMCQ / Cloze: option grid */}
+          {(currentQuestion.type === 'mcq' || currentQuestion.type === 'hanzi_mcq' || currentQuestion.type === 'cloze') && (
+            <div className="grid gap-2.5">
+              {currentQuestion.options?.map((opt, i) => (
+                <button key={i} onClick={() => handleAnswer(opt)}
+                  className="w-full text-left px-4 py-3.5 rounded-2xl transition-all font-medium flex items-center gap-3"
+                  style={{
+                    background: 'var(--surface)',
+                    color: 'var(--ink)',
+                    border: '1.5px solid var(--border)',
+                    fontSize: currentQuestion.type === 'hanzi_mcq' ? '20px' : '14px',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent)'; e.currentTarget.style.background = 'var(--surface-soft)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.background = 'var(--surface)'; }}>
+                  <span className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold flex-shrink-0"
+                    style={{ background: 'var(--surface-soft)', color: 'var(--accent)', fontFamily: 'monospace' }}>
+                    {i + 1}
+                  </span>
+                  {currentQuestion.type === 'hanzi_mcq'
+                    ? <span className="hanzi-text">{opt}</span>
+                    : <span>{opt}</span>
+                  }
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Pinyin / Meaning: text input */}
+          {(currentQuestion.type === 'pinyin' || currentQuestion.type === 'meaning') && (
+            <div>
+              <input
+                ref={inputRef}
+                type="text"
+                value={userInput}
+                onChange={e => setUserInput(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Enter' && userInput.trim()) handleInputSubmit(); }}
+                placeholder={currentQuestion.type === 'pinyin' ? 'Gõ pinyin (vd: wǒ ài nǐ hoặc wo ai ni)...' : 'Gõ nghĩa tiếng Việt...'}
+                className="w-full px-5 py-4 rounded-2xl text-center text-lg font-semibold outline-none mb-3"
+                style={{ background: 'var(--surface)', color: 'var(--ink)', border: '2px solid var(--accent-soft)', letterSpacing: '0.03em' }}
+              />
+              <div className="flex gap-2">
+                <button onClick={handleInputSubmit} disabled={!userInput.trim()}
+                  className="flex-1 py-3 rounded-2xl font-bold transition-all hover:scale-[1.02] disabled:opacity-40"
+                  style={{ background: 'linear-gradient(135deg, var(--accent), var(--accent-2))', color: 'white' }}>
+                  Kiểm tra ✓
+                </button>
+                <button onClick={() => handleAnswer('')}
+                  className="px-4 py-3 rounded-2xl font-semibold text-sm"
+                  style={{ background: 'var(--surface)', color: 'var(--muted)', border: '1px solid var(--border)' }}>
+                  Bỏ qua
+                </button>
+              </div>
+              {currentQuestion.type === 'pinyin' && (
+                <div className="text-xs text-center mt-2" style={{ color: 'var(--muted)' }}>
+                  Gõ có hoặc không có dấu thanh đều được
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Sentence builder */}
+          {currentQuestion.type === 'sentence' && (
+            <SentenceBuilder
+              parts={currentQuestion.parts}
+              correctOrder={currentQuestion.correctOrder}
+              onSubmit={handleAnswer}
+            />
+          )}
+        </>
+      )}
+    </div>
+  );
+};
+
 
 // ============ WRITING VIEW ============
 // Helper: Load HanziWriter library lazily
@@ -12745,7 +13423,7 @@ function App() {
         {view === 'grammar' && <GrammarView />}
         {view === 'reading' && <ReadingView onActivity={trackReading} srsData={srsData} updateSRS={updateSRS} learned={learned} toggleLearned={toggleLearned} />}
         {view === 'flashcard' && <FlashcardView srsData={srsData} updateSRS={updateSRS} />}
-        {view === 'quiz' && <QuizView toggleLearned={toggleLearned} learned={learned} addQuizScore={addQuizScore} />}
+        {view === 'quiz' && <QuizView toggleLearned={toggleLearned} learned={learned} addQuizScore={addQuizScore} srsData={srsData} />}
         {view === 'listening' && <ListeningView srsData={srsData} trackActivity={trackActivity} />}
         {view === 'writing' && <WritingView onActivity={trackWriting} />}
         {view === 'progress' && <ProgressView learned={learned} starred={starred} srsData={srsData} quizScores={quizScores} habit={habit} />}
