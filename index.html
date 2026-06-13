@@ -8931,6 +8931,12 @@ function App() {
     '--tone-4': '#dc2f2f',
   };
 
+  // Đưa biến màu theme lên :root để cửa sổ render qua portal (đăng nhập) cũng có màu
+  useEffect(() => {
+    const root = document.documentElement;
+    Object.entries(themeStyles).forEach(([k, v]) => root.style.setProperty(k, v));
+  }, [darkMode]);
+
   return (
     <div style={{
       ...themeStyles,
