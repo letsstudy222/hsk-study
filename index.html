@@ -10,6 +10,7 @@
 <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
 <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 html,body{margin:0;padding:0}html{overflow-y:scroll}
@@ -39,6 +40,7 @@ html{scrollbar-width:thin;scrollbar-color:#94c3ec rgba(148,195,236,.18)}
 <div id="root"></div>
 <!-- ===== DỮ LIỆU HỌC (file riêng, dễ chỉnh sửa) =====
      Nạp trước script ứng dụng. Là JS thường nên KHÔNG đi qua Babel -> tải nhanh hơn. -->
+<script src="data/config.js"></script>
 <script src="data/hsk1.js"></script>
 <script src="data/hsk2.js"></script>
 <script src="data/hsk3.js"></script>
@@ -1035,7 +1037,7 @@ const ColoredPinyin = ({ pinyin, size = 'base' }) => {
 };
 
 // ============ HEADER ============
-const Header = ({ view, setView, darkMode, toggleDark, habit, goalProgress, onOpenStreak }) => {
+const Header = ({ view, setView, darkMode, toggleDark, habit, goalProgress, onOpenStreak, accountSlot }) => {
   const navItems = [
     { id:'home', label:'主页', viLabel:'Trang chủ' },
     { id:'vocab', label:'词汇', viLabel:'Từ vựng' },
@@ -1124,6 +1126,7 @@ const Header = ({ view, setView, darkMode, toggleDark, habit, goalProgress, onOp
             }}
             title={darkMode ? 'Chế độ sáng' : 'Chế độ tối'}
           >{darkMode ? '☀' : '☾'}</button>
+          {accountSlot}
         </div>
       </div>
 
@@ -8519,6 +8522,205 @@ const ProgressView = ({ learned, starred, srsData, quizScores, habit }) => {
   );
 };
 
+// ============ CLOUD SYNC (Supabase) ============
+// Nếu chưa cấu hình -> supa = null -> toàn bộ phần này "ngủ", app chạy như cũ.
+const cloudEnabled = !!(
+  window.SUPABASE_URL && window.SUPABASE_ANON_KEY &&
+  !String(window.SUPABASE_URL).includes('YOUR_') &&
+  !String(window.SUPABASE_ANON_KEY).includes('YOUR_') &&
+  window.supabase
+);
+const supa = cloudEnabled
+  ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY)
+  : null;
+
+// So sánh ổn định (sắp key) để tránh reload lặp do thứ tự key khác nhau
+const stableStr = (o) => JSON.stringify(o, (k, v) =>
+  (v && typeof v === 'object' && !Array.isArray(v))
+    ? Object.keys(v).sort().reduce((a, key) => (a[key] = v[key], a), {})
+    : v);
+
+// Gom mọi tiến độ ('hsk:*') từ localStorage thành 1 object
+function gatherLocal() {
+  const blob = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const k = localStorage.key(i);
+    if (k && k.startsWith('hsk:')) {
+      try { blob[k] = JSON.parse(localStorage.getItem(k)); }
+      catch { blob[k] = localStorage.getItem(k); }
+    }
+  }
+  return blob;
+}
+// Ghi object tiến độ vào localStorage
+function applyLocal(blob) {
+  if (!blob) return;
+  Object.entries(blob).forEach(([k, v]) => {
+    if (k && k.startsWith('hsk:')) {
+      try { localStorage.setItem(k, JSON.stringify(v)); } catch {}
+    }
+  });
+}
+// Gộp cloud + local an toàn: KHÔNG bao giờ mất "từ đã học"
+function mergeBlobs(localB, cloudB) {
+  const out = { ...cloudB, ...localB }; // mặc định local thắng
+  const uni = (a, b) => Array.from(new Set([
+    ...(Array.isArray(a) ? a : []), ...(Array.isArray(b) ? b : [])
+  ]));
+  out['hsk:learned'] = uni(localB['hsk:learned'], cloudB['hsk:learned']);
+  out['hsk:starred'] = uni(localB['hsk:starred'], cloudB['hsk:starred']);
+  // SRS: gộp theo từng từ, giữ bản ôn gần đây hơn
+  const ls = localB['hsk:srs'] || {}, cs = cloudB['hsk:srs'] || {};
+  const srs = { ...cs };
+  for (const id in ls) {
+    if (!srs[id]) srs[id] = ls[id];
+    else srs[id] = (ls[id]?.lastReview || 0) >= (cs[id]?.lastReview || 0) ? ls[id] : cs[id];
+  }
+  if (Object.keys(srs).length) out['hsk:srs'] = srs;
+  // Thói quen/streak: giữ bản có xp cao hơn
+  const lh = localB['hsk:habit'], ch = cloudB['hsk:habit'];
+  if (lh || ch) out['hsk:habit'] = ((lh?.xp || 0) >= (ch?.xp || 0)) ? (lh || ch) : (ch || lh);
+  return out;
+}
+
+// Widget tài khoản: nút trên header + modal đăng nhập/đăng ký + Xuất/Nhập
+const AccountWidget = ({ supa, session, syncState }) => {
+  const [open, setOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [pw, setPw] = useState('');
+  const [msg, setMsg] = useState('');
+  const [busy, setBusy] = useState(false);
+  const fileRef = useRef(null);
+
+  const signIn = async () => {
+    setBusy(true); setMsg('');
+    const { error } = await supa.auth.signInWithPassword({ email: email.trim(), password: pw });
+    setBusy(false);
+    if (error) setMsg('⚠️ ' + error.message);
+    else { setMsg('Đăng nhập thành công!'); setPw(''); }
+  };
+  const signUp = async () => {
+    setBusy(true); setMsg('');
+    const { error } = await supa.auth.signUp({ email: email.trim(), password: pw });
+    setBusy(false);
+    setMsg(error ? ('⚠️ ' + error.message) : 'Đã tạo tài khoản — giờ bấm Đăng nhập.');
+  };
+  const signOut = async () => { await supa.auth.signOut(); setMsg('Đã đăng xuất.'); };
+
+  const exportData = () => {
+    const blob = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('hsk:')) blob[k] = localStorage.getItem(k);
+    }
+    const url = URL.createObjectURL(new Blob([JSON.stringify(blob, null, 2)], { type: 'application/json' }));
+    const a = document.createElement('a');
+    a.href = url; a.download = 'hsk-tien-do-' + new Date().toISOString().slice(0, 10) + '.json';
+    a.click(); URL.revokeObjectURL(url);
+  };
+  const importData = (e) => {
+    const f = e.target.files && e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      try {
+        const blob = JSON.parse(r.result);
+        Object.entries(blob).forEach(([k, v]) => {
+          if (k.startsWith('hsk:')) localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
+        });
+        alert('Đã nhập tiến độ. Tải lại trang...');
+        location.reload();
+      } catch { alert('File không hợp lệ.'); }
+    };
+    r.readAsText(f);
+  };
+
+  const dot = { idle: 'var(--muted)', syncing: '#f59e0b', synced: '#10b981', error: '#ef4444' }[syncState] || 'var(--muted)';
+
+  return (
+    <>
+      <button onClick={() => setOpen(true)}
+        className="w-10 h-10 flex items-center justify-center rounded-2xl transition-all hover:scale-110 relative"
+        style={{ background: 'var(--surface)', color: 'var(--accent)', border: '1px solid var(--border)', fontSize: '16px' }}
+        title={session ? 'Tài khoản' : 'Đăng nhập để đồng bộ'}>
+        {session ? '👤' : '☁'}
+        <span className="absolute" style={{ bottom: 4, right: 4, width: 8, height: 8, borderRadius: 9999, background: dot, border: '1.5px solid var(--surface)' }} />
+      </button>
+
+      {open && (
+        <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.45)' }} onClick={() => setOpen(false)}>
+          <div className="w-full max-w-sm rounded-3xl p-6"
+            style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}
+            onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <div className="font-semibold text-lg" style={{ color: 'var(--ink)' }}>
+                {session ? 'Tài khoản' : 'Đăng nhập'}
+              </div>
+              <button onClick={() => setOpen(false)} style={{ color: 'var(--muted)', fontSize: 22 }}>×</button>
+            </div>
+
+            {session ? (
+              <div className="space-y-3">
+                <div className="text-sm" style={{ color: 'var(--muted)' }}>Đang đăng nhập:</div>
+                <div className="font-medium break-all" style={{ color: 'var(--ink)' }}>{session.user.email}</div>
+                <div className="text-xs flex items-center gap-2" style={{ color: 'var(--muted)' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 9999, background: dot, display: 'inline-block' }} />
+                  {{ idle: 'Sẵn sàng', syncing: 'Đang đồng bộ…', synced: 'Đã đồng bộ ✓', error: 'Lỗi đồng bộ' }[syncState] || 'Sẵn sàng'}
+                </div>
+                <button onClick={signOut}
+                  className="w-full py-2.5 rounded-xl font-medium"
+                  style={{ background: 'var(--bg)', color: 'var(--ink)', border: '1px solid var(--border)' }}>
+                  Đăng xuất
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl outline-none"
+                  style={{ background: 'var(--bg)', color: 'var(--ink)', border: '1px solid var(--border)' }} />
+                <input type="password" placeholder="Mật khẩu (ít nhất 6 ký tự)" value={pw} onChange={e => setPw(e.target.value)}
+                  className="w-full px-3 py-2.5 rounded-xl outline-none"
+                  style={{ background: 'var(--bg)', color: 'var(--ink)', border: '1px solid var(--border)' }} />
+                <div className="flex gap-2">
+                  <button onClick={signIn} disabled={busy}
+                    className="flex-1 py-2.5 rounded-xl font-medium"
+                    style={{ background: 'var(--accent)', color: 'white', opacity: busy ? 0.6 : 1 }}>
+                    Đăng nhập
+                  </button>
+                  <button onClick={signUp} disabled={busy}
+                    className="flex-1 py-2.5 rounded-xl font-medium"
+                    style={{ background: 'var(--bg)', color: 'var(--accent)', border: '1px solid var(--border)', opacity: busy ? 0.6 : 1 }}>
+                    Đăng ký
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {msg && <div className="text-sm mt-3" style={{ color: 'var(--ink)' }}>{msg}</div>}
+
+            <div className="mt-5 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
+              <div className="text-xs mb-2" style={{ color: 'var(--muted)' }}>Sao lưu thủ công (luôn dùng được):</div>
+              <div className="flex gap-2">
+                <button onClick={exportData}
+                  className="flex-1 py-2 rounded-xl text-sm font-medium"
+                  style={{ background: 'var(--bg)', color: 'var(--ink)', border: '1px solid var(--border)' }}>
+                  ⬇ Xuất tiến độ
+                </button>
+                <button onClick={() => fileRef.current && fileRef.current.click()}
+                  className="flex-1 py-2 rounded-xl text-sm font-medium"
+                  style={{ background: 'var(--bg)', color: 'var(--ink)', border: '1px solid var(--border)' }}>
+                  ⬆ Nhập tiến độ
+                </button>
+                <input ref={fileRef} type="file" accept="application/json" onChange={importData} style={{ display: 'none' }} />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
 // ============ MAIN APP ============
 function App() {
   const [view, setView] = useState('home');
@@ -8530,6 +8732,69 @@ function App() {
   const [quizScores, setQuizScores] = useState([]);
   const [showStreakModal, setShowStreakModal] = useState(false);
   const [showMilestone, setShowMilestone] = useState(null); // milestone object
+  const [session, setSession] = useState(null);
+  const [syncState, setSyncState] = useState('idle'); // idle | syncing | synced | error
+
+  // === CLOUD: theo dõi phiên đăng nhập ===
+  useEffect(() => {
+    if (!supa) return;
+    supa.auth.getSession().then(({ data }) => setSession(data.session || null));
+    const { data: sub } = supa.auth.onAuthStateChange((_e, s) => setSession(s || null));
+    return () => sub.subscription.unsubscribe();
+  }, []);
+
+  // === CLOUD: khi đăng nhập -> kéo cloud, gộp, lưu, đẩy lại; reload nếu có dữ liệu mới ===
+  useEffect(() => {
+    if (!supa || !session) return;
+    let cancelled = false;
+    (async () => {
+      setSyncState('syncing');
+      try {
+        const uid = session.user.id;
+        const { data, error } = await supa.from('progress').select('data').eq('user_id', uid).maybeSingle();
+        if (error) throw error;
+        const cloudB = (data && data.data) || {};
+        const localB = gatherLocal();
+        const merged = mergeBlobs(localB, cloudB);
+        const changed = stableStr(merged) !== stableStr(localB);
+        applyLocal(merged);
+        await supa.from('progress').upsert({ user_id: uid, data: merged, updated_at: new Date().toISOString() });
+        if (cancelled) return;
+        setSyncState('synced');
+        if (changed) setTimeout(() => window.location.reload(), 400);
+      } catch (e) {
+        if (!cancelled) setSyncState('error');
+        console.warn('Cloud sync (login):', (e && e.message) || e);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [session]);
+
+  // === CLOUD: đẩy thay đổi lên cloud (mỗi 8s nếu có đổi + khi rời trang) ===
+  useEffect(() => {
+    if (!supa || !session) return;
+    let last = stableStr(gatherLocal());
+    const push = async () => {
+      const cur = gatherLocal();
+      const curStr = stableStr(cur);
+      if (curStr === last) return;
+      last = curStr;
+      try {
+        setSyncState('syncing');
+        await supa.from('progress').upsert({ user_id: session.user.id, data: cur, updated_at: new Date().toISOString() });
+        setSyncState('synced');
+      } catch (e) { setSyncState('error'); }
+    };
+    const iv = setInterval(push, 8000);
+    const onHide = () => { if (document.visibilityState === 'hidden') push(); };
+    document.addEventListener('visibilitychange', onHide);
+    window.addEventListener('beforeunload', push);
+    return () => {
+      clearInterval(iv);
+      document.removeEventListener('visibilitychange', onHide);
+      window.removeEventListener('beforeunload', push);
+    };
+  }, [session]);
 
   // === HABIT ENGINE ===
   const {
@@ -8734,6 +8999,7 @@ function App() {
         habit={habit}
         goalProgress={goalProgress}
         onOpenStreak={() => setShowStreakModal(true)}
+        accountSlot={cloudEnabled ? <AccountWidget supa={supa} session={session} syncState={syncState} /> : null}
       />
 
       <main>
@@ -8788,12 +9054,44 @@ function App() {
   );
 }
 
-const root=ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App/>);
-setTimeout(()=>{
+function __hideLoading(){
   const l=document.getElementById("loading");
-  if(l){l.style.transition="opacity .5s";l.style.opacity="0";setTimeout(()=>l.style.display="none",500)}
-},100);
+  if(l){l.style.transition="opacity .5s";l.style.opacity="0";setTimeout(()=>l.style.display="none",500);}
+}
+function __showFatal(message){
+  const l=document.getElementById("loading");
+  if(l) l.style.display="none";
+  let box=document.getElementById("__fatal");
+  if(!box){
+    box=document.createElement("div");
+    box.id="__fatal";
+    box.style.cssText="position:fixed;inset:0;z-index:99999;background:#fff;color:#b91c1c;font-family:system-ui,sans-serif;padding:24px;overflow:auto;line-height:1.6";
+    document.body.appendChild(box);
+  }
+  box.innerHTML='<div style="max-width:760px;margin:40px auto">'
+    +'<div style="font-size:20px;font-weight:700;margin-bottom:8px">⚠️ Không tải được ứng dụng</div>'
+    +'<div style="color:#374151;margin-bottom:16px">Chi tiết lỗi (gửi đoạn này nếu cần hỗ trợ):</div>'
+    +'<pre style="white-space:pre-wrap;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:14px;font-size:13px">'
+    +String(message).replace(/</g,"&lt;")+'</pre></div>';
+}
+// Bắt lỗi tải file (vd: data/hsk1.js bị 404) — dùng capture để bắt cả lỗi tải script
+window.addEventListener("error", function(e){
+  const t=e.target;
+  if(t && (t.tagName==="SCRIPT"||t.tagName==="LINK") && (t.src||t.href)){
+    __showFatal("Không tải được file:\n  "+(t.src||t.href)
+      +"\n\n→ Kiểm tra file này có tồn tại đúng đường dẫn không (thường là thiếu file trong thư mục data/, hoặc sai tên/đường dẫn).");
+  } else if(e.error){
+    __showFatal(e.error.stack || e.error.message || String(e.error));
+  }
+}, true);
+
+try{
+  const root=ReactDOM.createRoot(document.getElementById("root"));
+  root.render(<App/>);
+  setTimeout(__hideLoading,100);
+}catch(err){
+  __showFatal((err && (err.stack||err.message)) || String(err));
+}
 </script>
 </body>
 </html>
