@@ -3669,14 +3669,21 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
   const currentCardSRS = currentWord ? srsData[currentWord.id] : null;
   const isCram = sessionMode === 'cram';
 
-  // Auto-speak + reset flip/typing khi sang thẻ mới
+  // Reset + tự đọc khi sang thẻ mới (theo vị trí, nên thẻ lặp lại cũng reset đúng)
   useEffect(() => {
     if (!currentWord) return;
     setFlipped(false);
     setTyped(''); setTypedResult(null);
-    const t = setTimeout(() => speak(currentWord.hanzi), 280);
-    return () => clearTimeout(t);
-  }, [currentWord?.id]);
+    if (!typingMode) {
+      const t = setTimeout(() => speak(currentWord.hanzi), 300);
+      return () => clearTimeout(t);
+    }
+  }, [sessionIdx, currentWord?.id]);
+
+  // Đọc lại mỗi khi lật sang mặt nghĩa
+  useEffect(() => {
+    if (flipped && currentWord) speak(currentWord.hanzi);
+  }, [flipped]);
 
   // ── Đánh giá ──
   const handleRate = useCallback((rating) => {
@@ -3701,6 +3708,8 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
 
     setTimeout(() => {
       setFeedback(null);
+      setFlipped(false);
+      setTyped(''); setTypedResult(null);
       const nextIdx = sessionIdx + 1;
       if (nextIdx >= sessionQueue.length) {
         if (reQueue.length > 0 && rating !== 1) {
@@ -4068,7 +4077,7 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
 
       {/* Thẻ */}
       <div className="mb-5" style={{ perspective:'1600px' }}>
-        <div key={currentWord.id} className="relative cursor-pointer transition-transform duration-500 fc-enter"
+        <div key={sessionIdx} className="relative cursor-pointer transition-transform duration-500 fc-enter"
           onClick={() => { if (!feedback && !(typingMode && !flipped)) setFlipped(f => !f); }}
           onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}
           style={{ transformStyle:'preserve-3d', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)', height:'clamp(300px, 42vw, 440px)', width:'100%' }}>
