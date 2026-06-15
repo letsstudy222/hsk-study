@@ -3499,6 +3499,38 @@ function stripPinyin(s) {
     .replace(/[^a-z]/g, '');
 }
 
+// Vòng tiến độ tròn — chữ ký hình ảnh của màn hình "Hôm nay"
+const ProgressRing = ({ pct, size = 132, stroke = 12, children, watermark }) => {
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const [p, setP] = useState(0);
+  useEffect(() => { const t = setTimeout(() => setP(pct), 150); return () => clearTimeout(t); }, [pct]);
+  const cx = size / 2;
+  return (
+    <div className="relative flex items-center justify-center flex-shrink-0" style={{ width: size, height: size }}>
+      {watermark && (
+        <div className="absolute inset-0 flex items-center justify-center hanzi-text pointer-events-none select-none"
+          style={{ fontSize: size * 0.62, color: 'var(--accent)', opacity: 0.08, fontWeight: 600 }}>
+          {watermark}
+        </div>
+      )}
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+        <defs>
+          <linearGradient id="fcRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="var(--accent)" />
+            <stop offset="100%" stopColor="var(--accent-2)" />
+          </linearGradient>
+        </defs>
+        <circle cx={cx} cy={cx} r={r} fill="none" stroke="var(--surface-soft)" strokeWidth={stroke} />
+        <circle cx={cx} cy={cx} r={r} fill="none" stroke="url(#fcRingGrad)" strokeWidth={stroke}
+          strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - p / 100)}
+          style={{ transition: 'stroke-dashoffset 0.95s cubic-bezier(.2,.7,.2,1)' }} />
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">{children}</div>
+    </div>
+  );
+};
+
 const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpDaily, fcStats, bumpFcStat }) => {
   const newPerDay = settings?.newPerDay ?? 10;
   const maxReviews = settings?.maxReviews ?? 0;     // 0 = không giới hạn
@@ -3567,6 +3599,9 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
   const planDue = dueToStudy.length;
   const planNew = newToStudy.length;
   const planTotal = planDue + planNew;
+  const doneToday = newDoneToday + reviewsDoneToday;
+  const dayGoal = doneToday + planTotal;
+  const todayPct = dayGoal > 0 ? Math.round((doneToday / dayGoal) * 100) : 100;
 
   // ── Thống kê tổng ──
   const stats = useMemo(() => {
@@ -3735,6 +3770,11 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
     ? { label: 'ĐANG HỌC', color: '#f59e0b', bg: '#fef3c7' }
     : { label: `${currentCardSRS.reps || 0} LẦN ÔN`, color: 'var(--accent)', bg: 'var(--surface-soft)' };
 
+  // Màu thanh điệu của âm tiết đầu (cho quầng sáng sau chữ Hán)
+  const firstToneColor = currentWord
+    ? (TONE_COLORS[getToneColor((currentWord.pinyin || '').split(' ')[0] || '')] || 'var(--accent)')
+    : 'var(--accent)';
+
   // ════════════ SETTINGS MODAL ════════════
   const SettingsModal = () => (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4"
@@ -3748,10 +3788,9 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
             style={{ background: 'var(--surface-soft)', color: 'var(--muted)' }}>✕</button>
         </div>
 
-        {/* Cấp đang học (cho từ mới) */}
         <div className="mb-5">
           <div className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>Cấp đang học (lấy từ mới)</div>
-          <div className="text-xs mb-2" style={{ color: 'var(--muted)' }}>Từ mới sẽ lấy lần lượt theo cấp này. Từ ôn vẫn gộp tất cả các cấp.</div>
+          <div className="text-xs mb-2" style={{ color: 'var(--muted)' }}>Từ mới lấy lần lượt theo cấp này. Từ ôn vẫn gộp tất cả các cấp.</div>
           <div className="flex gap-1.5 flex-wrap">
             {[1,2,3,4,5,6].map(l => (
               <button key={l} onClick={() => setSettings({ currentLevel: l })}
@@ -3763,10 +3802,9 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
           </div>
         </div>
 
-        {/* Số từ mới mỗi ngày */}
         <div className="mb-5">
           <div className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>Số từ mới mỗi ngày</div>
-          <div className="text-xs mb-2" style={{ color: 'var(--muted)' }}>Giới hạn để không bị quá tải. 10 là mức nhẹ nhàng, bền vững.</div>
+          <div className="text-xs mb-2" style={{ color: 'var(--muted)' }}>Giới hạn để không quá tải. 10 là mức nhẹ nhàng, bền vững.</div>
           <div className="flex gap-1.5 flex-wrap">
             {[5,10,15,20,30].map(n => (
               <button key={n} onClick={() => setSettings({ newPerDay: n })}
@@ -3778,7 +3816,6 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
           </div>
         </div>
 
-        {/* Giới hạn ôn mỗi ngày */}
         <div className="mb-5">
           <div className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>Giới hạn từ ôn mỗi ngày</div>
           <div className="text-xs mb-2" style={{ color: 'var(--muted)' }}>"Không giới hạn" giúp không dồn từ sang ngày sau (khuyến nghị).</div>
@@ -3793,11 +3830,10 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
           </div>
         </div>
 
-        {/* Chế độ gõ pinyin */}
         <div className="mb-2 flex items-center justify-between p-3 rounded-2xl" style={{ background: 'var(--surface-soft)', border: '1px solid var(--border)' }}>
           <div className="flex-1 pr-3">
             <div className="text-sm font-semibold" style={{ color: 'var(--ink)' }}>Gõ pinyin để tự kiểm tra</div>
-            <div className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>Nhớ chủ động hơn, nhưng chậm hơn. Bật khi muốn thử thách.</div>
+            <div className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>Nhớ chủ động hơn nhưng chậm hơn. Bật khi muốn thử thách.</div>
           </div>
           <button onClick={() => setSettings({ typing: !typingMode })}
             className="relative w-12 h-7 rounded-full transition-all flex-shrink-0"
@@ -3816,7 +3852,6 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
       <div className="max-w-2xl mx-auto px-5 py-7">
         {showSettings && <SettingsModal />}
 
-        {/* Header */}
         <div className="flex items-start justify-between mb-5">
           <div>
             <div className="text-xs tracking-[0.3em] mb-1" style={{ color:'var(--accent)' }}>卡片 · FLASHCARD SRS</div>
@@ -3827,95 +3862,117 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
             style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>⚙️</button>
         </div>
 
-        {/* THẺ KẾ HOẠCH CHÍNH */}
-        {!allDone ? (
-          <div className="rounded-3xl p-6 mb-5 soft-shadow-lg"
-            style={{ background:'linear-gradient(145deg, var(--accent), var(--accent-2))', color:'white' }}>
-            <div className="text-sm opacity-90 mb-3">Kế hoạch hôm nay</div>
-            <div className="flex items-end gap-6 mb-5">
-              <div>
-                <div style={{ fontSize:'44px', fontWeight:800, lineHeight:1 }}>{planTotal}</div>
-                <div className="text-xs opacity-90 mt-1">thẻ cần học</div>
-              </div>
-              <div className="flex gap-4 pb-1">
-                <div>
-                  <div style={{ fontSize:'22px', fontWeight:700, lineHeight:1 }}>{planDue}</div>
-                  <div className="text-[11px] opacity-90 mt-0.5">cần ôn</div>
-                </div>
-                <div>
-                  <div style={{ fontSize:'22px', fontWeight:700, lineHeight:1 }}>{planNew}</div>
-                  <div className="text-[11px] opacity-90 mt-0.5">từ mới</div>
-                </div>
-              </div>
-            </div>
-            <button onClick={() => startSession('today')}
-              className="w-full py-3.5 rounded-2xl font-bold text-base transition-all hover:scale-[1.02] active:scale-[0.98]"
-              style={{ background:'white', color:'var(--accent)' }}>
-              ▶ Bắt đầu học
-            </button>
-          </div>
-        ) : (
-          <div className="rounded-3xl p-7 mb-5 text-center soft-shadow"
-            style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-            <div className="text-5xl mb-3">🎉</div>
-            <div className="text-lg font-bold mb-1" style={{ color:'var(--ink)' }}>Hôm nay xong rồi!</div>
-            <div className="text-sm mb-4" style={{ color:'var(--muted)' }}>
-              Bạn đã ôn {reviewsDoneToday} từ và học {newDoneToday} từ mới. Nghỉ ngơi hoặc luyện thêm tùy thích.
-            </div>
-            <div className="flex flex-col gap-2">
-              {newAvailable.length > 0 && (
-                <button onClick={() => startSession('extra')}
-                  className="w-full py-3 rounded-2xl font-semibold text-sm"
-                  style={{ background:'var(--accent)', color:'white' }}>
-                  ✨ Học thêm 10 từ mới (vượt giới hạn)
-                </button>
-              )}
-              <button onClick={() => startSession('cram')}
-                className="w-full py-3 rounded-2xl font-semibold text-sm"
-                style={{ background:'var(--surface-soft)', color:'var(--ink)', border:'1px solid var(--border)' }}>
-                📚 Ôn tự do HSK {currentLevel} (không tính lịch)
-              </button>
-            </div>
-          </div>
-        )}
+        {/* ── HERO: vòng tiến độ + chữ ký 今 ── */}
+        <div className="relative overflow-hidden rounded-3xl p-6 mb-4 soft-shadow-lg fc-enter"
+          style={{ background:'linear-gradient(155deg, var(--surface) 0%, var(--surface-soft) 60%, var(--surface) 100%)', border:'1px solid var(--accent-soft)' }}>
+          {/* chữ Hán mờ trang trí ở góc */}
+          <div className="absolute -right-5 -bottom-9 hanzi-text pointer-events-none select-none"
+            style={{ fontSize:'190px', lineHeight:1, color:'var(--accent)', opacity:0.05, fontWeight:600 }}>學</div>
 
-        {/* Nhịp hôm nay */}
-        <div className="grid grid-cols-2 gap-3 mb-5">
+          <div className="relative flex items-center gap-6">
+            <ProgressRing pct={allDone ? 100 : todayPct} watermark="今">
+              {allDone ? (
+                <>
+                  <div style={{ fontSize:'34px', lineHeight:1, color:'var(--accent)' }}>✓</div>
+                  <div className="text-[11px] mt-1" style={{ color:'var(--muted)' }}>hoàn thành</div>
+                </>
+              ) : (
+                <>
+                  <div style={{ fontSize:'40px', fontWeight:800, lineHeight:1, color:'var(--ink)', fontFamily:'var(--font-display)' }}>{planTotal}</div>
+                  <div className="text-[11px] mt-1" style={{ color:'var(--muted)' }}>thẻ cần học</div>
+                </>
+              )}
+            </ProgressRing>
+
+            <div className="flex-1 min-w-0">
+              {!allDone ? (
+                <>
+                  <div className="text-sm mb-3" style={{ color:'var(--muted)' }}>
+                    Đã xong <strong style={{ color:'var(--ink)' }}>{todayPct}%</strong> mục tiêu hôm nay
+                  </div>
+                  <div className="flex gap-2 mb-4">
+                    <div className="flex-1 px-3 py-2 rounded-xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+                      <div style={{ fontSize:'20px', fontWeight:800, lineHeight:1, color:'var(--accent)' }}>{planDue}</div>
+                      <div className="text-[11px] mt-0.5" style={{ color:'var(--muted)' }}>cần ôn</div>
+                    </div>
+                    <div className="flex-1 px-3 py-2 rounded-xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+                      <div style={{ fontSize:'20px', fontWeight:800, lineHeight:1, color:'#10b981' }}>{planNew}</div>
+                      <div className="text-[11px] mt-0.5" style={{ color:'var(--muted)' }}>từ mới</div>
+                    </div>
+                  </div>
+                  <button onClick={() => startSession('today')}
+                    className="w-full py-3.5 rounded-2xl font-bold text-base transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    style={{ background:'linear-gradient(135deg, var(--accent), var(--accent-2))', color:'white', boxShadow:'0 6px 22px rgba(61,139,209,0.4)' }}>
+                    ▶ Bắt đầu học
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="text-lg font-bold mb-1" style={{ color:'var(--ink)' }}>Hôm nay xong rồi 🎉</div>
+                  <div className="text-sm mb-4" style={{ color:'var(--muted)' }}>
+                    Đã ôn {reviewsDoneToday} từ · học {newDoneToday} từ mới. Nghỉ hoặc luyện thêm tùy bạn.
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    {newAvailable.length > 0 && (
+                      <button onClick={() => startSession('extra')} className="w-full py-2.5 rounded-2xl font-semibold text-sm"
+                        style={{ background:'linear-gradient(135deg, var(--accent), var(--accent-2))', color:'white' }}>
+                        ✨ Học thêm 10 từ mới
+                      </button>
+                    )}
+                    <button onClick={() => startSession('cram')} className="w-full py-2.5 rounded-2xl font-semibold text-sm"
+                      style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)' }}>
+                      📚 Ôn tự do HSK {currentLevel}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Nhịp hôm nay ── */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
           <div className="p-4 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-            <div className="text-xs mb-1" style={{ color:'var(--muted)' }}>Từ mới hôm nay</div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <span className="text-sm">✨</span>
+              <span className="text-xs" style={{ color:'var(--muted)' }}>Từ mới hôm nay</span>
+            </div>
             <div style={{ fontSize:'22px', fontWeight:800, color:'var(--ink)' }}>{newDoneToday}<span className="text-sm font-normal" style={{ color:'var(--muted)' }}> / {newPerDay}</span></div>
             <div className="h-1.5 rounded-full mt-2 overflow-hidden" style={{ background:'var(--surface-soft)' }}>
-              <div className="h-full rounded-full" style={{ width:`${Math.min(100,(newDoneToday/Math.max(1,newPerDay))*100)}%`, background:'#10b981' }} />
+              <div className="h-full rounded-full transition-all duration-700" style={{ width:`${Math.min(100,(newDoneToday/Math.max(1,newPerDay))*100)}%`, background:'linear-gradient(90deg,#10b981,#34d399)' }} />
             </div>
           </div>
           <div className="p-4 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-            <div className="text-xs mb-1" style={{ color:'var(--muted)' }}>Đã ôn hôm nay</div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <span className="text-sm">⏰</span>
+              <span className="text-xs" style={{ color:'var(--muted)' }}>Đã ôn hôm nay</span>
+            </div>
             <div style={{ fontSize:'22px', fontWeight:800, color:'var(--ink)' }}>{reviewsDoneToday}</div>
             <div className="text-[11px] mt-2" style={{ color:'var(--muted)' }}>{planDue > 0 ? `Còn ${planDue} từ đến hạn` : 'Đã ôn hết từ đến hạn'}</div>
           </div>
         </div>
 
-        {/* Tiến độ học tập */}
+        {/* ── Tiến độ ghi nhớ ── */}
         <div className="p-5 rounded-2xl mb-4" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
           <div className="flex items-center justify-between mb-3">
             <div className="text-sm font-semibold" style={{ color:'var(--ink)' }}>Tiến độ ghi nhớ</div>
             {stats.retention != null && (
-              <div className="text-xs px-2 py-0.5 rounded-md font-semibold" style={{ background:'var(--surface-soft)', color: stats.retention >= 80 ? '#10b981' : stats.retention >= 60 ? '#f59e0b' : '#ef4444' }}>
+              <div className="text-xs px-2 py-0.5 rounded-md font-semibold" style={{ background:'var(--surface-soft)', color: stats.retention >= 80 ? '#10b981' : stats.retention >= 60 ? '#e08e0a' : '#dc2f2f' }}>
                 Tỉ lệ nhớ {stats.retention}%
               </div>
             )}
           </div>
           {stats.inSrs > 0 ? (
             <>
-              <div className="flex h-3 rounded-full overflow-hidden mb-2">
+              <div className="flex h-3 rounded-full overflow-hidden mb-2.5" style={{ background:'var(--surface-soft)' }}>
                 {stats.mature > 0 && <div style={{ width:`${(stats.mature/stats.inSrs)*100}%`, background:'#10b981' }} />}
-                {stats.young > 0 && <div style={{ width:`${(stats.young/stats.inSrs)*100}%`, background:'#3b82f6' }} />}
-                {stats.learning > 0 && <div style={{ width:`${(stats.learning/stats.inSrs)*100}%`, background:'#f59e0b' }} />}
+                {stats.young > 0 && <div style={{ width:`${(stats.young/stats.inSrs)*100}%`, background:'var(--accent)' }} />}
+                {stats.learning > 0 && <div style={{ width:`${(stats.learning/stats.inSrs)*100}%`, background:'#e08e0a' }} />}
               </div>
               <div className="flex justify-between text-xs" style={{ color:'var(--muted)' }}>
-                <span>🟢 Thuộc lâu {stats.mature}</span>
-                <span>🔵 Đang nhớ {stats.young}</span>
-                <span>🟡 Mới học {stats.learning}</span>
+                <span><span style={{ color:'#10b981' }}>●</span> Thuộc lâu {stats.mature}</span>
+                <span><span style={{ color:'var(--accent)' }}>●</span> Đang nhớ {stats.young}</span>
+                <span><span style={{ color:'#e08e0a' }}>●</span> Mới học {stats.learning}</span>
               </div>
             </>
           ) : (
@@ -3923,7 +3980,7 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
           )}
         </div>
 
-        {/* Cảnh báo từ khó */}
+        {/* ── Từ khó ── */}
         {stats.leech > 0 && (
           <button onClick={() => startSession('leech')}
             className="w-full flex items-center gap-3 p-4 rounded-2xl mb-4 transition-all hover:scale-[1.01]"
@@ -3931,13 +3988,12 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
             <div className="text-2xl">🔥</div>
             <div className="flex-1 text-left">
               <div className="text-sm font-semibold" style={{ color:'#92400e' }}>{stats.leech} từ khó cần luyện thêm</div>
-              <div className="text-xs" style={{ color:'#b45309' }}>Những từ hay quên — luyện riêng để ghi nhớ tốt hơn</div>
+              <div className="text-xs" style={{ color:'#b45309' }}>Những từ hay quên — luyện riêng để nhớ tốt hơn</div>
             </div>
             <div style={{ color:'#b45309' }}>→</div>
           </button>
         )}
 
-        {/* Phím tắt */}
         <div className="text-xs text-center" style={{ color:'var(--muted)' }}>
           <kbd className="px-1.5 py-0.5 rounded" style={{ background:'var(--surface)',border:'1px solid var(--border)',fontFamily:'monospace' }}>Space</kbd> lật thẻ ·{' '}
           <kbd className="px-1.5 py-0.5 rounded" style={{ background:'var(--surface)',border:'1px solid var(--border)',fontFamily:'monospace' }}>1-4</kbd> đánh giá
@@ -3980,7 +4036,6 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 relative select-none">
 
-      {/* Toast đánh giá */}
       {feedback && (
         <div className="fixed top-20 left-1/2 z-[100] flex items-center gap-3 px-5 py-3.5 rounded-2xl soft-shadow-lg"
           style={{ transform:'translateX(-50%)', background:feedback.bg, border:`1.5px solid ${feedback.border}`, animation:'slideUp 0.25s ease-out', minWidth:'220px', maxWidth:'320px' }}>
@@ -3993,7 +4048,6 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
         </div>
       )}
 
-      {/* Thanh trên */}
       <div className="mb-4">
         <div className="flex items-center justify-between mb-2">
           <button onClick={resetSession} className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-xl transition-all hover:scale-105"
@@ -4014,30 +4068,31 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
 
       {/* Thẻ */}
       <div className="mb-5" style={{ perspective:'1600px' }}>
-        <div className="relative cursor-pointer transition-transform duration-500"
+        <div key={currentWord.id} className="relative cursor-pointer transition-transform duration-500 fc-enter"
           onClick={() => { if (!feedback && !(typingMode && !flipped)) setFlipped(f => !f); }}
           onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}
           style={{ transformStyle:'preserve-3d', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)', height:'clamp(300px, 42vw, 440px)', width:'100%' }}>
 
           {/* MẶT TRƯỚC */}
-          <div className="absolute inset-0 rounded-3xl soft-shadow-lg flex flex-col items-center justify-center p-8"
-            style={{ background:'linear-gradient(145deg, var(--surface) 0%, var(--surface-soft) 100%)', border:'1px solid var(--border)', backfaceVisibility:'hidden', WebkitBackfaceVisibility:'hidden' }}>
-            <div className="absolute top-4 right-4 px-2 py-0.5 rounded-md text-[10px]" style={{ background:'var(--surface-soft)', color:'var(--muted)', border:'1px solid var(--border)' }}>{currentWord.type}</div>
-            <div className="text-[11px] tracking-[0.25em] mb-5" style={{ color:'var(--muted)', fontWeight:500 }}>{typingMode ? 'GÕ PINYIN CỦA TỪ NÀY' : 'NHẤN ĐỂ XEM NGHĨA'}</div>
-            <div className="flex-1 flex items-center justify-center w-full">
+          <div className="absolute inset-0 rounded-3xl soft-shadow-lg flex flex-col items-center justify-center p-8 overflow-hidden"
+            style={{ background:'linear-gradient(150deg, var(--surface) 0%, var(--surface-soft) 100%)', border:'1px solid var(--border)', backfaceVisibility:'hidden', WebkitBackfaceVisibility:'hidden' }}>
+            {/* quầng sáng theo thanh điệu */}
+            <div className="absolute pointer-events-none" style={{ width:'60%', height:'60%', borderRadius:'50%', background:firstToneColor, opacity:0.10, filter:'blur(46px)', top:'18%' }} />
+            <div className="absolute top-4 right-4 px-2 py-0.5 rounded-md text-[10px]" style={{ background:'var(--surface)', color:'var(--muted)', border:'1px solid var(--border)' }}>{currentWord.type}</div>
+            <div className="text-[11px] tracking-[0.25em] mb-5 relative" style={{ color:'var(--muted)', fontWeight:500 }}>{typingMode ? 'GÕ PINYIN CỦA TỪ NÀY' : 'NHẤN ĐỂ XEM NGHĨA'}</div>
+            <div className="flex-1 flex items-center justify-center w-full relative">
               <div className="hanzi-text text-center" style={{ color:'var(--ink)', fontWeight:500, lineHeight:1.1,
-                fontSize: currentWord.hanzi.length <= 2 ? 'clamp(72px,14vw,108px)' : currentWord.hanzi.length <= 4 ? 'clamp(52px,10vw,84px)' : 'clamp(40px,8vw,64px)' }}>
+                fontSize: currentWord.hanzi.length <= 2 ? 'clamp(76px,15vw,116px)' : currentWord.hanzi.length <= 4 ? 'clamp(54px,10vw,86px)' : 'clamp(40px,8vw,64px)' }}>
                 {currentWord.hanzi}
               </div>
             </div>
-            <div className="flex gap-1.5 mb-3">
+            <div className="flex gap-1.5 mb-3 relative">
               {currentWord.pinyin.split(' ').filter(p => p.trim()).map((syl, i) => (
                 <div key={i} className="w-2 h-2 rounded-full" style={{ background: TONE_COLORS[getToneColor(syl)] || 'var(--border)' }} />
               ))}
             </div>
-            {/* Ô gõ pinyin */}
             {typingMode ? (
-              <div className="w-full max-w-xs" onClick={e => e.stopPropagation()}>
+              <div className="w-full max-w-xs relative" onClick={e => e.stopPropagation()}>
                 <input ref={inputRef} value={typed} onChange={e => setTyped(e.target.value)}
                   placeholder="vd: ni hao" autoComplete="off" autoCapitalize="off" spellCheck="false"
                   className="w-full px-4 py-2.5 rounded-xl text-center text-base outline-none"
@@ -4045,7 +4100,7 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
                 <button onClick={checkTyped} className="w-full mt-2 py-2 rounded-xl text-sm font-semibold" style={{ background:'var(--accent)', color:'white' }}>Kiểm tra (Enter)</button>
               </div>
             ) : (
-              <div className="text-xs" style={{ color:'var(--muted)', opacity:0.6 }}>👆 Chạm để lật</div>
+              <div className="text-xs relative" style={{ color:'var(--muted)', opacity:0.6 }}>👆 Chạm để lật</div>
             )}
           </div>
 
@@ -4053,7 +4108,7 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
           <div className="absolute inset-0 rounded-3xl soft-shadow-lg flex flex-col p-5"
             style={{ background:'var(--surface)', border:'1.5px solid var(--accent-soft)', backfaceVisibility:'hidden', WebkitBackfaceVisibility:'hidden', transform:'rotateY(180deg)' }}>
             {typedResult && (
-              <div className="text-center mb-1 text-xs font-bold" style={{ color: typedResult === 'correct' ? '#10b981' : '#ef4444' }}>
+              <div className="text-center mb-1 text-xs font-bold" style={{ color: typedResult === 'correct' ? '#10b981' : '#dc2f2f' }}>
                 {typedResult === 'correct' ? '✓ Bạn gõ đúng!' : `✗ Bạn gõ: ${typed || '(trống)'}`}
               </div>
             )}
@@ -8974,6 +9029,10 @@ function App() {
         @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(16px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
         @keyframes shake { 0%,100%{transform:translateX(0)} 15%{transform:translateX(-6px)} 30%{transform:translateX(6px)} 45%{transform:translateX(-4px)} 60%{transform:translateX(4px)} 75%{transform:translateX(-2px)} }
+        @keyframes fcPop { from { opacity:0; transform: translateY(10px) scale(0.985); } to { opacity:1; transform: translateY(0) scale(1); } }
+        @keyframes fcGlow { 0%,100% { opacity:0.6; } 50% { opacity:1; } }
+        .fc-enter { animation: fcPop 0.34s cubic-bezier(.2,.7,.2,1); }
+        @media (prefers-reduced-motion: reduce) { .fc-enter { animation: none; } }
       `}</style>
 
       <Header
