@@ -426,6 +426,25 @@ const quotes = [
 
 const ALL_HSK = { 1: hsk1, 2: hsk2, 3: hsk3, 4: hsk4, 5: hsk5, 6: hsk6 };
 
+// ===== CÂU MỖI NGÀY: danh sách + logic "mở khóa theo ngày" =====
+const SENT_LIST = (typeof sentences !== 'undefined' ? sentences : []);
+const sentDayInfo = () => {
+  const total = SENT_LIST.length;
+  if (!total) return { total: 0, dayNum: 0, unlocked: 0, todayIdx: 0 };
+  let anchor = null;
+  try { anchor = localStorage.getItem('hsk:sentstart'); } catch (e) {}
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  if (!anchor) {
+    anchor = today.toISOString().slice(0, 10);
+    try { localStorage.setItem('hsk:sentstart', anchor); } catch (e) {}
+  }
+  const a = new Date(anchor + 'T00:00:00');
+  const dayNum = Math.max(0, Math.floor((today - a) / 86400000));
+  const unlocked = Math.min(total, dayNum + 1);
+  const todayIdx = dayNum % total;
+  return { total, dayNum, unlocked, todayIdx };
+};
+
 // ============ HELPERS ============
 const getToneColor = (pinyin) => {
   const toneMarks = {
@@ -1960,6 +1979,29 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount, habit, go
           </div>
         </div>
       </div>
+
+      {/* ── CÂU HÔM NAY ── */}
+      {SENT_LIST.length > 0 && (() => {
+        const { todayIdx } = sentDayInfo();
+        const sd = SENT_LIST[todayIdx];
+        return (
+          <div onClick={() => setView('sentence')}
+            className="relative overflow-hidden rounded-3xl p-6 mb-8 cursor-pointer transition-all hover:scale-[1.01] active:scale-[0.99]"
+            style={{ background:'linear-gradient(135deg, var(--accent), var(--accent-2))', boxShadow:'0 14px 38px rgba(61,139,209,0.4)' }}>
+            <div className="absolute -right-5 -bottom-12 hanzi-text pointer-events-none select-none" style={{ fontSize:'180px', color:'#fff', opacity:0.12, lineHeight:1, fontWeight:700 }}>句</div>
+            <div className="absolute top-2 left-4 hanzi-text pointer-events-none select-none" style={{ fontSize:'52px', color:'#fff', opacity:0.22, lineHeight:1 }}>「</div>
+            <div className="relative">
+              <div className="flex items-center justify-between mb-3 pt-3">
+                <span className="text-xs tracking-[0.25em] font-bold" style={{ color:'rgba(255,255,255,0.9)' }}>每日一句 · CÂU HÔM NAY</span>
+                <span className="text-xs px-2.5 py-1 rounded-full font-bold" style={{ background:'rgba(255,255,255,0.25)', color:'white' }}>{sd.tag}</span>
+              </div>
+              <div className="hanzi-text mb-2.5" style={{ color:'white', fontWeight:600, fontSize:'clamp(22px,4.2vw,32px)', lineHeight:1.45, textShadow:'0 2px 10px rgba(0,0,0,0.15)' }}>{sd.hanzi}</div>
+              <div className="mb-4" style={{ color:'rgba(255,255,255,0.92)', fontSize:'15px', fontWeight:500 }}>{sd.meaning}</div>
+              <div className="inline-flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-xl" style={{ background:'white', color:'var(--accent)' }}>Xem nghĩa & cấu trúc <span>→</span></div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* ── DAILY DASHBOARD ── */}
       <DailyDashboard
@@ -4182,11 +4224,9 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
 };
 
 // ============ SENTENCE OF DAY VIEW (每日一句) ============
-const SENT_DATA = (typeof sentences !== 'undefined' ? sentences : []);
-const SentenceView = () => {
-  const list = SENT_DATA;
-  const total = list.length;
-  const todayIdx = total > 0 ? Math.floor(Date.now() / 86400000) % total : 0;
+const SentenceView = ({ goHome }) => {
+  const list = SENT_LIST;
+  const { total, unlocked, todayIdx } = sentDayInfo();
   const [idx, setIdx] = useState(todayIdx);
   const [seen, setSeen] = useState(() => {
     try { const s = localStorage.getItem('hsk:sentdone'); return s ? JSON.parse(s) : []; } catch { return []; }
@@ -4199,7 +4239,19 @@ const SentenceView = () => {
   const s = list[idx];
   const isToday = idx === todayIdx;
   const isSeen = seen.includes(s.id);
-  const tagColor = { '励志':'#e08e0a', '名言':'#7c5cff', '谚语':'#0d9b6e', '流行语':'#dc2f2f', '日常':'var(--accent)' }[s.tag] || 'var(--accent)';
+  const allUnlocked = unlocked >= total;
+  const atNewest = idx === unlocked - 1;            // câu mới nhất đã mở
+  const canPrev = idx > 0;
+  const canNext = allUnlocked ? true : idx < unlocked - 1;
+
+  const TAG_GRAD = {
+    '励志':   ['#f59e0b', '#fb923c'],
+    '名言':   ['#7c5cff', '#a78bfa'],
+    '谚语':   ['#0d9b6e', '#34d399'],
+    '流行语': ['#e11d6b', '#fb7185'],
+    '日常':   ['#3d8bd1', '#5fa8de'],
+  };
+  const grad = TAG_GRAD[s.tag] || ['#3d8bd1', '#5fa8de'];
 
   const toggleSeen = () => {
     setSeen(prev => {
@@ -4208,67 +4260,91 @@ const SentenceView = () => {
       return next;
     });
   };
-  const go = (d) => setIdx(i => (i + d + total) % total);
+  const go = (d) => {
+    setIdx(i => {
+      let n = i + d;
+      if (n < 0) n = allUnlocked ? total - 1 : 0;
+      if (n > unlocked - 1) n = allUnlocked ? 0 : unlocked - 1;
+      return n;
+    });
+  };
 
   return (
     <div className="max-w-2xl mx-auto px-5 py-7">
       {/* Header */}
-      <div className="flex items-start justify-between mb-5">
+      <div className="flex items-center justify-between mb-5">
         <div>
-          <div className="text-xs tracking-[0.3em] mb-1" style={{ color:'var(--accent)' }}>每日一句 · CÂU MỖI NGÀY</div>
-          <h1 className="text-3xl" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>{isToday ? 'Câu hôm nay' : 'Câu ôn'}</h1>
+          <div className="text-xs tracking-[0.3em] mb-1" style={{ color:'var(--accent)' }}>每日一句</div>
+          <h1 className="text-3xl" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>
+            {isToday ? 'Câu hôm nay' : `Câu ngày ${idx + 1}`}
+          </h1>
         </div>
-        <div className="text-right">
-          <div className="text-xs px-2 py-1 rounded-lg font-semibold inline-block" style={{ background:'var(--surface-soft)', color:'var(--muted)' }}>
-            Đã thuộc {seen.length}/{total}
-          </div>
+        <div className="text-xs px-2.5 py-1.5 rounded-xl font-semibold" style={{ background:'var(--surface-soft)', color:'var(--muted)' }}>
+          ✓ {seen.length}/{total}
         </div>
       </div>
 
-      {/* HERO CÂU */}
-      <div className="relative overflow-hidden rounded-3xl p-6 mb-4 soft-shadow-lg fc-enter"
-        style={{ background:'linear-gradient(155deg, var(--surface) 0%, var(--surface-soft) 70%, var(--surface) 100%)', border:'1px solid var(--accent-soft)' }}>
-        <div className="absolute -right-4 -bottom-10 hanzi-text pointer-events-none select-none"
-          style={{ fontSize:'180px', lineHeight:1, color:'var(--accent)', opacity:0.05, fontWeight:600 }}>句</div>
-        <div className="relative">
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-xs px-2.5 py-1 rounded-full font-bold" style={{ background:tagColor, color:'white' }}>{s.tag}</span>
-            {isToday && <span className="text-xs px-2.5 py-1 rounded-full font-semibold" style={{ background:'var(--surface)', color:'var(--accent)', border:'1px solid var(--accent-soft)' }}>Hôm nay</span>}
+      {/* ===== HERO: thẻ câu nổi bật ===== */}
+      <div className="relative overflow-hidden rounded-[28px] mb-5 fc-enter"
+        style={{ background:`linear-gradient(145deg, ${grad[0]} 0%, ${grad[1]} 100%)`, boxShadow:`0 18px 44px ${grad[0]}55` }}>
+        {/* chữ 句 watermark */}
+        <div className="absolute -right-6 -bottom-12 hanzi-text pointer-events-none select-none"
+          style={{ fontSize:'230px', lineHeight:1, color:'#ffffff', opacity:0.13, fontWeight:700 }}>句</div>
+        {/* dấu ngoặc trang trí */}
+        <div className="absolute top-3 left-5 hanzi-text select-none pointer-events-none" style={{ fontSize:'60px', color:'#ffffff', opacity:0.25, lineHeight:1 }}>「</div>
+
+        <div className="relative p-7 pt-14">
+          <div className="flex items-center gap-2 mb-5">
+            <span className="text-xs px-3 py-1 rounded-full font-bold" style={{ background:'rgba(255,255,255,0.25)', color:'white', backdropFilter:'blur(4px)' }}>{s.tag}</span>
+            {isToday && <span className="text-xs px-3 py-1 rounded-full font-bold" style={{ background:'white', color:grad[0] }}>HÔM NAY</span>}
           </div>
-          <div className="hanzi-text mb-3 cursor-pointer" onClick={() => speak(s.hanzi)}
-            style={{ color:'var(--ink)', fontWeight:500, fontSize:'clamp(24px,5vw,34px)', lineHeight:1.5 }}>
+
+          {/* CÂU CHÍNH - to & nổi bật */}
+          <div className="hanzi-text mb-4 cursor-pointer" onClick={() => speak(s.hanzi)}
+            style={{ color:'white', fontWeight:600, fontSize:'clamp(30px,6.5vw,46px)', lineHeight:1.45, letterSpacing:'0.5px', textShadow:'0 2px 12px rgba(0,0,0,0.18)' }}>
             {s.hanzi}
           </div>
-          <div className="mb-3"><ColoredPinyin pinyin={s.pinyin} size="md" /></div>
-          <div className="text-base mb-4" style={{ color:'var(--ink)', fontWeight:600 }}>{s.meaning}</div>
+
+          {/* pinyin trắng (đọc rõ trên nền màu) */}
+          <div className="mb-4" style={{ color:'rgba(255,255,255,0.92)', fontSize:'clamp(15px,3.4vw,19px)', fontFamily:'var(--font-pinyin)', fontWeight:500 }}>
+            {s.pinyin}
+          </div>
+
+          {/* nghĩa */}
+          <div className="pt-4 mb-5" style={{ borderTop:'1px solid rgba(255,255,255,0.25)' }}>
+            <div style={{ color:'white', fontSize:'clamp(16px,3.6vw,19px)', fontWeight:600, lineHeight:1.5 }}>{s.meaning}</div>
+          </div>
+
           <button onClick={() => speak(s.hanzi)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:scale-105"
-            style={{ background:'linear-gradient(135deg, var(--accent), var(--accent-2))', color:'white' }}>
-            🔊 Nghe đọc
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-bold transition-all hover:scale-105 active:scale-95"
+            style={{ background:'white', color:grad[0] }}>
+            🔊 Nghe đọc cả câu
           </button>
         </div>
       </div>
 
       {/* GHI CHÚ */}
       {s.note && (
-        <div className="rounded-2xl p-4 mb-4 flex gap-3" style={{ background:'#fffbeb', border:'1px solid #fde68a' }}>
-          <div className="text-lg">💡</div>
-          <div className="text-sm" style={{ color:'#92400e', lineHeight:1.6 }}>{s.note}</div>
+        <div className="rounded-2xl p-4 mb-4 flex gap-3" style={{ background:'var(--surface)', border:`1px solid ${grad[1]}55`, borderLeft:`4px solid ${grad[0]}` }}>
+          <div className="text-lg flex-shrink-0">💡</div>
+          <div className="text-sm" style={{ color:'var(--ink)', lineHeight:1.6 }}>{s.note}</div>
         </div>
       )}
 
       {/* TÁCH TỪ / CỤM */}
       <div className="rounded-2xl p-5 mb-4" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-        <div className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color:'var(--ink)' }}>
-          <span>🧩</span> Nghĩa theo từ / cụm
+        <div className="text-sm font-bold mb-3.5 flex items-center gap-2" style={{ color:'var(--ink)' }}>
+          <span className="w-6 h-6 rounded-lg flex items-center justify-center text-xs" style={{ background:'var(--surface-soft)' }}>🧩</span>
+          Nghĩa theo từ / cụm
         </div>
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-1">
           {s.words.map((w, i) => (
-            <div key={i} className="flex items-center gap-3 py-2 px-2 rounded-xl transition-colors hover:bg-[var(--surface-soft)]">
-              <button onClick={() => speak(w.w)} className="hanzi-text text-left flex-shrink-0 hover:opacity-70 transition-opacity"
-                style={{ color:'var(--ink)', fontWeight:500, fontSize:'18px', minWidth:'72px' }}>{w.w}</button>
+            <div key={i} className="flex items-center gap-3 py-2.5 px-3 rounded-xl"
+              style={{ background: i % 2 === 0 ? 'var(--surface-soft)' : 'transparent' }}>
+              <button onClick={() => speak(w.w)} className="hanzi-text text-left flex-shrink-0 transition-transform hover:scale-105 active:scale-95"
+                style={{ color:grad[0], fontWeight:600, fontSize:'20px', minWidth:'76px' }}>{w.w}</button>
               <div className="flex-shrink-0" style={{ minWidth:'96px' }}><ColoredPinyin pinyin={w.p} size="sm" /></div>
-              <div className="text-sm flex-1" style={{ color:'var(--muted)' }}>{w.m}</div>
+              <div className="text-sm flex-1" style={{ color:'var(--ink)' }}>{w.m}</div>
             </div>
           ))}
         </div>
@@ -4276,30 +4352,44 @@ const SentenceView = () => {
 
       {/* CẤU TRÚC */}
       <div className="rounded-2xl p-5 mb-5" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-        <div className="text-sm font-bold mb-2 flex items-center gap-2" style={{ color:'var(--ink)' }}>
-          <span>🏗️</span> Cấu trúc câu
+        <div className="text-sm font-bold mb-2.5 flex items-center gap-2" style={{ color:'var(--ink)' }}>
+          <span className="w-6 h-6 rounded-lg flex items-center justify-center text-xs" style={{ background:'var(--surface-soft)' }}>🏗️</span>
+          Cấu trúc câu
         </div>
-        <div className="text-sm" style={{ color:'var(--ink)', lineHeight:1.7 }}>{s.structure}</div>
+        <div className="text-sm" style={{ color:'var(--ink)', lineHeight:1.75 }}>{s.structure}</div>
       </div>
 
       {/* ĐÃ THUỘC */}
       <button onClick={toggleSeen}
-        className="w-full py-3 rounded-2xl font-semibold text-sm mb-4 transition-all hover:scale-[1.01]"
-        style={{ background: isSeen ? '#10b981' : 'var(--surface)', color: isSeen ? 'white' : 'var(--ink)', border: isSeen ? 'none' : '1px solid var(--border)' }}>
+        className="w-full py-3.5 rounded-2xl font-bold text-sm mb-4 transition-all hover:scale-[1.01] active:scale-[0.99]"
+        style={{ background: isSeen ? 'linear-gradient(135deg,#10b981,#34d399)' : 'var(--surface)', color: isSeen ? 'white' : 'var(--ink)', border: isSeen ? 'none' : '1px solid var(--border)' }}>
         {isSeen ? '✓ Đã thuộc câu này' : 'Đánh dấu đã thuộc'}
       </button>
 
       {/* ĐIỀU HƯỚNG */}
       <div className="flex items-center justify-between gap-3">
-        <button onClick={() => go(-1)} className="flex-1 py-3 rounded-2xl text-sm font-semibold transition-all hover:scale-[1.02]"
-          style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)' }}>← Câu trước</button>
-        <div className="text-center px-2" style={{ minWidth:'72px' }}>
+        <button onClick={() => go(-1)} disabled={!canPrev}
+          className="flex-1 py-3 rounded-2xl text-sm font-semibold transition-all hover:scale-[1.02]"
+          style={{ background:'var(--surface)', color: canPrev ? 'var(--ink)' : 'var(--muted)', border:'1px solid var(--border)', opacity: canPrev ? 1 : 0.45 }}>← Trước</button>
+        <div className="text-center px-1" style={{ minWidth:'80px' }}>
           <div style={{ fontSize:'15px', fontWeight:700, color:'var(--ink)' }}>{idx + 1}/{total}</div>
           {!isToday && <button onClick={() => setIdx(todayIdx)} className="text-xs mt-0.5" style={{ color:'var(--accent)' }}>về hôm nay</button>}
         </div>
-        <button onClick={() => go(1)} className="flex-1 py-3 rounded-2xl text-sm font-semibold transition-all hover:scale-[1.02]"
-          style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)' }}>Câu sau →</button>
+        {canNext ? (
+          <button onClick={() => go(1)}
+            className="flex-1 py-3 rounded-2xl text-sm font-semibold transition-all hover:scale-[1.02]"
+            style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)' }}>Sau →</button>
+        ) : (
+          <div className="flex-1 py-3 rounded-2xl text-xs font-semibold text-center" style={{ background:'var(--surface-soft)', color:'var(--muted)', border:'1px dashed var(--border)' }}>
+            🔒 Mai mở câu mới
+          </div>
+        )}
       </div>
+      {atNewest && !allUnlocked && (
+        <div className="text-center text-xs mt-3" style={{ color:'var(--muted)' }}>
+          Mỗi ngày mở thêm một câu mới — quay lại vào ngày mai nhé!
+        </div>
+      )}
     </div>
   );
 };
