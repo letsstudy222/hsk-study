@@ -431,17 +431,22 @@ const SENT_LIST = (typeof sentences !== 'undefined' ? sentences : []);
 const sentDayInfo = () => {
   const total = SENT_LIST.length;
   if (!total) return { total: 0, dayNum: 0, unlocked: 0, todayIdx: 0 };
-  let anchor = null;
-  try { anchor = localStorage.getItem('hsk:sentstart'); } catch (e) {}
-  const today = new Date(); today.setHours(0, 0, 0, 0);
-  if (!anchor) {
-    anchor = today.toISOString().slice(0, 10);
-    try { localStorage.setItem('hsk:sentstart', anchor); } catch (e) {}
+  const DAY = 86400000;
+  const todayMid = (() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d.getTime(); })();
+  let anchorMs = null;
+  try {
+    const v = localStorage.getItem('hsk:sentstart');
+    if (v != null) anchorMs = parseInt(v, 10);
+  } catch (e) {}
+  // mốc không hợp lệ (null/NaN/quá nhỏ do bản cũ lưu chuỗi ngày) -> đặt lại = hôm nay
+  if (anchorMs == null || isNaN(anchorMs) || anchorMs < 1e12) {
+    anchorMs = todayMid;
+    try { localStorage.setItem('hsk:sentstart', String(anchorMs)); } catch (e) {}
   }
-  const a = new Date(anchor + 'T00:00:00');
-  const dayNum = Math.max(0, Math.floor((today - a) / 86400000));
+  let dayNum = Math.floor((todayMid - anchorMs) / DAY);
+  if (!isFinite(dayNum) || dayNum < 0) dayNum = 0;
   const unlocked = Math.min(total, dayNum + 1);
-  const todayIdx = dayNum % total;
+  const todayIdx = ((dayNum % total) + total) % total; // luôn trong [0, total-1]
   return { total, dayNum, unlocked, todayIdx };
 };
 
@@ -1984,6 +1989,7 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount, habit, go
       {SENT_LIST.length > 0 && (() => {
         const { todayIdx } = sentDayInfo();
         const sd = SENT_LIST[todayIdx];
+        if (!sd) return null;
         return (
           <div onClick={() => setView('sentence')}
             className="relative overflow-hidden rounded-3xl p-6 mb-8 cursor-pointer transition-all hover:scale-[1.01] active:scale-[0.99]"
@@ -4237,6 +4243,7 @@ const SentenceView = ({ goHome }) => {
   }
 
   const s = list[idx];
+  if (!s) return <div className="max-w-2xl mx-auto px-6 py-10 text-center" style={{ color:'var(--muted)' }}>Không tìm thấy câu.</div>;
   const isToday = idx === todayIdx;
   const isSeen = seen.includes(s.id);
   const allUnlocked = unlocked >= total;
