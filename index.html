@@ -49,6 +49,7 @@ html{scrollbar-width:thin;scrollbar-color:#94c3ec rgba(148,195,236,.18)}
 <script src="hsk6.js"></script>
 <script src="grammar.js"></script>
 <script src="readings.js"></script>
+<script src="sentences.js"></script>
 <script type="text/babel" data-presets="react">
 const{useState,useEffect,useMemo,useRef,useCallback}=React;
 
@@ -1044,6 +1045,7 @@ const Header = ({ view, setView, darkMode, toggleDark, habit, goalProgress, onOp
     { id:'grammar', label:'语法', viLabel:'Ngữ pháp' },
     { id:'reading', label:'阅读', viLabel:'Bài đọc' },
     { id:'flashcard', label:'卡片', viLabel:'Flashcard' },
+    { id:'sentence', label:'每日一句', viLabel:'Câu mỗi ngày' },
     { id:'quiz', label:'测验', viLabel:'Quiz' },
     { id:'listening', label:'听力', viLabel:'Nghe' },
     { id:'writing', label:'书写', viLabel:'Viết' },
@@ -4179,7 +4181,132 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
   );
 };
 
+// ============ SENTENCE OF DAY VIEW (每日一句) ============
+const SENT_DATA = (typeof sentences !== 'undefined' ? sentences : []);
+const SentenceView = () => {
+  const list = SENT_DATA;
+  const total = list.length;
+  const todayIdx = total > 0 ? Math.floor(Date.now() / 86400000) % total : 0;
+  const [idx, setIdx] = useState(todayIdx);
+  const [seen, setSeen] = useState(() => {
+    try { const s = localStorage.getItem('hsk:sentdone'); return s ? JSON.parse(s) : []; } catch { return []; }
+  });
+
+  if (total === 0) {
+    return <div className="max-w-2xl mx-auto px-6 py-10 text-center" style={{ color:'var(--muted)' }}>Chưa có dữ liệu câu.</div>;
+  }
+
+  const s = list[idx];
+  const isToday = idx === todayIdx;
+  const isSeen = seen.includes(s.id);
+  const tagColor = { '励志':'#e08e0a', '名言':'#7c5cff', '谚语':'#0d9b6e', '流行语':'#dc2f2f', '日常':'var(--accent)' }[s.tag] || 'var(--accent)';
+
+  const toggleSeen = () => {
+    setSeen(prev => {
+      const next = prev.includes(s.id) ? prev.filter(x => x !== s.id) : [...prev, s.id];
+      try { localStorage.setItem('hsk:sentdone', JSON.stringify(next)); } catch {}
+      return next;
+    });
+  };
+  const go = (d) => setIdx(i => (i + d + total) % total);
+
+  return (
+    <div className="max-w-2xl mx-auto px-5 py-7">
+      {/* Header */}
+      <div className="flex items-start justify-between mb-5">
+        <div>
+          <div className="text-xs tracking-[0.3em] mb-1" style={{ color:'var(--accent)' }}>每日一句 · CÂU MỖI NGÀY</div>
+          <h1 className="text-3xl" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>{isToday ? 'Câu hôm nay' : 'Câu ôn'}</h1>
+        </div>
+        <div className="text-right">
+          <div className="text-xs px-2 py-1 rounded-lg font-semibold inline-block" style={{ background:'var(--surface-soft)', color:'var(--muted)' }}>
+            Đã thuộc {seen.length}/{total}
+          </div>
+        </div>
+      </div>
+
+      {/* HERO CÂU */}
+      <div className="relative overflow-hidden rounded-3xl p-6 mb-4 soft-shadow-lg fc-enter"
+        style={{ background:'linear-gradient(155deg, var(--surface) 0%, var(--surface-soft) 70%, var(--surface) 100%)', border:'1px solid var(--accent-soft)' }}>
+        <div className="absolute -right-4 -bottom-10 hanzi-text pointer-events-none select-none"
+          style={{ fontSize:'180px', lineHeight:1, color:'var(--accent)', opacity:0.05, fontWeight:600 }}>句</div>
+        <div className="relative">
+          <div className="flex items-center gap-2 mb-4">
+            <span className="text-xs px-2.5 py-1 rounded-full font-bold" style={{ background:tagColor, color:'white' }}>{s.tag}</span>
+            {isToday && <span className="text-xs px-2.5 py-1 rounded-full font-semibold" style={{ background:'var(--surface)', color:'var(--accent)', border:'1px solid var(--accent-soft)' }}>Hôm nay</span>}
+          </div>
+          <div className="hanzi-text mb-3 cursor-pointer" onClick={() => speak(s.hanzi)}
+            style={{ color:'var(--ink)', fontWeight:500, fontSize:'clamp(24px,5vw,34px)', lineHeight:1.5 }}>
+            {s.hanzi}
+          </div>
+          <div className="mb-3"><ColoredPinyin pinyin={s.pinyin} size="md" /></div>
+          <div className="text-base mb-4" style={{ color:'var(--ink)', fontWeight:600 }}>{s.meaning}</div>
+          <button onClick={() => speak(s.hanzi)}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:scale-105"
+            style={{ background:'linear-gradient(135deg, var(--accent), var(--accent-2))', color:'white' }}>
+            🔊 Nghe đọc
+          </button>
+        </div>
+      </div>
+
+      {/* GHI CHÚ */}
+      {s.note && (
+        <div className="rounded-2xl p-4 mb-4 flex gap-3" style={{ background:'#fffbeb', border:'1px solid #fde68a' }}>
+          <div className="text-lg">💡</div>
+          <div className="text-sm" style={{ color:'#92400e', lineHeight:1.6 }}>{s.note}</div>
+        </div>
+      )}
+
+      {/* TÁCH TỪ / CỤM */}
+      <div className="rounded-2xl p-5 mb-4" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+        <div className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color:'var(--ink)' }}>
+          <span>🧩</span> Nghĩa theo từ / cụm
+        </div>
+        <div className="flex flex-col gap-1.5">
+          {s.words.map((w, i) => (
+            <div key={i} className="flex items-center gap-3 py-2 px-2 rounded-xl transition-colors hover:bg-[var(--surface-soft)]">
+              <button onClick={() => speak(w.w)} className="hanzi-text text-left flex-shrink-0 hover:opacity-70 transition-opacity"
+                style={{ color:'var(--ink)', fontWeight:500, fontSize:'18px', minWidth:'72px' }}>{w.w}</button>
+              <div className="flex-shrink-0" style={{ minWidth:'96px' }}><ColoredPinyin pinyin={w.p} size="sm" /></div>
+              <div className="text-sm flex-1" style={{ color:'var(--muted)' }}>{w.m}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* CẤU TRÚC */}
+      <div className="rounded-2xl p-5 mb-5" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+        <div className="text-sm font-bold mb-2 flex items-center gap-2" style={{ color:'var(--ink)' }}>
+          <span>🏗️</span> Cấu trúc câu
+        </div>
+        <div className="text-sm" style={{ color:'var(--ink)', lineHeight:1.7 }}>{s.structure}</div>
+      </div>
+
+      {/* ĐÃ THUỘC */}
+      <button onClick={toggleSeen}
+        className="w-full py-3 rounded-2xl font-semibold text-sm mb-4 transition-all hover:scale-[1.01]"
+        style={{ background: isSeen ? '#10b981' : 'var(--surface)', color: isSeen ? 'white' : 'var(--ink)', border: isSeen ? 'none' : '1px solid var(--border)' }}>
+        {isSeen ? '✓ Đã thuộc câu này' : 'Đánh dấu đã thuộc'}
+      </button>
+
+      {/* ĐIỀU HƯỚNG */}
+      <div className="flex items-center justify-between gap-3">
+        <button onClick={() => go(-1)} className="flex-1 py-3 rounded-2xl text-sm font-semibold transition-all hover:scale-[1.02]"
+          style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)' }}>← Câu trước</button>
+        <div className="text-center px-2" style={{ minWidth:'72px' }}>
+          <div style={{ fontSize:'15px', fontWeight:700, color:'var(--ink)' }}>{idx + 1}/{total}</div>
+          {!isToday && <button onClick={() => setIdx(todayIdx)} className="text-xs mt-0.5" style={{ color:'var(--accent)' }}>về hôm nay</button>}
+        </div>
+        <button onClick={() => go(1)} className="flex-1 py-3 rounded-2xl text-sm font-semibold transition-all hover:scale-[1.02]"
+          style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)' }}>Câu sau →</button>
+      </div>
+    </div>
+  );
+};
+
 // ============ QUIZ VIEW ============
+
+
 // ============ QUIZ & ACTIVE RECALL SYSTEM ============
 
 // ── Quiz Type Config ──
@@ -9071,6 +9198,7 @@ function App() {
         {view === 'grammar' && <GrammarView />}
         {view === 'reading' && <ReadingView onActivity={trackReading} srsData={srsData} updateSRS={updateSRS} learned={learned} toggleLearned={toggleLearned} />}
         {view === 'flashcard' && <FlashcardView srsData={srsData} updateSRS={updateSRS} settings={fcSettings} setSettings={updateFcSettings} daily={fcDaily} bumpDaily={bumpDaily} fcStats={fcStats} bumpFcStat={bumpFcStat} />}
+        {view === 'sentence' && <SentenceView />}
         {view === 'quiz' && <QuizView toggleLearned={toggleLearned} learned={learned} addQuizScore={addQuizScore} srsData={srsData} />}
         {view === 'listening' && <ListeningView srsData={srsData} trackActivity={trackActivity} />}
         {view === 'writing' && <WritingView onActivity={trackWriting} />}
