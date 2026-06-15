@@ -3586,6 +3586,7 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
   const maxReviews = settings?.maxReviews ?? 0;     // 0 = không giới hạn
   const currentLevel = settings?.currentLevel ?? 1;
   const typingMode = !!settings?.typing;
+  const deckSize = Math.min(50, Math.max(20, settings?.deckSize ?? 25));
 
   const today = fcToday();
   const newDoneToday = daily?.date === today ? (daily.newDone || 0) : 0;
@@ -3599,8 +3600,9 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
   const [flipped, setFlipped] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [sessionDone, setSessionDone] = useState(false);
-  const [sessionMode, setSessionMode] = useState('today'); // today | cram | leech | extra
+  const [sessionMode, setSessionMode] = useState('today'); // today | cram | leech | extra | deck...
   const [showSettings, setShowSettings] = useState(false);
+  const [selectedDeck, setSelectedDeck] = useState(null); // chỉ số bộ đang mở (null = danh sách bộ)
   // Typing
   const [typed, setTyped] = useState('');
   const [typedResult, setTypedResult] = useState(null); // null | 'correct' | 'wrong'
@@ -3669,6 +3671,39 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
     return { inSrs: ids.length, learning, young, mature, retention, leech: leechList.length };
   }, [srsData, fcStats, leechList]);
 
+  // ── Chia cấp hiện tại thành các BỘ cố định ──
+  const levelWords = ALL_HSK[currentLevel] || [];
+  const deckCount = Math.max(1, Math.ceil(levelWords.length / deckSize));
+  const RATE_COLOR = { 1: '#dc2f2f', 2: '#e08e0a', 3: 'var(--accent)', 4: '#10b981' };
+  const deckInfo = (k) => {
+    const now = Date.now();
+    const start = k * deckSize;
+    const ws = levelWords.slice(start, start + deckSize);
+    let studied = 0, due = 0;
+    const b = [0, 0, 0, 0, 0]; // đếm theo mức 1..4
+    const newW = [], dueW = [], weakW = [], restW = [];
+    for (const w of ws) {
+      const d = srsData[w.id];
+      if (!d) { newW.push(w); continue; }
+      studied++;
+      const r = d.lastRating || 3;
+      b[r] = (b[r] || 0) + 1;
+      if (d.nextReview <= now) { due++; dueW.push(w); } else { restW.push(w); }
+      if (r === 1 || r === 2) weakW.push(w);
+    }
+    return { k, start, ws, total: ws.length, studied, due, b, newW, dueW, weakW, restW };
+  };
+  // tổng quan cả cấp
+  const levelOverview = (() => {
+    const now = Date.now();
+    let studied = 0, due = 0;
+    for (const w of levelWords) {
+      const d = srsData[w.id]; if (!d) continue;
+      studied++; if (d.nextReview <= now) due++;
+    }
+    return { total: levelWords.length, studied, due };
+  })();
+
   // ── Trộn từ mới xen vào từ ôn (kiểu Anki) ──
   const buildToday = useCallback(() => {
     const due = dueToStudy.map(x => x.w);
@@ -3715,6 +3750,20 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
     setTyped(''); setTypedResult(null);
   };
 
+  // Học một danh sách từ cụ thể (dùng cho các BỘ)
+  const startWords = (words, modeName = 'deck') => {
+    if (!words || words.length === 0) return;
+    setSessionMode(modeName);
+    setSessionQueue([...words]);
+    setSessionIdx(0);
+    setReQueue([]);
+    setSessionStats({ forgot:0, hard:0, good:0, easy:0, total:0 });
+    setFlipped(false);
+    setFeedback(null);
+    setSessionDone(false);
+    setTyped(''); setTypedResult(null);
+  };
+
   const currentWord = sessionQueue ? sessionQueue[sessionIdx] : null;
   const currentCardSRS = currentWord ? srsData[currentWord.id] : null;
   const isCram = sessionMode === 'cram';
@@ -3743,7 +3792,7 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
     const next = fsrsUpdateState(prev, rating);
 
     if (!isCram) {
-      updateSRS(currentWord.id, next);
+      updateSRS(currentWord.id, { ...next, lastRating: rating });
       bumpDaily(wasNew ? 'new' : 'review');
       bumpFcStat(rating >= 3);
     }
@@ -3848,42 +3897,14 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
         </div>
 
         <div className="mb-5">
-          <div className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>Cấp đang học (lấy từ mới)</div>
-          <div className="text-xs mb-2" style={{ color: 'var(--muted)' }}>Từ mới lấy lần lượt theo cấp này. Từ ôn vẫn gộp tất cả các cấp.</div>
+          <div className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>Số từ mỗi bộ</div>
+          <div className="text-xs mb-2" style={{ color: 'var(--muted)' }}>Mỗi cấp HSK được chia thành các bộ cố định theo số này — giúp xác định giới hạn và dễ ôn lại.</div>
           <div className="flex gap-1.5 flex-wrap">
-            {[1,2,3,4,5,6].map(l => (
-              <button key={l} onClick={() => setSettings({ currentLevel: l })}
+            {[20,25,30,40,50].map(n => (
+              <button key={n} onClick={() => setSettings({ deckSize: n })}
                 className="px-3.5 py-2 rounded-xl text-sm font-semibold transition-all"
-                style={{ background: currentLevel === l ? 'var(--accent)' : 'var(--surface-soft)', color: currentLevel === l ? 'white' : 'var(--ink)', border: '1px solid var(--border)' }}>
-                HSK {l}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-5">
-          <div className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>Số từ mới mỗi ngày</div>
-          <div className="text-xs mb-2" style={{ color: 'var(--muted)' }}>Giới hạn để không quá tải. 10 là mức nhẹ nhàng, bền vững.</div>
-          <div className="flex gap-1.5 flex-wrap">
-            {[5,10,15,20,30].map(n => (
-              <button key={n} onClick={() => setSettings({ newPerDay: n })}
-                className="px-3.5 py-2 rounded-xl text-sm font-semibold transition-all"
-                style={{ background: newPerDay === n ? 'var(--accent)' : 'var(--surface-soft)', color: newPerDay === n ? 'white' : 'var(--ink)', border: '1px solid var(--border)' }}>
+                style={{ background: deckSize === n ? 'var(--accent)' : 'var(--surface-soft)', color: deckSize === n ? 'white' : 'var(--ink)', border: '1px solid var(--border)' }}>
                 {n}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="mb-5">
-          <div className="text-sm font-semibold mb-1" style={{ color: 'var(--ink)' }}>Giới hạn từ ôn mỗi ngày</div>
-          <div className="text-xs mb-2" style={{ color: 'var(--muted)' }}>"Không giới hạn" giúp không dồn từ sang ngày sau (khuyến nghị).</div>
-          <div className="flex gap-1.5 flex-wrap">
-            {[{v:0,l:'Không giới hạn'},{v:50,l:'50'},{v:100,l:'100'},{v:200,l:'200'}].map(o => (
-              <button key={o.v} onClick={() => setSettings({ maxReviews: o.v })}
-                className="px-3.5 py-2 rounded-xl text-sm font-semibold transition-all"
-                style={{ background: maxReviews === o.v ? 'var(--accent)' : 'var(--surface-soft)', color: maxReviews === o.v ? 'white' : 'var(--ink)', border: '1px solid var(--border)' }}>
-                {o.l}
               </button>
             ))}
           </div>
@@ -3904,158 +3925,149 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
     </div>
   );
 
-  // ════════════ MÀN HÌNH "HÔM NAY" ════════════
+  // ════════════ MÀN HÌNH CHỌN BỘ ════════════
   if (!sessionQueue) {
-    const allDone = planTotal === 0;
+    // ----- Chi tiết một BỘ -----
+    if (selectedDeck != null) {
+      const di = deckInfo(selectedDeck);
+      const segs = [
+        { n: di.b[4], c: RATE_COLOR[4] },
+        { n: di.b[3], c: RATE_COLOR[3] },
+        { n: di.b[2], c: RATE_COLOR[2] },
+        { n: di.b[1], c: RATE_COLOR[1] },
+      ];
+      const orderedAll = [...di.dueW, ...di.newW, ...di.restW];
+      return (
+        <div className="max-w-2xl mx-auto px-5 py-7">
+          {showSettings && <SettingsModal />}
+          <button onClick={() => setSelectedDeck(null)} className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-xl mb-4 transition-all hover:scale-105"
+            style={{ background:'var(--surface)', color:'var(--muted)', border:'1px solid var(--border)' }}>← Các bộ HSK {currentLevel}</button>
+
+          <div className="rounded-3xl p-6 mb-5 soft-shadow-lg fc-enter" style={{ background:'linear-gradient(150deg, var(--surface), var(--surface-soft))', border:'1px solid var(--accent-soft)' }}>
+            <div className="text-xs tracking-[0.25em] mb-1" style={{ color:'var(--accent)' }}>HSK {currentLevel} · BỘ {selectedDeck + 1}</div>
+            <h1 className="text-2xl mb-1" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Từ {di.start + 1}–{di.start + di.total}</h1>
+            <div className="text-sm mb-4" style={{ color:'var(--muted)' }}>{di.total} từ · đã học {di.studied}/{di.total}</div>
+
+            {/* thanh phân loại */}
+            <div className="flex h-3 rounded-full overflow-hidden mb-3" style={{ background:'var(--surface-soft)' }}>
+              {segs.map((s, i) => s.n > 0 && <div key={i} style={{ width:`${(s.n / di.total) * 100}%`, background:s.c }} />)}
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs">
+              {di.b[4] > 0 && <span className="px-2 py-1 rounded-lg font-semibold" style={{ background:'var(--surface)', color:RATE_COLOR[4], border:`1px solid ${RATE_COLOR[4]}40` }}>● Dễ {di.b[4]}</span>}
+              {di.b[3] > 0 && <span className="px-2 py-1 rounded-lg font-semibold" style={{ background:'var(--surface)', color:'var(--accent)', border:'1px solid var(--accent-soft)' }}>● Ổn {di.b[3]}</span>}
+              {di.b[2] > 0 && <span className="px-2 py-1 rounded-lg font-semibold" style={{ background:'var(--surface)', color:RATE_COLOR[2], border:`1px solid ${RATE_COLOR[2]}40` }}>● Khó {di.b[2]}</span>}
+              {di.b[1] > 0 && <span className="px-2 py-1 rounded-lg font-semibold" style={{ background:'var(--surface)', color:RATE_COLOR[1], border:`1px solid ${RATE_COLOR[1]}40` }}>● Quên {di.b[1]}</span>}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2.5">
+            <button onClick={() => startWords(orderedAll, 'deck')}
+              className="w-full py-3.5 rounded-2xl font-bold text-base transition-all hover:scale-[1.02] active:scale-[0.98]"
+              style={{ background:'linear-gradient(135deg, var(--accent), var(--accent-2))', color:'white', boxShadow:'0 6px 22px rgba(61,139,209,0.4)' }}>
+              ▶ Học cả bộ ({di.total})
+            </button>
+            {di.due > 0 && (
+              <button onClick={() => startWords(di.dueW, 'deck-due')}
+                className="w-full py-3 rounded-2xl font-semibold text-sm transition-all hover:scale-[1.01]"
+                style={{ background:'var(--surface)', color:'var(--accent)', border:'1.5px solid var(--accent-soft)' }}>
+                🔄 Ôn từ đến hạn ({di.due})
+              </button>
+            )}
+            {di.weakW.length > 0 && (
+              <button onClick={() => startWords(di.weakW, 'deck-weak')}
+                className="w-full py-3 rounded-2xl font-semibold text-sm transition-all hover:scale-[1.01]"
+                style={{ background:'#fff7ed', color:'#b45309', border:'1.5px solid #fed7aa' }}>
+                🎯 Luyện từ yếu — Quên/Khó ({di.weakW.length})
+              </button>
+            )}
+            {di.newW.length > 0 && (
+              <button onClick={() => startWords(di.newW, 'deck-new')}
+                className="w-full py-3 rounded-2xl font-semibold text-sm transition-all hover:scale-[1.01]"
+                style={{ background:'#ecfdf5', color:'#047857', border:'1.5px solid #a7f3d0' }}>
+                ✨ Học từ mới trong bộ ({di.newW.length})
+              </button>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // ----- Danh sách các BỘ của cấp -----
     return (
       <div className="max-w-2xl mx-auto px-5 py-7">
         {showSettings && <SettingsModal />}
-
-        <div className="flex items-start justify-between mb-5">
+        <div className="flex items-start justify-between mb-4">
           <div>
-            <div className="text-xs tracking-[0.3em] mb-1" style={{ color:'var(--accent)' }}>卡片 · FLASHCARD SRS</div>
-            <h1 className="text-3xl" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Hôm nay</h1>
+            <div className="text-xs tracking-[0.3em] mb-1" style={{ color:'var(--accent)' }}>卡片 · FLASHCARD</div>
+            <h1 className="text-3xl" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Chọn bộ từ</h1>
           </div>
           <button onClick={() => setShowSettings(true)}
             className="w-10 h-10 rounded-2xl flex items-center justify-center text-lg transition-all hover:scale-105"
             style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>⚙️</button>
         </div>
 
-        {/* ── HERO: vòng tiến độ + chữ ký 今 ── */}
-        <div className="relative overflow-hidden rounded-3xl p-6 mb-4 soft-shadow-lg fc-enter"
-          style={{ background:'linear-gradient(155deg, var(--surface) 0%, var(--surface-soft) 60%, var(--surface) 100%)', border:'1px solid var(--accent-soft)' }}>
-          {/* chữ Hán mờ trang trí ở góc */}
-          <div className="absolute -right-5 -bottom-9 hanzi-text pointer-events-none select-none"
-            style={{ fontSize:'190px', lineHeight:1, color:'var(--accent)', opacity:0.05, fontWeight:600 }}>學</div>
-
-          <div className="relative flex items-center gap-6">
-            <ProgressRing pct={allDone ? 100 : todayPct} watermark="今">
-              {allDone ? (
-                <>
-                  <div style={{ fontSize:'34px', lineHeight:1, color:'var(--accent)' }}>✓</div>
-                  <div className="text-[11px] mt-1" style={{ color:'var(--muted)' }}>hoàn thành</div>
-                </>
-              ) : (
-                <>
-                  <div style={{ fontSize:'40px', fontWeight:800, lineHeight:1, color:'var(--ink)', fontFamily:'var(--font-display)' }}>{planTotal}</div>
-                  <div className="text-[11px] mt-1" style={{ color:'var(--muted)' }}>thẻ cần học</div>
-                </>
-              )}
-            </ProgressRing>
-
-            <div className="flex-1 min-w-0">
-              {!allDone ? (
-                <>
-                  <div className="text-sm mb-3" style={{ color:'var(--muted)' }}>
-                    Đã xong <strong style={{ color:'var(--ink)' }}>{todayPct}%</strong> mục tiêu hôm nay
-                  </div>
-                  <div className="flex gap-2 mb-4">
-                    <div className="flex-1 px-3 py-2 rounded-xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-                      <div style={{ fontSize:'20px', fontWeight:800, lineHeight:1, color:'var(--accent)' }}>{planDue}</div>
-                      <div className="text-[11px] mt-0.5" style={{ color:'var(--muted)' }}>cần ôn</div>
-                    </div>
-                    <div className="flex-1 px-3 py-2 rounded-xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-                      <div style={{ fontSize:'20px', fontWeight:800, lineHeight:1, color:'#10b981' }}>{planNew}</div>
-                      <div className="text-[11px] mt-0.5" style={{ color:'var(--muted)' }}>từ mới</div>
-                    </div>
-                  </div>
-                  <button onClick={() => startSession('today')}
-                    className="w-full py-3.5 rounded-2xl font-bold text-base transition-all hover:scale-[1.02] active:scale-[0.98]"
-                    style={{ background:'linear-gradient(135deg, var(--accent), var(--accent-2))', color:'white', boxShadow:'0 6px 22px rgba(61,139,209,0.4)' }}>
-                    ▶ Bắt đầu học
-                  </button>
-                </>
-              ) : (
-                <>
-                  <div className="text-lg font-bold mb-1" style={{ color:'var(--ink)' }}>Hôm nay xong rồi 🎉</div>
-                  <div className="text-sm mb-4" style={{ color:'var(--muted)' }}>
-                    Đã ôn {reviewsDoneToday} từ · học {newDoneToday} từ mới. Nghỉ hoặc luyện thêm tùy bạn.
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    {newAvailable.length > 0 && (
-                      <button onClick={() => startSession('extra')} className="w-full py-2.5 rounded-2xl font-semibold text-sm"
-                        style={{ background:'linear-gradient(135deg, var(--accent), var(--accent-2))', color:'white' }}>
-                        ✨ Học thêm 10 từ mới
-                      </button>
-                    )}
-                    <button onClick={() => startSession('cram')} className="w-full py-2.5 rounded-2xl font-semibold text-sm"
-                      style={{ background:'var(--surface)', color:'var(--ink)', border:'1px solid var(--border)' }}>
-                      📚 Ôn tự do HSK {currentLevel}
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
+        {/* chọn cấp HSK */}
+        <div className="flex gap-1.5 mb-3 overflow-x-auto pb-1">
+          {[1,2,3,4,5,6].map(l => (
+            <button key={l} onClick={() => { setSettings({ currentLevel: l }); setSelectedDeck(null); }}
+              className="px-4 py-2 rounded-xl text-sm font-bold transition-all flex-shrink-0"
+              style={{ background: currentLevel === l ? 'var(--accent)' : 'var(--surface)', color: currentLevel === l ? 'white' : 'var(--ink)', border:'1px solid var(--border)' }}>
+              HSK {l}
+            </button>
+          ))}
         </div>
 
-        {/* ── Nhịp hôm nay ── */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="p-4 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <span className="text-sm">✨</span>
-              <span className="text-xs" style={{ color:'var(--muted)' }}>Từ mới hôm nay</span>
-            </div>
-            <div style={{ fontSize:'22px', fontWeight:800, color:'var(--ink)' }}>{newDoneToday}<span className="text-sm font-normal" style={{ color:'var(--muted)' }}> / {newPerDay}</span></div>
-            <div className="h-1.5 rounded-full mt-2 overflow-hidden" style={{ background:'var(--surface-soft)' }}>
-              <div className="h-full rounded-full transition-all duration-700" style={{ width:`${Math.min(100,(newDoneToday/Math.max(1,newPerDay))*100)}%`, background:'linear-gradient(90deg,#10b981,#34d399)' }} />
-            </div>
-          </div>
-          <div className="p-4 rounded-2xl" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <span className="text-sm">⏰</span>
-              <span className="text-xs" style={{ color:'var(--muted)' }}>Đã ôn hôm nay</span>
-            </div>
-            <div style={{ fontSize:'22px', fontWeight:800, color:'var(--ink)' }}>{reviewsDoneToday}</div>
-            <div className="text-[11px] mt-2" style={{ color:'var(--muted)' }}>{planDue > 0 ? `Còn ${planDue} từ đến hạn` : 'Đã ôn hết từ đến hạn'}</div>
-          </div>
+        {/* tổng quan cấp */}
+        <div className="flex items-center gap-4 mb-5 px-1 text-sm" style={{ color:'var(--muted)' }}>
+          <span>{levelOverview.total} từ</span>
+          <span>·</span>
+          <span>đã học {levelOverview.studied}</span>
+          {levelOverview.due > 0 && <><span>·</span><span style={{ color:'var(--accent)', fontWeight:600 }}>cần ôn {levelOverview.due}</span></>}
         </div>
 
-        {/* ── Tiến độ ghi nhớ ── */}
-        <div className="p-5 rounded-2xl mb-4" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-          <div className="flex items-center justify-between mb-3">
-            <div className="text-sm font-semibold" style={{ color:'var(--ink)' }}>Tiến độ ghi nhớ</div>
-            {stats.retention != null && (
-              <div className="text-xs px-2 py-0.5 rounded-md font-semibold" style={{ background:'var(--surface-soft)', color: stats.retention >= 80 ? '#10b981' : stats.retention >= 60 ? '#e08e0a' : '#dc2f2f' }}>
-                Tỉ lệ nhớ {stats.retention}%
-              </div>
-            )}
-          </div>
-          {stats.inSrs > 0 ? (
-            <>
-              <div className="flex h-3 rounded-full overflow-hidden mb-2.5" style={{ background:'var(--surface-soft)' }}>
-                {stats.mature > 0 && <div style={{ width:`${(stats.mature/stats.inSrs)*100}%`, background:'#10b981' }} />}
-                {stats.young > 0 && <div style={{ width:`${(stats.young/stats.inSrs)*100}%`, background:'var(--accent)' }} />}
-                {stats.learning > 0 && <div style={{ width:`${(stats.learning/stats.inSrs)*100}%`, background:'#e08e0a' }} />}
-              </div>
-              <div className="flex justify-between text-xs" style={{ color:'var(--muted)' }}>
-                <span><span style={{ color:'#10b981' }}>●</span> Thuộc lâu {stats.mature}</span>
-                <span><span style={{ color:'var(--accent)' }}>●</span> Đang nhớ {stats.young}</span>
-                <span><span style={{ color:'#e08e0a' }}>●</span> Mới học {stats.learning}</span>
-              </div>
-            </>
-          ) : (
-            <div className="text-sm text-center py-2" style={{ color:'var(--muted)' }}>Chưa có từ nào trong SRS — bắt đầu học để tạo lịch ôn!</div>
-          )}
+        {/* lưới các bộ */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {Array.from({ length: deckCount }, (_, k) => {
+            const di = deckInfo(k);
+            const segs = [
+              { n: di.b[4], c: RATE_COLOR[4] },
+              { n: di.b[3], c: 'var(--accent)' },
+              { n: di.b[2], c: RATE_COLOR[2] },
+              { n: di.b[1], c: RATE_COLOR[1] },
+            ];
+            return (
+              <button key={k} onClick={() => setSelectedDeck(k)}
+                className="text-left rounded-2xl p-4 transition-all hover:scale-[1.02] active:scale-[0.98] soft-shadow"
+                style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="font-bold" style={{ color:'var(--ink)' }}>Bộ {k + 1}</div>
+                  {di.due > 0 && <span className="text-[11px] px-2 py-0.5 rounded-md font-bold" style={{ background:'var(--surface-soft)', color:'var(--accent)' }}>ôn {di.due}</span>}
+                </div>
+                <div className="text-xs mb-3" style={{ color:'var(--muted)' }}>từ {di.start + 1}–{di.start + di.total} · {di.total} từ</div>
+                <div className="flex h-2 rounded-full overflow-hidden mb-2" style={{ background:'var(--surface-soft)' }}>
+                  {segs.map((s, i) => s.n > 0 && <div key={i} style={{ width:`${(s.n / di.total) * 100}%`, background:s.c }} />)}
+                </div>
+                {di.studied > 0 ? (
+                  <div className="flex flex-wrap gap-1.5 text-[11px]" style={{ color:'var(--muted)' }}>
+                    {di.b[1] > 0 && <span style={{ color:RATE_COLOR[1] }}>●{di.b[1]}</span>}
+                    {di.b[2] > 0 && <span style={{ color:RATE_COLOR[2] }}>●{di.b[2]}</span>}
+                    {di.b[3] > 0 && <span style={{ color:'var(--accent)' }}>●{di.b[3]}</span>}
+                    {di.b[4] > 0 && <span style={{ color:RATE_COLOR[4] }}>●{di.b[4]}</span>}
+                    <span className="ml-auto">đã học {di.studied}/{di.total}</span>
+                  </div>
+                ) : (
+                  <div className="text-[11px]" style={{ color:'var(--muted)', opacity:0.7 }}>chưa bắt đầu</div>
+                )}
+              </button>
+            );
+          })}
         </div>
 
-        {/* ── Từ khó ── */}
-        {stats.leech > 0 && (
-          <button onClick={() => startSession('leech')}
-            className="w-full flex items-center gap-3 p-4 rounded-2xl mb-4 transition-all hover:scale-[1.01]"
-            style={{ background:'#fffbeb', border:'1px solid #fde68a' }}>
-            <div className="text-2xl">🔥</div>
-            <div className="flex-1 text-left">
-              <div className="text-sm font-semibold" style={{ color:'#92400e' }}>{stats.leech} từ khó cần luyện thêm</div>
-              <div className="text-xs" style={{ color:'#b45309' }}>Những từ hay quên — luyện riêng để nhớ tốt hơn</div>
-            </div>
-            <div style={{ color:'#b45309' }}>→</div>
-          </button>
-        )}
-
-        <div className="text-xs text-center" style={{ color:'var(--muted)' }}>
-          <kbd className="px-1.5 py-0.5 rounded" style={{ background:'var(--surface)',border:'1px solid var(--border)',fontFamily:'monospace' }}>Space</kbd> lật thẻ ·{' '}
-          <kbd className="px-1.5 py-0.5 rounded" style={{ background:'var(--surface)',border:'1px solid var(--border)',fontFamily:'monospace' }}>1-4</kbd> đánh giá
+        <div className="mt-5 flex items-center justify-center gap-3 text-[11px]" style={{ color:'var(--muted)' }}>
+          <span><span style={{ color:RATE_COLOR[1] }}>●</span> Quên</span>
+          <span><span style={{ color:RATE_COLOR[2] }}>●</span> Khó</span>
+          <span><span style={{ color:'var(--accent)' }}>●</span> Ổn</span>
+          <span><span style={{ color:RATE_COLOR[4] }}>●</span> Dễ</span>
         </div>
       </div>
     );
@@ -4063,15 +4075,14 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
 
   // ════════════ MÀN HÌNH KẾT THÚC ════════════
   if (sessionDone) {
-    const stillDue = maxReviews > 0 ? dueList.slice(0, maxReviews).length : dueList.length;
-    const stillNew = Math.max(0, newPerDay - newDoneToday);
-    const remaining = sessionMode === 'today' ? (stillDue + Math.min(stillNew, newAvailable.length)) : 0;
+    const di = selectedDeck != null ? deckInfo(selectedDeck) : null;
+    const remaining = di ? di.due : 0;
     return (
       <div className="max-w-lg mx-auto px-6 py-8">
         <SessionEndScreen
           stats={sessionStats}
           remaining={remaining}
-          onContinue={() => startSession('today')}
+          onContinue={() => { if (di && di.dueW.length) startWords(di.dueW, 'deck-due'); else resetSession(); }}
           onReset={resetSession}
         />
       </div>
@@ -4089,7 +4100,7 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
   }
 
   const sessionProgress = sessionIdx / Math.max(sessionQueue.length, 1);
-  const modeBadge = isCram ? 'ÔN TỰ DO' : sessionMode === 'leech' ? 'TỪ KHÓ' : sessionMode === 'extra' ? 'TỪ MỚI THÊM' : null;
+  const modeBadge = isCram ? 'ÔN TỰ DO' : sessionMode === 'deck-due' ? 'CẦN ÔN' : sessionMode === 'deck-weak' ? 'TỪ YẾU' : sessionMode === 'deck-new' ? 'TỪ MỚI' : (selectedDeck != null ? `BỘ ${selectedDeck + 1}` : null);
 
   // ════════════ PHIÊN HỌC ════════════
   return (
