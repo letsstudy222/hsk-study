@@ -484,101 +484,124 @@ const feedPetFood = (n) => { const p = readPet() || defaultPet(); p.food = (p.fo
 const isDevMode = () => { try { return localStorage.getItem('hsk:dev') === '1'; } catch (e) { return false; } };
 const setDevMode = (on) => { try { localStorage.setItem('hsk:dev', on ? '1' : '0'); } catch (e) {} if (typeof window !== 'undefined') window.HSK_DEV = !!on; };
 if (typeof window !== 'undefined') window.HSK_DEV = isDevMode();
-// ===== NHÂN VẬT VẼ TAY (SVG có khớp cử động) =====
+// ===== NHÂN VẬT VẼ TAY (SVG bo tròn, gradient, mắt bóng) =====
 const Creature = ({ art = 'dragon', size = 210 }) => {
+  const [uid] = useState(() => 'c' + Math.random().toString(36).slice(2, 7));
+  const id = (k) => k + uid;
   const vb = { width: size, height: 'auto', overflow: 'visible', display: 'block' };
+  const Eye = ({ x, y, r = 13 }) => (
+    <g>
+      <circle cx={x} cy={y} r={r} fill="#fff" />
+      <circle cx={x - 1} cy={y + 1} r={r * 0.62} fill="#3a2a2a" />
+      <circle cx={x - r * 0.34} cy={y - r * 0.34} r={r * 0.3} fill="#fff" />
+      <circle cx={x + r * 0.22} cy={y + r * 0.26} r={r * 0.13} fill="#fff" opacity="0.85" />
+    </g>
+  );
+
   if (art === 'egg') {
     return (
-      <svg viewBox="0 0 160 180" style={{ ...vb }}>
-        <ellipse cx="80" cy="156" rx="40" ry="9" fill="rgba(0,0,0,0.12)" />
-        <g className="cr-egg" style={{ transformBox: 'view-box', transformOrigin: '80px 156px' }}>
-          <ellipse cx="80" cy="92" rx="50" ry="64" fill="#fff4dc" stroke="#eecf95" strokeWidth="3" />
-          <ellipse cx="62" cy="62" rx="13" ry="8" fill="#ffffff" opacity="0.7" />
-          <circle cx="94" cy="76" r="6" fill="#ffd98a" /><circle cx="70" cy="110" r="7" fill="#ffd98a" /><circle cx="100" cy="120" r="5" fill="#ffd98a" />
-          <path d="M58,50 l9,11 l-8,9 l10,10" fill="none" stroke="#eab94f" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <svg viewBox="0 0 160 184" style={{ ...vb }}>
+        <defs>
+          <radialGradient id={id('eg')} cx="38%" cy="30%" r="78%">
+            <stop offset="0%" stopColor="#fffdf6" /><stop offset="58%" stopColor="#fff0d4" /><stop offset="100%" stopColor="#ffdca0" />
+          </radialGradient>
+        </defs>
+        <ellipse cx="80" cy="160" rx="38" ry="8" fill="rgba(0,0,0,0.10)" />
+        <g className="cr-egg" style={{ transformBox: 'view-box', transformOrigin: '80px 158px' }}>
+          <ellipse cx="80" cy="94" rx="50" ry="64" fill={`url(#${id('eg')})`} stroke="#f0cf96" strokeWidth="2.5" />
+          <ellipse cx="60" cy="60" rx="15" ry="10" fill="#ffffff" opacity="0.5" />
+          <path d="M82,52 l7,9 l-6,7 l8,9" fill="none" stroke="#e9bd66" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" opacity="0.7" />
+          <path d="M62,98 q6,5 12,0" fill="none" stroke="#b98a3e" strokeWidth="2.6" strokeLinecap="round" />
+          <path d="M86,98 q6,5 12,0" fill="none" stroke="#b98a3e" strokeWidth="2.6" strokeLinecap="round" />
+          <path d="M74,110 q6,5 12,0" fill="none" stroke="#cf9a44" strokeWidth="2.4" strokeLinecap="round" />
+          <ellipse cx="62" cy="108" rx="6" ry="3.6" fill="#ffb3a0" opacity="0.55" />
+          <ellipse cx="98" cy="108" rx="6" ry="3.6" fill="#ffb3a0" opacity="0.55" />
         </g>
       </svg>
     );
   }
+
   if (art === 'koi' || art === 'koigold') {
     const gold = art === 'koigold';
-    const body = gold ? '#ffd24a' : '#ffffff';
-    const stroke = gold ? '#e8a92a' : '#ffd2bd';
-    const patch = gold ? '#ff9f2e' : '#ff7a3c';
-    const fin = gold ? '#ffc063' : '#ffb59a';
+    const bA = gold ? '#fff7d0' : '#ffffff', bB = gold ? '#ffc12e' : '#ffe6d4';
+    const stroke = gold ? '#e3a128' : '#f4b89a', accent = gold ? '#ff8f1f' : '#ff7a3c', fin = gold ? '#ffdf78' : '#ffd0b8';
     return (
-      <svg viewBox="0 0 240 170" style={{ ...vb }}>
-        <ellipse cx="120" cy="150" rx="58" ry="10" fill="rgba(0,0,0,0.10)" />
+      <svg viewBox="0 0 240 176" style={{ ...vb }}>
+        <defs>
+          <radialGradient id={id('b')} cx="40%" cy="32%" r="80%"><stop offset="0%" stopColor={bA} /><stop offset="100%" stopColor={bB} /></radialGradient>
+          <linearGradient id={id('f')} x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor={fin} /><stop offset="100%" stopColor={accent} /></linearGradient>
+        </defs>
+        <ellipse cx="118" cy="152" rx="58" ry="9" fill="rgba(0,0,0,0.10)" />
         <g className="cr-bob"><g className="cr-wig" style={{ transformBox: 'view-box', transformOrigin: '112px 92px' }}>
-          <g className="cr-koitail" style={{ transformBox: 'view-box', transformOrigin: '172px 90px' }}>
-            <path d="M166,90 q46,-34 62,-20 q-16,20 0,40 q-16,14 -62,-20 z" fill={fin} stroke={stroke} strokeWidth="2" />
+          <g className="cr-koitail" style={{ transformBox: 'view-box', transformOrigin: '166px 90px' }}>
+            <path d="M158,90 C196,58 230,54 236,70 C228,82 232,98 236,110 C230,126 196,122 158,90 Z" fill={`url(#${id('f')})`} stroke={stroke} strokeWidth="2" />
           </g>
-          <g className="cr-fin" style={{ transformBox: 'view-box', transformOrigin: '120px 62px' }}>
-            <path d="M108,66 q14,-28 36,-14 q-8,16 -18,18 z" fill={fin} stroke={stroke} strokeWidth="2" />
+          <g className="cr-fin" style={{ transformBox: 'view-box', transformOrigin: '118px 60px' }}>
+            <path d="M104,64 C112,36 142,34 150,52 C140,58 126,60 118,66 Z" fill={`url(#${id('f')})`} stroke={stroke} strokeWidth="2" />
           </g>
-          <ellipse cx="112" cy="92" rx="74" ry="44" fill={body} stroke={stroke} strokeWidth="3" />
-          <ellipse cx="96" cy="78" rx="26" ry="17" fill={patch} opacity="0.92" />
-          <ellipse cx="142" cy="104" rx="20" ry="13" fill={patch} opacity="0.92" />
-          <g className="cr-fin" style={{ transformBox: 'view-box', transformOrigin: '96px 114px' }}>
-            <path d="M92,112 q-6,28 20,24 q8,-16 -2,-26 z" fill={fin} stroke={stroke} strokeWidth="2" />
+          <ellipse cx="110" cy="92" rx="70" ry="44" fill={`url(#${id('b')})`} stroke={stroke} strokeWidth="2.5" />
+          <ellipse cx="98" cy="76" rx="40" ry="22" fill="#ffffff" opacity="0.42" />
+          {!gold && <ellipse cx="120" cy="84" rx="26" ry="18" fill={accent} opacity="0.9" />}
+          {!gold && <ellipse cx="86" cy="104" rx="16" ry="11" fill={accent} opacity="0.9" />}
+          <path d="M150,118 C172,116 180,96 176,86 C190,104 184,128 150,128 Z" fill={accent} opacity="0.16" />
+          <g className="cr-fin" style={{ transformBox: 'view-box', transformOrigin: '92px 116px' }}>
+            <path d="M88,112 C78,138 104,146 114,134 C104,128 96,120 92,112 Z" fill={`url(#${id('f')})`} stroke={stroke} strokeWidth="2" />
           </g>
-          <path d="M50,90 q-16,2 -20,12" fill="none" stroke={stroke} strokeWidth="2.5" strokeLinecap="round" />
-          <path d="M50,98 q-18,8 -18,22" fill="none" stroke={stroke} strokeWidth="2.5" strokeLinecap="round" />
-          <g className="cr-blink" style={{ transformBox: 'view-box', transformOrigin: '64px 84px' }}>
-            <circle cx="64" cy="84" r="13" fill="#fff" stroke="#3a3a4a" strokeWidth="1.5" />
-            <circle cx="60" cy="85" r="6.5" fill="#2a2a3a" /><circle cx="57" cy="82" r="2.3" fill="#fff" />
-          </g>
-          <path d="M42,104 q10,9 20,4" fill="none" stroke="#b5532f" strokeWidth="2.6" strokeLinecap="round" />
-          <ellipse cx="76" cy="100" rx="6" ry="4" fill="#ff9a9a" opacity="0.55" />
+          <path d="M50,92 q-16,3 -20,13" fill="none" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" />
+          <path d="M50,99 q-18,9 -17,22" fill="none" stroke={stroke} strokeWidth="2.4" strokeLinecap="round" />
+          <g className="cr-blink" style={{ transformBox: 'view-box', transformOrigin: '64px 84px' }}><Eye x={64} y={84} r={13} /></g>
+          <path d="M42,106 q11,9 22,3" fill="none" stroke="#c75f38" strokeWidth="2.6" strokeLinecap="round" />
+          <ellipse cx="80" cy="104" rx="7" ry="4.2" fill="#ff8f8f" opacity="0.5" />
         </g></g>
       </svg>
     );
   }
+
   const max = art === 'dragonmax';
-  const body = max ? '#ff7e2e' : '#ff9f43';
-  const belly = '#ffe2b4';
-  const stroke = max ? '#d9601a' : '#e8821f';
-  const mane1 = '#ffd23e', mane2 = '#ff6a1a';
+  const bA = max ? '#ffc171' : '#ffd6a0', bB = max ? '#ff6f1f' : '#ff8f33';
+  const stroke = max ? '#cf5c14' : '#dd6a1c', belly = '#ffeccb', m1 = '#ffe14d', m2 = '#ff7a18';
   return (
-    <svg viewBox="0 0 250 200" style={{ ...vb }}>
-      <ellipse cx="142" cy="186" rx="76" ry="12" fill="rgba(0,0,0,0.12)" />
+    <svg viewBox="0 0 262 204" style={{ ...vb }}>
+      <defs>
+        <radialGradient id={id('b')} cx="40%" cy="30%" r="82%"><stop offset="0%" stopColor={bA} /><stop offset="100%" stopColor={bB} /></radialGradient>
+        <linearGradient id={id('m')} x1="0" y1="1" x2="0" y2="0"><stop offset="0%" stopColor={m2} /><stop offset="100%" stopColor={m1} /></linearGradient>
+      </defs>
+      <ellipse cx="142" cy="190" rx="74" ry="11" fill="rgba(0,0,0,0.12)" />
       <g className="cr-bob">
-        <g className="cr-tail" style={{ transformBox: 'view-box', transformOrigin: '188px 122px' }}>
-          <path d="M180,118 q40,6 52,-12 q6,-10 16,-8 q-4,10 -8,14 q14,2 18,-8 q-2,16 -22,18 q-30,16 -56,4 z" fill={body} stroke={stroke} strokeWidth="3" />
-          <path d="M236,100 q12,-12 8,-26 q12,10 6,26 q10,-4 8,-16 q8,16 -8,24 q-12,4 -22,-8 z" fill={mane2} />
+        <g className="cr-tail" style={{ transformBox: 'view-box', transformOrigin: '190px 126px' }}>
+          <path d="M182,120 C214,118 236,104 238,86 C246,90 250,80 246,72 C250,86 240,98 232,100 C246,110 234,128 210,126 C198,132 188,130 182,124 Z" fill={`url(#${id('b')})`} stroke={stroke} strokeWidth="2.5" />
+          <path d="M238,84 C250,70 246,56 248,50 C258,62 256,80 244,90 C254,86 256,74 256,70 C260,86 248,98 234,94 Z" fill={`url(#${id('m')})`} />
         </g>
-        <g className="cr-legB" style={{ transformBox: 'view-box', transformOrigin: '128px 150px' }}><rect x="121" y="148" width="15" height="34" rx="7" fill={stroke} /><ellipse cx="128" cy="184" rx="11" ry="7" fill={stroke} /></g>
-        <g className="cr-legA" style={{ transformBox: 'view-box', transformOrigin: '178px 150px' }}><rect x="171" y="148" width="15" height="34" rx="7" fill={stroke} /><ellipse cx="178" cy="184" rx="11" ry="7" fill={stroke} /></g>
-        <ellipse cx="150" cy="120" rx="62" ry="50" fill={body} stroke={stroke} strokeWidth="3" />
-        <ellipse cx="146" cy="134" rx="40" ry="32" fill={belly} />
-        <g className="cr-mane" style={{ transformBox: 'view-box', transformOrigin: '140px 86px' }}>
-          <path d="M104,80 q6,-28 24,-32 q-6,16 -2,28 z" fill={mane1} />
-          <path d="M128,66 q8,-26 28,-26 q-10,16 -6,32 z" fill={mane2} />
-          <path d="M156,64 q10,-22 28,-18 q-12,14 -10,30 z" fill={mane1} />
+        <g className="cr-legB" style={{ transformBox: 'view-box', transformOrigin: '124px 152px' }}><rect x="117" y="150" width="16" height="34" rx="8" fill={bB} opacity="0.78" /><ellipse cx="125" cy="186" rx="11" ry="6.5" fill={bB} opacity="0.78" /></g>
+        <g className="cr-legA" style={{ transformBox: 'view-box', transformOrigin: '176px 152px' }}><rect x="169" y="150" width="16" height="34" rx="8" fill={bB} opacity="0.78" /><ellipse cx="177" cy="186" rx="11" ry="6.5" fill={bB} opacity="0.78" /></g>
+        <ellipse cx="152" cy="124" rx="60" ry="50" fill={`url(#${id('b')})`} stroke={stroke} strokeWidth="2.5" />
+        <ellipse cx="150" cy="138" rx="40" ry="32" fill={belly} />
+        <ellipse cx="132" cy="104" rx="30" ry="18" fill="#ffffff" opacity="0.32" />
+        <path d="M196,128 C204,146 190,168 162,170 C196,164 200,140 196,128 Z" fill={bB} opacity="0.18" />
+        <g className="cr-mane" style={{ transformBox: 'view-box', transformOrigin: '142px 88px' }}>
+          <path d="M106,80 C108,52 122,42 132,40 C124,56 128,70 122,82 Z" fill={`url(#${id('m')})`} />
+          <path d="M128,66 C132,42 150,36 160,38 C146,52 150,70 144,82 Z" fill={`url(#${id('m')})`} />
+          <path d="M156,62 C164,42 182,40 190,44 C174,54 176,72 170,84 Z" fill={`url(#${id('m')})`} />
         </g>
-        <g className="cr-legA" style={{ transformBox: 'view-box', transformOrigin: '113px 150px' }}><rect x="105" y="150" width="17" height="37" rx="8" fill={body} stroke={stroke} strokeWidth="2" /><ellipse cx="113" cy="187" rx="12" ry="7" fill={belly} /></g>
-        <g className="cr-legB" style={{ transformBox: 'view-box', transformOrigin: '163px 150px' }}><rect x="155" y="150" width="17" height="37" rx="8" fill={body} stroke={stroke} strokeWidth="2" /><ellipse cx="163" cy="187" rx="12" ry="7" fill={belly} /></g>
+        <g className="cr-legA" style={{ transformBox: 'view-box', transformOrigin: '114px 152px' }}><rect x="106" y="150" width="18" height="37" rx="9" fill={`url(#${id('b')})`} stroke={stroke} strokeWidth="2" /><ellipse cx="115" cy="187" rx="12" ry="7" fill={belly} /></g>
+        <g className="cr-legB" style={{ transformBox: 'view-box', transformOrigin: '164px 152px' }}><rect x="156" y="150" width="18" height="37" rx="9" fill={`url(#${id('b')})`} stroke={stroke} strokeWidth="2" /><ellipse cx="165" cy="187" rx="12" ry="7" fill={belly} /></g>
         <g className="cr-head" style={{ transformBox: 'view-box', transformOrigin: '92px 122px' }}>
-          <path d="M70,58 q-2,-22 10,-30 q2,16 8,22 z" fill={mane1} stroke={stroke} strokeWidth="1.5" />
-          <path d="M92,54 q4,-20 16,-24 q-2,16 2,24 z" fill={mane1} stroke={stroke} strokeWidth="1.5" />
-          <circle cx="78" cy="92" r="44" fill={body} stroke={stroke} strokeWidth="3" />
-          <ellipse cx="40" cy="100" rx="26" ry="20" fill={body} stroke={stroke} strokeWidth="3" />
-          <ellipse cx="34" cy="104" rx="18" ry="12" fill={belly} />
-          <circle cx="26" cy="96" r="2.6" fill="#7a3b12" /><circle cx="35" cy="92" r="2.6" fill="#7a3b12" />
-          <path d="M22,108 q15,12 34,4" fill="none" stroke="#a8501f" strokeWidth="3" strokeLinecap="round" />
-          <path d="M16,99 q-15,-2 -17,-12" fill="none" stroke={mane2} strokeWidth="2.5" strokeLinecap="round" />
-          <path d="M18,106 q-17,4 -19,16" fill="none" stroke={mane2} strokeWidth="2.5" strokeLinecap="round" />
-          <g className="cr-blink" style={{ transformBox: 'view-box', transformOrigin: '74px 80px' }}>
-            <circle cx="62" cy="80" r="13" fill="#fff" stroke="#3a3a4a" strokeWidth="1.5" />
-            <circle cx="87" cy="78" r="13" fill="#fff" stroke="#3a3a4a" strokeWidth="1.5" />
-            <circle cx="60" cy="82" r="6.5" fill="#2a2a3a" /><circle cx="57" cy="79" r="2.3" fill="#fff" />
-            <circle cx="85" cy="80" r="6.5" fill="#2a2a3a" /><circle cx="82" cy="77" r="2.3" fill="#fff" />
-          </g>
-          <ellipse cx="52" cy="100" rx="7" ry="4.5" fill="#ff8f8f" opacity="0.5" />
-          <ellipse cx="98" cy="98" rx="7" ry="4.5" fill="#ff8f8f" opacity="0.5" />
-          {max && <path d="M56,46 l9,-17 l11,13 l10,-17 l10,17 l11,-13 l9,17 z" fill="#ffd23e" stroke="#e0a01a" strokeWidth="1.5" strokeLinejoin="round" />}
+          <path d="M64,60 C60,40 70,30 78,28 C78,42 84,52 88,58 Z" fill={`url(#${id('m')})`} stroke={stroke} strokeWidth="1.2" />
+          <path d="M94,56 C96,38 108,32 116,32 C108,44 110,54 112,60 Z" fill={`url(#${id('m')})`} stroke={stroke} strokeWidth="1.2" />
+          <circle cx="80" cy="92" r="44" fill={`url(#${id('b')})`} stroke={stroke} strokeWidth="2.5" />
+          <ellipse cx="42" cy="102" rx="26" ry="20" fill={`url(#${id('b')})`} stroke={stroke} strokeWidth="2.5" />
+          <ellipse cx="36" cy="106" rx="17" ry="11" fill={belly} />
+          <ellipse cx="64" cy="74" rx="20" ry="12" fill="#ffffff" opacity="0.3" />
+          <circle cx="28" cy="98" r="2.6" fill="#6e3410" /><circle cx="37" cy="94" r="2.6" fill="#6e3410" />
+          <path d="M24,110 q15,11 33,4" fill="none" stroke="#9a4a1c" strokeWidth="2.8" strokeLinecap="round" />
+          <path d="M18,101 q-15,-2 -17,-12" fill="none" stroke={m2} strokeWidth="2.4" strokeLinecap="round" />
+          <path d="M20,108 q-17,4 -19,16" fill="none" stroke={m2} strokeWidth="2.4" strokeLinecap="round" />
+          <g className="cr-blink" style={{ transformBox: 'view-box', transformOrigin: '74px 80px' }}><Eye x={62} y={80} r={13} /><Eye x={88} y={78} r={13} /></g>
+          <ellipse cx="52" cy="102" rx="7.5" ry="4.6" fill="#ff8f8f" opacity="0.5" />
+          <ellipse cx="100" cy="100" rx="7.5" ry="4.6" fill="#ff8f8f" opacity="0.5" />
+          {max && <path d="M58,46 l9,-18 l11,14 l10,-18 l10,18 l11,-14 l9,18 z" fill={`url(#${id('m')})`} stroke="#e0a01a" strokeWidth="1.5" strokeLinejoin="round" />}
         </g>
-        <path d="M14,96 q-12,0 -16,8 q10,2 6,10 q10,-6 10,-18 z" fill={mane2} opacity="0.85" />
+        <path d="M16,98 C4,98 0,106 -2,112 C8,110 6,118 4,122 C14,116 16,106 16,98 Z" fill={`url(#${id('m')})`} opacity="0.9" />
       </g>
     </svg>
   );
@@ -9220,6 +9243,7 @@ const PetView = () => {
   const [editing, setEditing] = useState(false);
   const [nameInput, setNameInput] = useState('');
   const [dev, setDev] = useState(() => isDevMode());
+  const [viewStage, setViewStage] = useState(null);
 
   useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
@@ -9372,17 +9396,37 @@ const PetView = () => {
             );
           })}
         </div>
-        <div className="flex items-center gap-2 flex-wrap">
+        <div className="text-xs font-bold mb-2 mt-1" style={{ color: 'var(--muted)' }}>Hành trình tiến hóa — chạm để xem lại</div>
+        <div className="grid grid-cols-3 gap-2">
           {PET_STAGES.map((s, i) => {
             const reached = p.lv >= s.lv;
             return (
-              <div key={i} className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg" style={{ background: reached ? `${C.b}22` : 'var(--surface-soft)', color: reached ? C.deep : 'var(--muted)', fontWeight: reached ? 700 : 400 }}>
-                <span style={{ filter: reached ? 'none' : 'grayscale(1)', opacity: reached ? 1 : 0.5 }}>{s.emoji}</span>{s.name}
-              </div>
+              <button key={i} disabled={!reached} onClick={() => reached && setViewStage(s)}
+                className="relative rounded-xl p-2 flex flex-col items-center transition-all"
+                style={{ background: reached ? `${C.b}14` : 'var(--surface-soft)', border: `1px solid ${reached ? C.b + '44' : 'var(--border)'}`, cursor: reached ? 'pointer' : 'default' }}>
+                <div className="flex items-center justify-center" style={{ width: '100%', height: 52, overflow: 'hidden', opacity: reached ? 1 : 0.32, filter: reached ? 'none' : 'grayscale(1)' }}>
+                  <div style={{ transform: 'translateY(4px)' }}><Creature art={s.art} size={s.art === 'egg' ? 40 : 78} /></div>
+                </div>
+                <span className="text-[11px] mt-1 font-semibold" style={{ color: reached ? C.deep : 'var(--muted)' }}>{reached ? s.name : 'Cấp ' + s.lv}</span>
+                {!reached && <span className="absolute top-1.5 right-1.5 text-xs" style={{ opacity: 0.5 }}>🔒</span>}
+              </button>
             );
           })}
         </div>
       </div>
+
+      {/* XEM LẠI MỘT DẠNG */}
+      {viewStage && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center px-6" style={{ background: 'rgba(15,30,28,0.6)' }} onClick={() => setViewStage(null)}>
+          <div className="rounded-3xl p-7 text-center max-w-xs" style={{ background: `linear-gradient(160deg, ${C.water[0]}, ${C.water[1]})`, border: `1px solid ${C.b}55`, boxShadow: '0 20px 56px rgba(0,0,0,0.4)' }} onClick={e => e.stopPropagation()}>
+            <div className="flex justify-center mb-2" style={{ filter: 'drop-shadow(0 6px 10px rgba(0,0,0,0.18))' }}><Creature art={viewStage.art} size={170} /></div>
+            <div className="text-lg font-bold mb-1" style={{ color: '#1f4b45' }}>{viewStage.name}</div>
+            <div className="text-xs mb-1" style={{ color: C.deep, fontWeight: 600 }}>Mở từ cấp {viewStage.lv}</div>
+            <div className="text-xs px-3 py-2 rounded-xl mt-2" style={{ background: 'rgba(255,255,255,0.7)', color: '#2a5b54', lineHeight: 1.6 }}>{viewStage.line}</div>
+            <button onClick={() => setViewStage(null)} className="mt-4 px-5 py-2 rounded-xl text-sm font-bold" style={{ background: `linear-gradient(135deg, ${C.a}, ${C.b})`, color: '#fff' }}>Đóng</button>
+          </div>
+        </div>
+      )}
 
       {/* MÀN HÓA THÂN */}
       {evolveModal && (
