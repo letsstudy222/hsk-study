@@ -450,6 +450,40 @@ const sentDayInfo = () => {
   return { total, dayNum, unlocked, todayIdx };
 };
 
+// ===== BẦU TRỜI SAO (12 con giáp) =====
+const STAR_COST = 5; // ánh sáng cần để thắp 1 sao
+const ZODIAC = [
+  { char:'鼠', py:'shǔ', vi:'Tý · Chuột', stars:5, seed:101, note:'Đứng đầu 12 con giáp, tượng trưng cho sự nhanh nhẹn và mưu trí.' },
+  { char:'牛', py:'niú', vi:'Sửu · Trâu', stars:5, seed:202, note:'Biểu tượng của sự cần cù, chăm chỉ và bền bỉ.' },
+  { char:'虎', py:'hǔ', vi:'Dần · Hổ', stars:6, seed:303, note:'Chúa tể sơn lâm, đại diện cho dũng khí và uy quyền.' },
+  { char:'兔', py:'tù', vi:'Mão · Mèo (Thỏ)', stars:6, seed:404, note:'Hiền lành, nhanh nhẹn; ở Việt Nam là Mèo, ở Trung Quốc là Thỏ.' },
+  { char:'龙', py:'lóng', vi:'Thìn · Rồng', stars:7, seed:505, note:'Linh vật cao quý nhất, gắn với mây mưa, đế vương và may mắn.' },
+  { char:'蛇', py:'shé', vi:'Tỵ · Rắn', stars:7, seed:606, note:'Còn gọi là "tiểu long", tượng trưng trí tuệ và sự huyền bí.' },
+  { char:'马', py:'mǎ', vi:'Ngọ · Ngựa', stars:7, seed:707, note:'Đại diện cho tự do, sức mạnh và tinh thần tiến lên.' },
+  { char:'羊', py:'yáng', vi:'Mùi · Dê', stars:8, seed:808, note:'Dịu dàng, hòa thuận, gắn với sự an lành.' },
+  { char:'猴', py:'hóu', vi:'Thân · Khỉ', stars:8, seed:909, note:'Thông minh, hoạt bát; nổi tiếng qua hình tượng Tôn Ngộ Không.' },
+  { char:'鸡', py:'jī', vi:'Dậu · Gà', stars:8, seed:110, note:'Cần mẫn, đúng giờ; tiếng gà gáy báo hiệu bình minh.' },
+  { char:'狗', py:'gǒu', vi:'Tuất · Chó', stars:9, seed:211, note:'Trung thành, tận tụy, người bạn thân thiết của con người.' },
+  { char:'猪', py:'zhū', vi:'Hợi · Lợn', stars:9, seed:312, note:'Khép lại vòng giáp, tượng trưng cho sung túc và phúc hậu.' },
+];
+const ZTOTAL = ZODIAC.reduce((s, z) => s + z.stars, 0);
+const _mulberry32 = (a) => () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const constellationStars = (seed, n) => {
+  const rnd = _mulberry32(seed);
+  const pts = []; let x = 18 + rnd() * 22, y = 16 + rnd() * 36;
+  for (let i = 0; i < n; i++) {
+    pts.push({ x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 });
+    const ang = rnd() * Math.PI * 2, dist = 13 + rnd() * 15;
+    x = Math.max(9, Math.min(91, x + Math.cos(ang) * dist));
+    y = Math.max(9, Math.min(61, y + Math.sin(ang) * dist));
+  }
+  return pts;
+};
+const readStars = () => { try { const s = localStorage.getItem('hsk:stars'); return s ? JSON.parse(s) : null; } catch (e) { return null; } };
+const writeStars = (o) => { try { localStorage.setItem('hsk:stars', JSON.stringify(o)); } catch (e) {} };
+const defaultStars = () => ({ light: 0, zi: 0, lit: 0, completed: [], skies: 0, lastDay: '' });
+const addStarLight = (n) => { const s = readStars() || defaultStars(); s.light = (s.light || 0) + n; writeStars(s); };
+
 // ============ HELPERS ============
 const getToneColor = (pinyin) => {
   const toneMarks = {
@@ -1070,6 +1104,7 @@ const Header = ({ view, setView, darkMode, toggleDark, habit, goalProgress, onOp
     { id:'reading', label:'阅读', viLabel:'Bài đọc' },
     { id:'flashcard', label:'卡片', viLabel:'Flashcard' },
     { id:'sentence', label:'每日一句', viLabel:'Câu mỗi ngày' },
+    { id:'stars', label:'星空', viLabel:'Bầu trời sao' },
     { id:'quiz', label:'测验', viLabel:'Quiz' },
     { id:'listening', label:'听力', viLabel:'Nghe' },
     { id:'writing', label:'书写', viLabel:'Viết' },
@@ -2004,6 +2039,33 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount, habit, go
               <div className="hanzi-text mb-2.5" style={{ color:'white', fontWeight:600, fontSize:'clamp(22px,4.2vw,32px)', lineHeight:1.45, textShadow:'0 2px 10px rgba(0,0,0,0.15)' }}>{sd.hanzi}</div>
               <div className="mb-4" style={{ color:'rgba(255,255,255,0.92)', fontSize:'15px', fontWeight:500 }}>{sd.meaning}</div>
               <div className="inline-flex items-center gap-1.5 text-sm font-bold px-4 py-2 rounded-xl" style={{ background:'white', color:'var(--accent)' }}>Xem nghĩa & cấu trúc <span>→</span></div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* ── BẦU TRỜI SAO ── */}
+      {(() => {
+        const ss = readStars() || defaultStars();
+        const zi = Math.min(ss.zi || 0, ZODIAC.length - 1);
+        const z = ZODIAC[zi];
+        const done = (ss.completed || []).length;
+        return (
+          <div onClick={() => setView('stars')}
+            className="relative overflow-hidden rounded-3xl p-5 mb-8 cursor-pointer transition-all hover:scale-[1.01] active:scale-[0.99]"
+            style={{ background:'linear-gradient(135deg,#0e1c38,#1c3463)', boxShadow:'0 14px 38px rgba(14,28,56,0.45)' }}>
+            {useMemo(() => Array.from({length:14},(_,i)=>{const r=_mulberry32(700+i);return{x:r()*100,y:r()*100,s:r()*1.4+0.6,o:r()*0.5+0.2};}),[]).map((s,i)=>(
+              <div key={i} className="absolute rounded-full" style={{ left:s.x+'%', top:s.y+'%', width:s.s+'px', height:s.s+'px', background:'#fff', opacity:s.o }} />
+            ))}
+            <div className="relative flex items-center gap-4">
+              <div className="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center hanzi-text"
+                style={{ background:'rgba(255,224,138,0.12)', border:'1px solid rgba(255,224,138,0.4)', color:'#ffe08a', fontSize:'28px', fontWeight:700 }}>{z.char}</div>
+              <div className="flex-1 min-w-0">
+                <div className="text-xs tracking-[0.2em] font-bold mb-0.5" style={{ color:'rgba(255,224,138,0.85)' }}>星空 · BẦU TRỜI SAO</div>
+                <div className="text-base font-bold mb-1" style={{ color:'white' }}>Đã mở {done}/12 con giáp</div>
+                <div className="text-xs" style={{ color:'rgba(255,255,255,0.7)' }}>✨ {ss.light || 0} ánh sáng · thắp sao để mở linh vật</div>
+              </div>
+              <div style={{ color:'#ffe08a' }}>→</div>
             </div>
           </div>
         );
@@ -3817,6 +3879,7 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
       updateSRS(currentWord.id, { ...next, lastRating: rating });
       bumpDaily(wasNew ? 'new' : 'review');
       bumpFcStat(rating >= 3);
+      addStarLight(wasNew ? 2 : 1);
     }
 
     const ratingKey = ['', 'forgot', 'hard', 'good', 'easy'][rating] || 'good';
@@ -4297,6 +4360,7 @@ const SentenceView = ({ goHome }) => {
     setSeen(prev => {
       const next = prev.includes(s.id) ? prev.filter(x => x !== s.id) : [...prev, s.id];
       try { localStorage.setItem('hsk:sentdone', JSON.stringify(next)); } catch {}
+      if (!prev.includes(s.id)) addStarLight(4);
       return next;
     });
   };
@@ -9038,7 +9102,175 @@ const SkyBackground = ({ dark }) => {
   );
 };
 
+// ============ BẦU TRỜI SAO ============
+const StarView = () => {
+  const [st, setSt] = useState(() => readStars() || defaultStars());
+  const [justDaily, setJustDaily] = useState(0);
+  const [celebrate, setCelebrate] = useState(false);
+
+  // thưởng "ánh sáng ban ngày" 1 lần/ngày khi mở
+  useEffect(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    setSt(prev => {
+      if (prev.lastDay === today) return prev;
+      const next = { ...prev, light: (prev.light || 0) + 8, lastDay: today };
+      writeStars(next); setJustDaily(8); setTimeout(() => setJustDaily(0), 2600);
+      return next;
+    });
+  }, []);
+
+  const zi = Math.min(st.zi || 0, ZODIAC.length - 1);
+  const z = ZODIAC[zi];
+  const allDone = (st.completed || []).length >= ZODIAC.length;
+  const pts = useMemo(() => constellationStars(z.seed, z.stars), [z.seed, z.stars]);
+  const lit = st.lit || 0;
+  const canLight = (st.light || 0) >= STAR_COST && lit < z.stars;
+  const totalLitEver = (st.completed || []).reduce((s, i) => s + ZODIAC[i].stars, 0) + lit;
+
+  const lightStar = () => {
+    if (!canLight) return;
+    setSt(prev => {
+      let light = prev.light - STAR_COST;
+      let newLit = (prev.lit || 0) + 1;
+      let completed = prev.completed || [];
+      let zzi = prev.zi || 0, skies = prev.skies || 0;
+      if (newLit >= ZODIAC[zzi].stars) {
+        completed = [...completed, zzi];
+        setCelebrate(true); setTimeout(() => setCelebrate(false), 2800);
+        if (zzi >= ZODIAC.length - 1) { skies += 1; zzi = 0; completed = []; newLit = 0; }
+        else { zzi += 1; newLit = 0; }
+      }
+      const next = { ...prev, light, lit: newLit, completed, zi: zzi, skies };
+      writeStars(next); return next;
+    });
+  };
+
+  const litColor = '#ffe08a';
+  return (
+    <div className="max-w-2xl mx-auto px-5 py-7">
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <div className="text-xs tracking-[0.3em] mb-1" style={{ color:'var(--accent)' }}>星空 · BẦU TRỜI SAO</div>
+          <h1 className="text-3xl" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Thắp sao 12 con giáp</h1>
+        </div>
+        <div className="text-right">
+          <div className="px-3 py-1.5 rounded-xl font-bold text-sm inline-flex items-center gap-1" style={{ background:'linear-gradient(135deg,#f7b733,#fc4a1a)', color:'white' }}>
+            ✨ {st.light || 0}
+          </div>
+          {justDaily > 0 && <div className="text-xs mt-1 font-semibold" style={{ color:'#e08e0a' }}>+{justDaily} hôm nay</div>}
+        </div>
+      </div>
+
+      {/* bảng trời */}
+      <div className="relative rounded-3xl overflow-hidden mb-4" style={{ background:'linear-gradient(180deg,#070f24,#0e1c38 60%,#13254a)', boxShadow:'0 16px 44px rgba(7,15,36,0.5)' }}>
+        <div className="absolute inset-0 pointer-events-none" style={{ background:'radial-gradient(circle at 80% 12%, rgba(190,212,255,0.16), transparent 45%)' }} />
+        <svg viewBox="0 0 100 70" style={{ width:'100%', display:'block' }}>
+          {/* sao nền lấp lánh nhỏ */}
+          {useMemo(() => Array.from({length:26},(_,i)=>{const r=_mulberry32(z.seed*7+i);return {x:r()*100,y:r()*70,s:r()*0.5+0.2,o:r()*0.4+0.1};}),[z.seed]).map((s,i)=>(
+            <circle key={'bg'+i} cx={s.x} cy={s.y} r={s.s} fill="#ffffff" opacity={s.o} />
+          ))}
+          {/* chữ con giáp mờ làm nền */}
+          <text x="50" y="42" textAnchor="middle" fontSize="40" fontFamily="Noto Sans SC, serif" fontWeight="700"
+            fill={litColor} opacity={lit >= z.stars ? 0.22 : 0.07}>{z.char}</text>
+          {/* đường nối các sao đã thắp */}
+          {pts.map((p, i) => (i < lit - 1) && (
+            <line key={'l'+i} x1={p.x} y1={p.y} x2={pts[i+1].x} y2={pts[i+1].y}
+              stroke={litColor} strokeWidth="0.5" opacity="0.6" strokeLinecap="round" />
+          ))}
+          {/* các sao */}
+          {pts.map((p, i) => {
+            const isLit = i < lit;
+            const isNext = i === lit && lit < z.stars;
+            return (
+              <g key={'s'+i} onClick={isNext ? lightStar : undefined} style={{ cursor: isNext && canLight ? 'pointer' : 'default' }}>
+                {isLit && <circle cx={p.x} cy={p.y} r="3.4" fill={litColor} opacity="0.28" />}
+                {isNext && <circle cx={p.x} cy={p.y} r="3.6" fill={litColor} opacity="0.35" className="star-next" />}
+                <circle cx={p.x} cy={p.y} r={isLit ? 1.7 : isNext ? 1.5 : 1.1}
+                  fill={isLit ? litColor : isNext ? '#fff7da' : '#cfe0ff'}
+                  opacity={isLit ? 1 : isNext ? 0.95 : 0.3}
+                  stroke={isNext ? litColor : 'none'} strokeWidth={isNext ? 0.5 : 0} />
+              </g>
+            );
+          })}
+        </svg>
+        {/* nhãn chòm */}
+        <div className="absolute top-3 left-4">
+          <div className="text-xs font-semibold" style={{ color:'rgba(255,255,255,0.55)' }}>Chòm {zi + 1}/12{st.skies > 0 ? ` · vòng ${st.skies + 1}` : ''}</div>
+          <div className="text-base font-bold" style={{ color:'white' }}>{lit >= z.stars ? z.vi : '???'}</div>
+        </div>
+      </div>
+
+      {/* tiến độ + nút thắp */}
+      <div className="rounded-2xl p-4 mb-4" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+        <div className="flex items-center justify-between mb-2 text-sm">
+          <span style={{ color:'var(--ink)', fontWeight:600 }}>Sao đã thắp: {lit}/{z.stars}</span>
+          <span style={{ color:'var(--muted)' }}>Mỗi sao cần ✨{STAR_COST}</span>
+        </div>
+        <div className="h-2.5 rounded-full overflow-hidden mb-3" style={{ background:'var(--surface-soft)' }}>
+          <div style={{ width:`${(lit / z.stars) * 100}%`, height:'100%', background:'linear-gradient(90deg,#f7b733,#fc4a1a)', transition:'width .4s' }} />
+        </div>
+        {canLight ? (
+          <button onClick={lightStar} className="w-full py-3 rounded-2xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+            style={{ background:'linear-gradient(135deg,#f7b733,#fc4a1a)', color:'white' }}>
+            ✨ Thắp một ngôi sao (−{STAR_COST})
+          </button>
+        ) : (
+          <div className="w-full py-3 rounded-2xl text-center text-sm font-semibold" style={{ background:'var(--surface-soft)', color:'var(--muted)' }}>
+            {lit >= z.stars ? 'Chòm này đã sáng — đang mở chòm mới…' : `Học thêm để có ✨ (còn thiếu ${STAR_COST - (st.light||0)})`}
+          </div>
+        )}
+        <div className="text-xs text-center mt-2.5" style={{ color:'var(--muted)' }}>
+          Ôn thẻ +1 · từ mới +2 · thuộc 1 câu +4 · mở app mỗi ngày +8
+        </div>
+      </div>
+
+      {/* bộ sưu tập 12 con giáp */}
+      <div className="rounded-2xl p-4" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
+        <div className="text-sm font-bold mb-3" style={{ color:'var(--ink)' }}>Bộ sưu tập con giáp · {(st.completed||[]).length}/12</div>
+        <div className="grid grid-cols-6 gap-2">
+          {ZODIAC.map((zz, i) => {
+            const done = (st.completed || []).includes(i) || st.skies > 0;
+            const cur = i === zi && !done;
+            return (
+              <div key={i} className="aspect-square rounded-xl flex flex-col items-center justify-center"
+                style={{ background: done ? 'linear-gradient(145deg,#1a2a4d,#26406e)' : 'var(--surface-soft)', border: cur ? '1.5px solid #f7b733' : '1px solid var(--border)' }}>
+                <span className="hanzi-text" style={{ fontSize:'20px', color: done ? '#ffe08a' : 'var(--muted)', opacity: done ? 1 : 0.4, fontWeight:700 }}>{zz.char}</span>
+              </div>
+            );
+          })}
+        </div>
+        {(st.completed || []).length > 0 && (
+          <div className="mt-3 text-xs" style={{ color:'var(--muted)' }}>
+            Đã mở gần nhất: <strong style={{ color:'var(--ink)' }}>{ZODIAC[(st.completed)[(st.completed).length-1]].vi}</strong> — {ZODIAC[(st.completed)[(st.completed).length-1]].note}
+          </div>
+        )}
+      </div>
+
+      {/* chúc mừng hoàn thành chòm */}
+      {celebrate && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center px-6" style={{ background:'rgba(7,15,36,0.55)' }} onClick={() => setCelebrate(false)}>
+          <div className="rounded-3xl p-8 text-center max-w-xs" style={{ background:'linear-gradient(160deg,#16264a,#0e1c38)', border:'1px solid #f7b73355', boxShadow:'0 20px 60px rgba(0,0,0,0.5)' }}>
+            <div className="hanzi-text mb-2" style={{ fontSize:'72px', color:'#ffe08a', fontWeight:700, textShadow:'0 0 30px #f7b73388' }}>
+              {ZODIAC[((st.completed||[]).length ? (st.completed)[(st.completed).length-1] : (zi>0?zi-1:11))].char}
+            </div>
+            <div className="text-lg font-bold mb-1" style={{ color:'white' }}>Chòm sao hoàn thành!</div>
+            <div className="text-sm mb-3" style={{ color:'rgba(255,255,255,0.8)' }}>
+              {ZODIAC[((st.completed||[]).length ? (st.completed)[(st.completed).length-1] : (zi>0?zi-1:11))].vi}
+            </div>
+            <div className="text-xs px-3 py-2 rounded-xl" style={{ background:'rgba(255,255,255,0.08)', color:'rgba(255,255,255,0.85)', lineHeight:1.6 }}>
+              {ZODIAC[((st.completed||[]).length ? (st.completed)[(st.completed).length-1] : (zi>0?zi-1:11))].note}
+            </div>
+            <button onClick={() => setCelebrate(false)} className="mt-4 px-5 py-2 rounded-xl text-sm font-bold" style={{ background:'#f7b733', color:'#0e1c38' }}>Tiếp tục ✨</button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ============ MAIN APP ============
+
+
 function App() {
   const [view, setView] = useState('home');
   const [selectedHSK, setSelectedHSK] = useState(1);
@@ -9370,6 +9602,8 @@ function App() {
         @keyframes skyTwinkle { 0%,100% { opacity:.12; transform:scale(.7);} 50% { opacity:.95; transform:scale(1);} }
         .sky-bird { position: absolute; color: #5d80a8; opacity: .35; }
         @media (prefers-reduced-motion: reduce) { .sky-cloud.drift { animation: none; } .sky-stars i { animation: none; opacity: .6; } }
+        .star-next { animation: starNextPulse 1.5s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+        @keyframes starNextPulse { 0%,100% { opacity:.2; } 50% { opacity:.6; } }
       `}</style>
 
       <SkyBackground dark={darkMode} />
@@ -9402,6 +9636,7 @@ function App() {
         {view === 'reading' && <ReadingView onActivity={trackReading} srsData={srsData} updateSRS={updateSRS} learned={learned} toggleLearned={toggleLearned} />}
         {view === 'flashcard' && <FlashcardView srsData={srsData} updateSRS={updateSRS} settings={fcSettings} setSettings={updateFcSettings} daily={fcDaily} bumpDaily={bumpDaily} fcStats={fcStats} bumpFcStat={bumpFcStat} />}
         {view === 'sentence' && <SentenceView />}
+        {view === 'stars' && <StarView />}
         {view === 'quiz' && <QuizView toggleLearned={toggleLearned} learned={learned} addQuizScore={addQuizScore} srsData={srsData} />}
         {view === 'listening' && <ListeningView srsData={srsData} trackActivity={trackActivity} />}
         {view === 'writing' && <WritingView onActivity={trackWriting} />}
