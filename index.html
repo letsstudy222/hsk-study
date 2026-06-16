@@ -9123,8 +9123,130 @@ const SkyBackground = ({ dark }) => {
 };
 
 // ============ BẦU TRỜI SAO ============
+const ZEMOJI = ['🐭','🐮','🐯','🐰','🐲','🐍','🐴','🐐','🐵','🐔','🐶','🐷'];
+
+// Bảng trời động (canvas): sao lấp lánh, sao băng, phản ứng con trỏ, chòm sao phát sáng
+const SkyCanvas = ({ theme, pts, lit, complete, emoji, zchar, onLightNext, canLight, onHover }) => {
+  const canvasRef = useRef(null);
+  const wrapRef = useRef(null);
+  const sceneRef = useRef({});
+  const mouseRef = useRef({ x: -999, y: -999, on: false });
+  sceneRef.current = { theme, pts, lit, complete, emoji, zchar, canLight };
+
+  // toạ độ sao chòm theo pixel
+  const starPx = (W, H) => sceneRef.current.pts.map(p => ({ x: (p[0] / 100) * W, y: (p[1] / 64) * H }));
+
+  useEffect(() => {
+    const canvas = canvasRef.current; if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const H = 290; let W = canvas.clientWidth || 600;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    const resize = () => { W = canvas.clientWidth || 600; canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.height = H + 'px'; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    resize(); window.addEventListener('resize', resize);
+    setTimeout(resize, 60);
+
+    const rnd = _mulberry32(20260616);
+    const N = reduce ? 60 : 140;
+    const bg = Array.from({ length: N }, () => ({ x: rnd(), y: rnd(), r: rnd() * 1.3 + 0.3, ph: rnd() * 6.28, tw: rnd() * 1.4 + 0.4, sp: (rnd() * 0.5 + 0.1) * (rnd() < 0.5 ? -1 : 1), ly: rnd() * 0.7 + 0.3 }));
+    let meteor = null, nextMet = 1500 + rnd() * 3500, t0 = performance.now(), raf;
+
+    const draw = (t) => {
+      const dt = Math.min(0.05, (t - t0) / 1000); t0 = t;
+      const s = sceneRef.current, th = s.theme;
+      const mx = mouseRef.current.x, my = mouseRef.current.y, mon = mouseRef.current.on;
+      ctx.clearRect(0, 0, W, H);
+
+      // sao nền + lấp lánh + phản ứng chuột
+      const R = 90;
+      for (const b of bg) {
+        if (!reduce) { b.x += b.sp * b.ly * dt * 0.012; if (b.x > 1.03) b.x -= 1.06; if (b.x < -0.03) b.x += 1.06; }
+        const px = b.x * W, py = b.y * H;
+        let a = 0.18 + 0.5 * (0.5 + 0.5 * Math.sin(t * 0.001 * b.tw + b.ph)) * b.ly;
+        if (mon) { const d = Math.hypot(px - mx, py - my); if (d < R) { const k = 1 - d / R; a = Math.min(1, a + k * 0.7);
+          ctx.strokeStyle = th.c1 + Math.floor(k * 90).toString(16).padStart(2, '0'); ctx.lineWidth = 0.5;
+          ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(px, py); ctx.stroke(); } }
+        ctx.globalAlpha = a; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(px, py, b.r, 0, 6.283); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+
+      // sao băng
+      if (!reduce) {
+        nextMet -= dt * 1000;
+        if (!meteor && nextMet <= 0) { meteor = { x: W * (0.45 + rnd() * 0.5), y: 8 + rnd() * 40, vx: -(180 + rnd() * 120), vy: 95 + rnd() * 55, life: 0 }; nextMet = 3500 + rnd() * 5000; }
+        if (meteor) { meteor.life += dt; const len = 60; const ex = meteor.x - meteor.vx * 0.05, ey = meteor.y - meteor.vy * 0.05;
+          const g = ctx.createLinearGradient(meteor.x, meteor.y, ex, ey); g.addColorStop(0, th.c1); g.addColorStop(1, 'transparent');
+          ctx.strokeStyle = g; ctx.lineWidth = 1.6; ctx.globalAlpha = Math.max(0, 1 - meteor.life / 0.9);
+          ctx.beginPath(); ctx.moveTo(meteor.x, meteor.y); ctx.lineTo(ex, ey); ctx.stroke(); ctx.globalAlpha = 1;
+          meteor.x += meteor.vx * dt; meteor.y += meteor.vy * dt; if (meteor.life > 0.9 || meteor.x < -80) meteor = null; }
+      }
+
+      // emoji con giáp mờ khi hoàn thành
+      const sp = starPx(W, H);
+      if (s.complete) { ctx.globalAlpha = 0.13; ctx.font = (H * 0.55) + 'px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(s.emoji, W / 2, H / 2); ctx.globalAlpha = 1; }
+
+      // đường nối các sao đã thắp (glow)
+      ctx.save(); ctx.shadowBlur = 10; ctx.shadowColor = th.c1;
+      for (let i = 0; i < s.lit - 1 && i < sp.length - 1; i++) {
+        ctx.strokeStyle = th.c1; ctx.globalAlpha = 0.85; ctx.lineWidth = 1.4; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(sp[i].x, sp[i].y); ctx.lineTo(sp[i + 1].x, sp[i + 1].y); ctx.stroke();
+      }
+      ctx.restore(); ctx.globalAlpha = 1;
+
+      // các sao chòm
+      const pulse = 0.5 + 0.5 * Math.sin(t * 0.0045);
+      sp.forEach((p, i) => {
+        const isLit = i < s.lit, isNext = i === s.lit && !s.complete;
+        const hov = mon && Math.hypot(p.x - mx, p.y - my) < 16;
+        if (isLit) {
+          const gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, hov ? 20 : 15);
+          gr.addColorStop(0, th.c1 + 'cc'); gr.addColorStop(0.4, th.c1 + '55'); gr.addColorStop(1, 'transparent');
+          ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(p.x, p.y, hov ? 20 : 15, 0, 6.283); ctx.fill();
+          ctx.save(); ctx.shadowBlur = 12; ctx.shadowColor = th.c1; ctx.fillStyle = '#fffdf5';
+          ctx.beginPath(); ctx.arc(p.x, p.y, hov ? 3.4 : 2.6, 0, 6.283); ctx.fill(); ctx.restore();
+        } else if (isNext) {
+          const rr = (canLight ? 9 : 7) + pulse * 3;
+          ctx.strokeStyle = th.c1; ctx.globalAlpha = 0.35 + pulse * 0.4; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(p.x, p.y, rr, 0, 6.283); ctx.stroke();
+          ctx.globalAlpha = 1; ctx.save(); ctx.shadowBlur = 14; ctx.shadowColor = th.c1; ctx.fillStyle = '#fff7e0';
+          ctx.beginPath(); ctx.arc(p.x, p.y, hov ? 3.6 : 2.8, 0, 6.283); ctx.fill(); ctx.restore();
+        } else {
+          ctx.globalAlpha = hov ? 0.7 : 0.32; ctx.fillStyle = '#d6e4ff'; ctx.beginPath(); ctx.arc(p.x, p.y, hov ? 2 : 1.3, 0, 6.283); ctx.fill(); ctx.globalAlpha = 1;
+        }
+      });
+      raf = requestAnimationFrame(draw);
+    };
+    raf = requestAnimationFrame(draw);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
+  }, []);
+
+  const handleMove = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    mouseRef.current = { x, y, on: true };
+    const W = rect.width, H = 290; const sp = starPx(W, H);
+    let hi = -1; sp.forEach((p, i) => { if (Math.hypot(p.x - x, p.y - y) < 16) hi = i; });
+    if (hi >= 0) { const isNext = hi === sceneRef.current.lit && !sceneRef.current.complete;
+      onHover({ x: sp[hi].x, y: sp[hi].y, label: isNext ? (sceneRef.current.canLight ? 'Thắp ✨ −' + STAR_COST : 'Cần thêm ✨') : (hi < sceneRef.current.lit ? 'Sao ' + (hi + 1) + ' ✦' : 'Chưa tới') });
+    } else onHover(null);
+  };
+  const handleLeave = () => { mouseRef.current = { x: -999, y: -999, on: false }; onHover(null); };
+  const handleClick = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left, y = e.clientY - rect.top;
+    const sp = starPx(rect.width, 290); const ni = sceneRef.current.lit;
+    if (ni < sp.length && Math.hypot(sp[ni].x - x, sp[ni].y - y) < 24) onLightNext();
+  };
+  return (
+    <canvas ref={canvasRef} onMouseMove={handleMove} onMouseLeave={handleLeave} onClick={handleClick}
+      style={{ width: '100%', display: 'block', cursor: canLight ? 'pointer' : 'default' }} />
+  );
+};
+
 const StarView = () => {
   const [st, setSt] = useState(() => readStars() || defaultStars());
+  const [tab, setTab] = useState('sky');
+  const [pick, setPick] = useState(null);
+  const [hover, setHover] = useState(null);
   const [justDaily, setJustDaily] = useState(0);
   const [celebrate, setCelebrate] = useState(false);
   const [bigCelebrate, setBigCelebrate] = useState(false);
@@ -9132,182 +9254,175 @@ const StarView = () => {
 
   useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
-    setSt(prev => {
-      if (prev.lastDay === today) return prev;
+    setSt(prev => { if (prev.lastDay === today) return prev;
       const next = { ...prev, light: (prev.light || 0) + 8, lastDay: today };
-      writeStars(next); setJustDaily(8); setTimeout(() => setJustDaily(0), 2600);
-      return next;
-    });
+      writeStars(next); setJustDaily(8); setTimeout(() => setJustDaily(0), 2600); return next; });
   }, []);
 
   const tier = st.skies || 0;
   const theme = STAR_THEMES[tier % STAR_THEMES.length];
   const zi = Math.min(st.zi || 0, ZODIAC.length - 1);
   const z = ZODIAC[zi];
-  const pts = z.pts;
   const lit = st.lit || 0;
   const complete = lit >= z.stars;
   const canLight = (st.light || 0) >= STAR_COST && !complete;
   const doneCount = (st.completed || []).length;
-
-  // sao nền theo tầng (đổi mỗi tầng cho tươi mới)
-  const bgStars = useMemo(() => {
-    const r = _mulberry32(z.char.charCodeAt(0) * 13 + tier * 97 + zi * 7);
-    return Array.from({ length: 44 }, () => ({ x: r() * 100, y: r() * 64, s: r() * 0.7 + 0.25, o: r() * 0.45 + 0.12, t: (r() * 3 + 2).toFixed(1), d: (r() * 4).toFixed(1) }));
-  }, [z.char, tier, zi]);
+  const everDone = (i) => (st.completed || []).includes(i) || tier > 0;
 
   const lightStar = () => {
     if (!canLight) return;
     let { light, lit: l = 0, zi: zz = 0, completed = [], skies = 0 } = st;
-    light -= STAR_COST; l += 1;
-    let done = null, big = false;
-    if (l >= ZODIAC[zz].stars) {
-      done = zz; completed = [...completed, zz];
-      if (zz >= ZODIAC.length - 1) { big = true; skies += 1; zz = 0; completed = []; l = 0; }
-      else { zz += 1; l = 0; }
-    }
-    const next = { ...st, light, lit: l, zi: zz, completed, skies };
-    writeStars(next); setSt(next);
-    if (done != null) {
-      setLastDone(done);
-      if (big) { setBigCelebrate(true); setTimeout(() => setBigCelebrate(false), 4000); }
-      else { setCelebrate(true); setTimeout(() => setCelebrate(false), 2600); }
-    }
+    light -= STAR_COST; l += 1; let done = null, big = false;
+    if (l >= ZODIAC[zz].stars) { done = zz; completed = [...completed, zz];
+      if (zz >= ZODIAC.length - 1) { big = true; skies += 1; zz = 0; completed = []; l = 0; } else { zz += 1; l = 0; } }
+    const next = { ...st, light, lit: l, zi: zz, completed, skies }; writeStars(next); setSt(next);
+    if (done != null) { setLastDone(done); if (big) { setBigCelebrate(true); setTimeout(() => setBigCelebrate(false), 4200); } else { setCelebrate(true); setTimeout(() => setCelebrate(false), 2600); } }
   };
+
+  const TabBtn = ({ id, children }) => (
+    <button onClick={() => { setTab(id); setPick(null); }} className="px-4 py-1.5 rounded-xl text-sm font-bold transition-all"
+      style={{ background: tab === id ? 'var(--accent)' : 'var(--surface)', color: tab === id ? 'white' : 'var(--ink)', border: '1px solid var(--border)' }}>{children}</button>
+  );
 
   return (
     <div className="max-w-2xl mx-auto px-5 py-7">
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex items-start justify-between mb-3">
         <div>
-          <div className="text-xs tracking-[0.3em] mb-1" style={{ color:'var(--accent)' }}>星空 · BẦU TRỜI SAO</div>
-          <h1 className="text-2xl" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>{theme.name}</h1>
-          <div className="text-xs mt-0.5" style={{ color:'var(--muted)' }}>Tầng trời {tier + 1} · đã mở {doneCount}/12 con giáp</div>
+          <div className="text-xs tracking-[0.3em] mb-1" style={{ color: 'var(--accent)' }}>星空 · BẦU TRỜI SAO</div>
+          <h1 className="text-2xl" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--ink)' }}>{theme.name}</h1>
+          <div className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>Tầng trời {tier + 1} · đã mở {doneCount}/12 con giáp</div>
         </div>
         <div className="text-right">
-          <div className="px-3 py-1.5 rounded-xl font-bold text-sm inline-flex items-center gap-1" style={{ background:`linear-gradient(135deg, ${theme.c1}, ${theme.c2})`, color:'#1a1430' }}>✨ {st.light || 0}</div>
-          {justDaily > 0 && <div className="text-xs mt-1 font-semibold" style={{ color:theme.c2 }}>+{justDaily} hôm nay</div>}
+          <div className="px-3 py-1.5 rounded-xl font-bold text-sm inline-flex items-center gap-1" style={{ background: `linear-gradient(135deg, ${theme.c1}, ${theme.c2})`, color: '#1a1430' }}>✨ {st.light || 0}</div>
+          {justDaily > 0 && <div className="text-xs mt-1 font-semibold" style={{ color: theme.c2 }}>+{justDaily} hôm nay</div>}
         </div>
       </div>
 
-      {/* bảng trời */}
-      <div className="relative rounded-3xl overflow-hidden mb-4"
-        style={{ background:`linear-gradient(180deg, ${theme.sky[0]}, ${theme.sky[1]} 55%, ${theme.sky[2]})`, boxShadow:'0 18px 48px rgba(5,10,25,0.55)' }}>
-        {/* dải ngân hà */}
-        <div className="absolute inset-0 pointer-events-none" style={{ background:`linear-gradient(115deg, transparent 30%, ${theme.c1}22 48%, ${theme.c2}14 56%, transparent 72%)`, filter:'blur(8px)' }} />
-        <div className="absolute inset-0 pointer-events-none" style={{ background:`radial-gradient(circle at 82% 14%, ${theme.c1}26, transparent 42%)` }} />
-        {/* sao băng */}
-        <div className="cst-shoot" style={{ background:`linear-gradient(90deg, ${theme.c1}, transparent)` }} />
-
-        <svg viewBox="0 0 100 64" style={{ width:'100%', display:'block', position:'relative' }}>
-          {bgStars.map((s, i) => (
-            <circle key={'bg'+i} cx={s.x} cy={s.y} r={s.s} fill="#ffffff" opacity={s.o} className="cst-twinkle"
-              style={{ animationDuration:s.t+'s', animationDelay:s.d+'s' }} />
-          ))}
-          {/* chữ con giáp mờ */}
-          <text x="50" y="40" textAnchor="middle" fontSize="34" fontFamily="Noto Sans SC, serif" fontWeight="700"
-            fill={theme.c1} opacity={complete ? 0.2 : 0.06}>{z.char}</text>
-          {/* đường nối (glow + nét) giữa các sao đã thắp */}
-          {pts.map((p, i) => (i < lit - 1) && (
-            <g key={'l'+i}>
-              <line x1={p[0]} y1={p[1]} x2={pts[i+1][0]} y2={pts[i+1][1]} stroke={theme.c1} strokeWidth="1.6" opacity="0.18" strokeLinecap="round" />
-              <line x1={p[0]} y1={p[1]} x2={pts[i+1][0]} y2={pts[i+1][1]} stroke={theme.c1} strokeWidth="0.5" opacity="0.85" strokeLinecap="round" />
-            </g>
-          ))}
-          {/* các sao */}
-          {pts.map((p, i) => {
-            const isLit = i < lit, isNext = i === lit && !complete;
-            return (
-              <g key={'s'+i} onClick={isNext ? lightStar : undefined} style={{ cursor: isNext && canLight ? 'pointer' : 'default' }}>
-                {isLit && <circle cx={p[0]} cy={p[1]} r="3.8" fill={theme.c1} opacity="0.22" />}
-                {isLit && <circle cx={p[0]} cy={p[1]} r="2.2" fill={theme.c1} opacity="0.45" />}
-                {isNext && <circle cx={p[0]} cy={p[1]} r="4" fill={theme.c1} className="star-next" />}
-                <circle cx={p[0]} cy={p[1]} r={isLit ? 1.5 : isNext ? 1.4 : 1}
-                  fill={isLit ? '#fffdf5' : isNext ? '#fff7e0' : '#d6e4ff'}
-                  opacity={isLit ? 1 : isNext ? 0.95 : 0.32}
-                  stroke={isLit || isNext ? theme.c1 : 'none'} strokeWidth={isLit ? 0.6 : isNext ? 0.5 : 0} />
-              </g>
-            );
-          })}
-        </svg>
-
-        <div className="absolute top-3 left-4">
-          <div className="text-[11px] font-semibold" style={{ color:'rgba(255,255,255,0.5)' }}>Chòm {zi + 1}/12</div>
-          <div className="text-base font-bold" style={{ color: complete ? theme.c1 : 'white' }}>{complete ? z.vi : '? ? ?'}</div>
-        </div>
-        <div className="absolute bottom-3 right-4 text-[11px] font-semibold" style={{ color:'rgba(255,255,255,0.45)' }}>{lit}/{z.stars} sao</div>
+      <div className="flex gap-1.5 mb-4">
+        <TabBtn id="sky">🌌 Bầu trời</TabBtn>
+        <TabBtn id="gallery">🗂️ Bộ sưu tập</TabBtn>
       </div>
 
-      {/* nút thắp */}
-      <div className="rounded-2xl p-4 mb-4" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-        <div className="h-2.5 rounded-full overflow-hidden mb-3" style={{ background:'var(--surface-soft)' }}>
-          <div style={{ width:`${(lit / z.stars) * 100}%`, height:'100%', background:`linear-gradient(90deg, ${theme.c1}, ${theme.c2})`, transition:'width .4s' }} />
-        </div>
-        {canLight ? (
-          <button onClick={lightStar} className="w-full py-3 rounded-2xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
-            style={{ background:`linear-gradient(135deg, ${theme.c1}, ${theme.c2})`, color:'#1a1430' }}>
-            ✨ Thắp một ngôi sao (−{STAR_COST})
-          </button>
-        ) : (
-          <div className="w-full py-3 rounded-2xl text-center text-sm font-semibold" style={{ background:'var(--surface-soft)', color:'var(--muted)' }}>
-            {complete ? 'Đang mở chòm mới…' : `Học thêm để có ✨ (còn thiếu ${STAR_COST - (st.light||0)})`}
+      {tab === 'sky' && (<>
+        <div ref={null} className="relative rounded-3xl overflow-hidden mb-4"
+          style={{ background: `linear-gradient(180deg, ${theme.sky[0]}, ${theme.sky[1]} 55%, ${theme.sky[2]})`, boxShadow: '0 18px 48px rgba(5,10,25,0.55)' }}>
+          <div className="neb neb1" style={{ background: `radial-gradient(circle, ${theme.c1}33, transparent 70%)` }} />
+          <div className="neb neb2" style={{ background: `radial-gradient(circle, ${theme.c2}2e, transparent 70%)` }} />
+          <SkyCanvasWrap theme={theme} z={z} lit={lit} complete={complete} emoji={ZEMOJI[zi]} canLight={canLight} onLightNext={lightStar} onHover={setHover} hover={hover} />
+          <div className="absolute top-3 left-4 pointer-events-none">
+            <div className="text-[11px] font-semibold" style={{ color: 'rgba(255,255,255,0.5)' }}>Chòm {zi + 1}/12</div>
+            <div className="text-base font-bold" style={{ color: complete ? theme.c1 : 'white' }}>{complete ? (ZEMOJI[zi] + ' ' + z.vi) : '? ? ?'}</div>
           </div>
-        )}
-        <div className="text-xs text-center mt-2.5" style={{ color:'var(--muted)' }}>Ôn thẻ +1 · từ mới +2 · thuộc 1 câu +4 · mở app mỗi ngày +8</div>
-      </div>
+          <div className="absolute bottom-3 right-4 text-[11px] font-semibold pointer-events-none" style={{ color: 'rgba(255,255,255,0.45)' }}>{lit}/{z.stars} sao</div>
+        </div>
 
-      {/* bộ sưu tập */}
-      <div className="rounded-2xl p-4" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-        <div className="flex items-center justify-between mb-3">
-          <div className="text-sm font-bold" style={{ color:'var(--ink)' }}>Con giáp tầng này · {doneCount}/12</div>
-          {tier > 0 && <div className="text-xs px-2 py-0.5 rounded-md font-semibold" style={{ background:'var(--surface-soft)', color:theme.c2 }}>Đã qua {tier} tầng trời</div>}
-        </div>
-        <div className="grid grid-cols-6 gap-2">
-          {ZODIAC.map((zz, i) => {
-            const done = (st.completed || []).includes(i);
-            const cur = i === zi && !done;
-            return (
-              <div key={i} className="aspect-square rounded-xl flex items-center justify-center"
-                style={{ background: done ? `linear-gradient(145deg, ${theme.sky[1]}, ${theme.sky[2]})` : 'var(--surface-soft)', border: cur ? `1.5px solid ${theme.c2}` : '1px solid var(--border)' }}>
-                <span className="hanzi-text" style={{ fontSize:'20px', color: done ? theme.c1 : 'var(--muted)', opacity: done ? 1 : 0.4, fontWeight:700 }}>{zz.char}</span>
-              </div>
-            );
-          })}
-        </div>
-        {lastDone != null && (
-          <div className="mt-3 text-xs" style={{ color:'var(--muted)' }}>
-            <strong style={{ color:'var(--ink)' }}>{ZODIAC[lastDone].vi}</strong> — {ZODIAC[lastDone].note}
+        <div className="rounded-2xl p-4 mb-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <div className="h-2.5 rounded-full overflow-hidden mb-3" style={{ background: 'var(--surface-soft)' }}>
+            <div style={{ width: `${(lit / z.stars) * 100}%`, height: '100%', background: `linear-gradient(90deg, ${theme.c1}, ${theme.c2})`, transition: 'width .4s' }} />
           </div>
-        )}
-      </div>
+          {canLight ? (
+            <button onClick={lightStar} className="w-full py-3 rounded-2xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+              style={{ background: `linear-gradient(135deg, ${theme.c1}, ${theme.c2})`, color: '#1a1430' }}>✨ Thắp một ngôi sao (−{STAR_COST})</button>
+          ) : (
+            <div className="w-full py-3 rounded-2xl text-center text-sm font-semibold" style={{ background: 'var(--surface-soft)', color: 'var(--muted)' }}>
+              {complete ? 'Đang mở chòm mới…' : `Học thêm để có ✨ (còn thiếu ${STAR_COST - (st.light || 0)})`}</div>
+          )}
+          <div className="text-xs text-center mt-2.5" style={{ color: 'var(--muted)' }}>Di chuột lên bầu trời để xem sao phản ứng · chạm sao sáng để thắp</div>
+        </div>
+      </>)}
 
-      {/* mừng hoàn thành 1 chòm */}
-      {celebrate && lastDone != null && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center px-6" style={{ background:'rgba(7,12,30,0.6)' }} onClick={() => setCelebrate(false)}>
-          <div className="rounded-3xl p-8 text-center max-w-xs" style={{ background:`linear-gradient(160deg, ${theme.sky[1]}, ${theme.sky[0]})`, border:`1px solid ${theme.c1}55`, boxShadow:'0 24px 64px rgba(0,0,0,0.55)' }}>
-            <div className="hanzi-text mb-2" style={{ fontSize:'72px', color:theme.c1, fontWeight:700, textShadow:`0 0 34px ${theme.c1}` }}>{ZODIAC[lastDone].char}</div>
-            <div className="text-lg font-bold mb-1" style={{ color:'white' }}>Chòm sao hoàn thành!</div>
-            <div className="text-sm mb-3" style={{ color:'rgba(255,255,255,0.82)' }}>{ZODIAC[lastDone].vi}</div>
-            <div className="text-xs px-3 py-2 rounded-xl mb-4" style={{ background:'rgba(255,255,255,0.08)', color:'rgba(255,255,255,0.85)', lineHeight:1.6 }}>{ZODIAC[lastDone].note}</div>
-            <button onClick={() => setCelebrate(false)} className="px-5 py-2 rounded-xl text-sm font-bold" style={{ background:theme.c1, color:theme.sky[0] }}>Tiếp tục ✨</button>
+      {tab === 'gallery' && pick == null && (
+        <div className="rounded-2xl p-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+          <div className="text-sm font-bold mb-1" style={{ color: 'var(--ink)' }}>Bộ sưu tập con giáp</div>
+          <div className="text-xs mb-3" style={{ color: 'var(--muted)' }}>Chạm vào con giáp đã mở để xem lại chòm sao.</div>
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+            {ZODIAC.map((zz, i) => {
+              const done = everDone(i);
+              return (
+                <button key={i} disabled={!done} onClick={() => done && setPick(i)}
+                  className="rounded-2xl p-3 flex flex-col items-center gap-1 transition-all"
+                  style={{ background: done ? `linear-gradient(160deg, ${theme.sky[1]}, ${theme.sky[2]})` : 'var(--surface-soft)', border: `1px solid ${done ? theme.c1 + '55' : 'var(--border)'}`, cursor: done ? 'pointer' : 'default', opacity: done ? 1 : 0.55 }}>
+                  <span style={{ fontSize: '26px', filter: done ? 'none' : 'grayscale(1)' }}>{done ? ZEMOJI[i] : '🔒'}</span>
+                  <span className="hanzi-text" style={{ fontSize: '15px', fontWeight: 700, color: done ? theme.c1 : 'var(--muted)' }}>{zz.char}</span>
+                  <span className="text-[10px]" style={{ color: done ? 'rgba(255,255,255,0.7)' : 'var(--muted)' }}>{zz.vi.split('·')[0].trim()}</span>
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
 
-      {/* mừng trọn 1 TẦNG TRỜI */}
+      {tab === 'gallery' && pick != null && (() => {
+        const zz = ZODIAC[pick];
+        return (
+          <div>
+            <button onClick={() => setPick(null)} className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-xl mb-3"
+              style={{ background: 'var(--surface)', color: 'var(--muted)', border: '1px solid var(--border)' }}>← Bộ sưu tập</button>
+            <div className="relative rounded-3xl overflow-hidden mb-3" style={{ background: `linear-gradient(180deg, ${theme.sky[0]}, ${theme.sky[2]})`, boxShadow: '0 16px 40px rgba(5,10,25,0.5)' }}>
+              <svg viewBox="0 0 100 64" style={{ width: '100%', display: 'block' }}>
+                <defs><filter id="gblur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.4" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter></defs>
+                <text x="50" y="40" textAnchor="middle" fontSize="34" opacity="0.16">{ZEMOJI[pick]}</text>
+                {zz.pts.map((p, i) => (i < zz.pts.length - 1) && (
+                  <line key={i} x1={p[0]} y1={p[1]} x2={zz.pts[i + 1][0]} y2={zz.pts[i + 1][1]} stroke={theme.c1} strokeWidth="0.6" opacity="0.85" strokeLinecap="round" filter="url(#gblur)" />
+                ))}
+                {zz.pts.map((p, i) => (<circle key={'c' + i} cx={p[0]} cy={p[1]} r="1.6" fill="#fffdf5" stroke={theme.c1} strokeWidth="0.6" filter="url(#gblur)" />))}
+              </svg>
+              <div className="absolute top-3 left-4">
+                <div className="text-2xl">{ZEMOJI[pick]}</div>
+                <div className="text-base font-bold" style={{ color: theme.c1 }}>{zz.vi}</div>
+              </div>
+            </div>
+            <div className="rounded-2xl p-4 text-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--ink)', lineHeight: 1.7 }}>
+              <span className="hanzi-text" style={{ fontWeight: 700, color: theme.c2, marginRight: 6 }}>{zz.char} <span style={{ color: 'var(--muted)', fontWeight: 400 }}>{zz.py}</span></span>{zz.note}
+            </div>
+          </div>
+        );
+      })()}
+
+      {hover && tab === 'sky' && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-xl text-xs font-bold pointer-events-none z-[110]"
+          style={{ background: theme.sky[0], color: theme.c1, border: `1px solid ${theme.c1}66` }}>{hover.label}</div>
+      )}
+
+      {celebrate && lastDone != null && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center px-6" style={{ background: 'rgba(7,12,30,0.6)' }} onClick={() => setCelebrate(false)}>
+          <div className="rounded-3xl p-8 text-center max-w-xs" style={{ background: `linear-gradient(160deg, ${theme.sky[1]}, ${theme.sky[0]})`, border: `1px solid ${theme.c1}55`, boxShadow: '0 24px 64px rgba(0,0,0,0.55)' }}>
+            <div className="mb-1" style={{ fontSize: '64px' }}>{ZEMOJI[lastDone]}</div>
+            <div className="hanzi-text mb-2" style={{ fontSize: '34px', color: theme.c1, fontWeight: 700, textShadow: `0 0 24px ${theme.c1}` }}>{ZODIAC[lastDone].char}</div>
+            <div className="text-lg font-bold mb-1" style={{ color: 'white' }}>Chòm sao hoàn thành!</div>
+            <div className="text-sm mb-3" style={{ color: 'rgba(255,255,255,0.82)' }}>{ZODIAC[lastDone].vi}</div>
+            <div className="text-xs px-3 py-2 rounded-xl mb-4" style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>{ZODIAC[lastDone].note}</div>
+            <button onClick={() => setCelebrate(false)} className="px-5 py-2 rounded-xl text-sm font-bold" style={{ background: theme.c1, color: theme.sky[0] }}>Tiếp tục ✨</button>
+          </div>
+        </div>
+      )}
+
       {bigCelebrate && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center px-6" style={{ background:'rgba(7,12,30,0.72)' }} onClick={() => setBigCelebrate(false)}>
-          <div className="rounded-3xl p-8 text-center max-w-sm" style={{ background:`linear-gradient(160deg, ${STAR_THEMES[tier % STAR_THEMES.length].sky[1]}, #050a18)`, border:`1px solid ${theme.c1}66`, boxShadow:'0 24px 70px rgba(0,0,0,0.6)' }}>
+        <div className="fixed inset-0 z-[120] flex items-center justify-center px-6" style={{ background: 'rgba(7,12,30,0.72)' }} onClick={() => setBigCelebrate(false)}>
+          <div className="rounded-3xl p-8 text-center max-w-sm" style={{ background: `linear-gradient(160deg, ${theme.sky[1]}, #050a18)`, border: `1px solid ${theme.c1}66`, boxShadow: '0 24px 70px rgba(0,0,0,0.6)' }}>
             <div className="text-5xl mb-3">🌌</div>
-            <div className="text-xl font-bold mb-1" style={{ color:theme.c1 }}>Trọn một tầng trời!</div>
-            <div className="text-sm mb-3" style={{ color:'rgba(255,255,255,0.85)' }}>Bạn đã thắp sáng đủ 12 con giáp. Một bầu trời mới đang mở ra…</div>
-            <div className="text-base font-bold mb-4 px-3 py-2 rounded-xl inline-block" style={{ background:'rgba(255,255,255,0.08)', color:theme.c1 }}>→ {theme.name}</div>
-            <div><button onClick={() => setBigCelebrate(false)} className="px-6 py-2.5 rounded-xl text-sm font-bold" style={{ background:`linear-gradient(135deg, ${theme.c1}, ${theme.c2})`, color:theme.sky[0] }}>Khám phá tầng mới 🌠</button></div>
+            <div className="text-xl font-bold mb-1" style={{ color: theme.c1 }}>Trọn một tầng trời!</div>
+            <div className="text-sm mb-3" style={{ color: 'rgba(255,255,255,0.85)' }}>Bạn đã thắp đủ 12 con giáp. Một bầu trời mới đang mở ra…</div>
+            <div className="text-base font-bold mb-4 px-3 py-2 rounded-xl inline-block" style={{ background: 'rgba(255,255,255,0.08)', color: theme.c1 }}>→ {theme.name}</div>
+            <div><button onClick={() => setBigCelebrate(false)} className="px-6 py-2.5 rounded-xl text-sm font-bold" style={{ background: `linear-gradient(135deg, ${theme.c1}, ${theme.c2})`, color: theme.sky[0] }}>Khám phá tầng mới 🌠</button></div>
           </div>
         </div>
       )}
     </div>
   );
 };
+
+// bọc canvas để đo bề rộng
+const SkyCanvasWrap = ({ theme, z, lit, complete, emoji, canLight, onLightNext, onHover, hover }) => {
+  const ref = useRef(null);
+  return (
+    <div ref={ref} className="relative">
+      <SkyCanvas theme={theme} pts={z.pts} lit={lit} complete={complete} emoji={emoji} zchar={z.char} canLight={canLight} onLightNext={onLightNext} onHover={onHover} />
+    </div>
+  );
+};
+
+// ============ MAIN APP ============
 
 // ============ MAIN APP ============
 
@@ -9649,6 +9764,12 @@ function App() {
         .cst-shoot { position:absolute; top:10%; left:64%; width:70px; height:1.6px; border-radius:2px; transform: rotate(22deg); opacity:0; pointer-events:none; animation: cstShoot 11s ease-in infinite; }
         @keyframes cstShoot { 0% { transform: translate(0,0) rotate(22deg); opacity:0; } 4% { opacity:.9; } 16% { transform: translate(-180px,95px) rotate(22deg); opacity:0; } 100% { opacity:0; } }
         @media (prefers-reduced-motion: reduce) { .star-next { animation:none; } .cst-twinkle { animation:none; } .cst-shoot { display:none; } }
+        .neb { position:absolute; width:70%; height:130%; border-radius:50%; filter: blur(34px); opacity:0.5; pointer-events:none; }
+        .neb1 { top:-30%; left:-12%; animation: nebDrift 26s ease-in-out infinite alternate; }
+        .neb2 { bottom:-40%; right:-14%; animation: nebDrift2 32s ease-in-out infinite alternate; }
+        @keyframes nebDrift { from { transform: translate(0,0) scale(1); } to { transform: translate(16px,12px) scale(1.12); } }
+        @keyframes nebDrift2 { from { transform: translate(0,0) scale(1.05); } to { transform: translate(-18px,-10px) scale(1); } }
+        @media (prefers-reduced-motion: reduce) { .neb1,.neb2 { animation:none; } }
       `}</style>
 
       <SkyBackground dark={darkMode} />
