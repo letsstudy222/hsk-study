@@ -450,58 +450,36 @@ const sentDayInfo = () => {
   return { total, dayNum, unlocked, todayIdx };
 };
 
-// ===== BẦU TRỜI SAO (12 con giáp) =====
-const STAR_COST = 5; // ánh sáng cần để thắp 1 sao
-const ZODIAC = [
-  { char:'鼠', py:'shǔ', vi:'Tý · Chuột', note:'Đứng đầu 12 con giáp, tượng trưng cho sự nhanh nhẹn và mưu trí.',
-    pts:[[24,42],[36,31],[50,27],[63,33],[72,46]] },
-  { char:'牛', py:'niú', vi:'Sửu · Trâu', note:'Biểu tượng của sự cần cù, chăm chỉ và bền bỉ.',
-    pts:[[22,46],[31,32],[46,25],[61,31],[78,44]] },
-  { char:'虎', py:'hǔ', vi:'Dần · Hổ', note:'Chúa tể sơn lâm, đại diện cho dũng khí và uy quyền.',
-    pts:[[20,47],[30,35],[43,28],[57,30],[69,40],[79,51]] },
-  { char:'兔', py:'tù', vi:'Mão · Mèo (Thỏ)', note:'Hiền lành, nhanh nhẹn; ở Việt Nam là Mèo, ở Trung Quốc là Thỏ.',
-    pts:[[27,50],[34,36],[43,25],[56,21],[67,29],[74,43]] },
-  { char:'龙', py:'lóng', vi:'Thìn · Rồng', note:'Linh vật cao quý nhất, gắn với mây mưa, đế vương và may mắn.',
-    pts:[[16,48],[27,39],[39,43],[51,31],[62,38],[73,27],[83,36]] },
-  { char:'蛇', py:'shé', vi:'Tỵ · Rắn', note:'Còn gọi là "tiểu long", tượng trưng cho trí tuệ và sự huyền bí.',
-    pts:[[17,30],[28,40],[40,31],[52,42],[63,33],[74,44],[84,34]] },
-  { char:'马', py:'mǎ', vi:'Ngọ · Ngựa', note:'Đại diện cho tự do, sức mạnh và tinh thần tiến lên.',
-    pts:[[19,51],[30,36],[42,30],[54,34],[64,25],[74,33],[83,48]] },
-  { char:'羊', py:'yáng', vi:'Mùi · Dê', note:'Dịu dàng, hòa thuận, gắn với sự an lành.',
-    pts:[[21,48],[29,36],[39,42],[48,29],[58,29],[67,42],[75,33],[83,47]] },
-  { char:'猴', py:'hóu', vi:'Thân · Khỉ', note:'Thông minh, hoạt bát; nổi tiếng qua hình tượng Tôn Ngộ Không.',
-    pts:[[22,31],[31,43],[41,36],[50,48],[60,39],[69,49],[77,39],[85,30]] },
-  { char:'鸡', py:'jī', vi:'Dậu · Gà', note:'Cần mẫn, đúng giờ; tiếng gà gáy báo hiệu bình minh.',
-    pts:[[21,46],[28,34],[38,28],[48,33],[56,22],[65,30],[74,27],[83,40]] },
-  { char:'狗', py:'gǒu', vi:'Tuất · Chó', note:'Trung thành, tận tụy, người bạn thân thiết của con người.',
-    pts:[[17,45],[25,34],[35,39],[44,28],[54,33],[62,24],[71,33],[79,28],[87,41]] },
-  { char:'猪', py:'zhū', vi:'Hợi · Lợn', note:'Khép lại vòng giáp, tượng trưng cho sung túc và phúc hậu.',
-    pts:[[19,41],[27,30],[38,35],[46,26],[56,31],[64,23],[73,33],[81,28],[89,39]] },
-].map(z => ({ ...z, stars: z.pts.length }));
-const STAR_THEMES = [
-  { name:'Trời Vàng Kim', c1:'#ffe08a', c2:'#f7b733', sky:['#060e22','#0e1c38','#13254a'] },
-  { name:'Trời Lục Bảo', c1:'#9af5e1', c2:'#23b59e', sky:['#04171a','#0a2630','#0f3040'] },
-  { name:'Trời Hồng Hà', c1:'#ffc2d6', c2:'#e85a8a', sky:['#19091a','#2a0f26','#3a1633'] },
-  { name:'Trời Tử Vi', c1:'#d6c8ff', c2:'#8b5cf6', sky:['#0d0922','#160f38','#201652'] },
-  { name:'Trời Băng Lam', c1:'#c2e6ff', c2:'#3d8bd1', sky:['#050f1f','#0a1a30','#102746'] },
+// ===== LINH THÚ: CÁ CHÉP HÓA RỒNG =====
+const PET_STAGES = [
+  { lv:1,  emoji:'🥚', name:'Trứng cá',     line:'Một quả trứng nhỏ đang chờ nở…' },
+  { lv:2,  emoji:'🐟', name:'Cá bột',       line:'Chú cá bé xíu vừa chào đời.' },
+  { lv:4,  emoji:'🐠', name:'Cá chép',      line:'Cá chép nhanh nhẹn, bơi tung tăng.' },
+  { lv:7,  emoji:'🐡', name:'Cá chép vàng', line:'Vảy ánh vàng, sắp đủ sức vượt Vũ Môn.' },
+  { lv:11, emoji:'🐉', name:'Tiểu Long',    line:'Vượt Vũ Môn (龙门 lóngmén) thành công — hóa rồng!' },
+  { lv:16, emoji:'🐲', name:'Thần Long',    line:'Rồng thiêng oai phong, đạt cảnh giới cao nhất.' },
 ];
-const ZTOTAL = ZODIAC.reduce((s, z) => s + z.stars, 0);
-const _mulberry32 = (a) => () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
-const constellationStars = (seed, n) => {
-  const rnd = _mulberry32(seed);
-  const pts = []; let x = 18 + rnd() * 22, y = 16 + rnd() * 36;
-  for (let i = 0; i < n; i++) {
-    pts.push({ x: Math.round(x * 10) / 10, y: Math.round(y * 10) / 10 });
-    const ang = rnd() * Math.PI * 2, dist = 13 + rnd() * 15;
-    x = Math.max(9, Math.min(91, x + Math.cos(ang) * dist));
-    y = Math.max(9, Math.min(61, y + Math.sin(ang) * dist));
-  }
-  return pts;
-};
-const readStars = () => { try { const s = localStorage.getItem('hsk:stars'); return s ? JSON.parse(s) : null; } catch (e) { return null; } };
-const writeStars = (o) => { try { localStorage.setItem('hsk:stars', JSON.stringify(o)); } catch (e) {} };
-const defaultStars = () => ({ light: 0, zi: 0, lit: 0, completed: [], skies: 0, lastDay: '' });
-const addStarLight = (n) => { const s = readStars() || defaultStars(); s.light = (s.light || 0) + n; writeStars(s); };
+const PET_GIFTS = [
+  { lv:3,  icon:'🪷', name:'Hoa sen' },
+  { lv:5,  icon:'🎐', name:'Chuông gió' },
+  { lv:8,  icon:'🧧', name:'Bao lì xì' },
+  { lv:12, icon:'👑', name:'Vương miện' },
+  { lv:18, icon:'🏮', name:'Đèn lồng' },
+];
+const PET_CHEERS = [
+  '谢谢 (xièxie)! Cảm ơn bạn nha~',
+  '加油 (jiāyóu)! Cố lên nhé!',
+  '好开心 (hǎo kāixīn) — vui quá đi!',
+  '再喂一点 (zài wèi yìdiǎn) đi mà~',
+  '你真棒 (nǐ zhēn bàng)! Bạn giỏi lắm!',
+  '我要变成龙 (wǒ yào biànchéng lóng)! Mình sẽ hóa rồng!',
+];
+const petNeed = (lv) => 12 + lv * 6;            // EXP để lên từ cấp lv -> lv+1
+const petStage = (lv) => { let s = PET_STAGES[0]; for (const x of PET_STAGES) if (lv >= x.lv) s = x; return s; };
+const readPet = () => { try { const s = localStorage.getItem('hsk:pet'); return s ? JSON.parse(s) : null; } catch (e) { return null; } };
+const writePet = (o) => { try { localStorage.setItem('hsk:pet', JSON.stringify(o)); } catch (e) {} };
+const defaultPet = () => ({ name: '', lv: 1, exp: 0, food: 0, bonusDay: '', lastSeen: '' });
+const feedPetFood = (n) => { const p = readPet() || defaultPet(); p.food = (p.food || 0) + n; writePet(p); };
 
 // ============ HELPERS ============
 const getToneColor = (pinyin) => {
@@ -1123,7 +1101,7 @@ const Header = ({ view, setView, darkMode, toggleDark, habit, goalProgress, onOp
     { id:'reading', label:'阅读', viLabel:'Bài đọc' },
     { id:'flashcard', label:'卡片', viLabel:'Flashcard' },
     { id:'sentence', label:'每日一句', viLabel:'Câu mỗi ngày' },
-    { id:'stars', label:'星空', viLabel:'Bầu trời sao' },
+    { id:'pet', label:'灵兽', viLabel:'Linh thú' },
     { id:'quiz', label:'测验', viLabel:'Quiz' },
     { id:'listening', label:'听力', viLabel:'Nghe' },
     { id:'writing', label:'书写', viLabel:'Viết' },
@@ -2063,29 +2041,25 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount, habit, go
         );
       })()}
 
-      {/* ── BẦU TRỜI SAO ── */}
+      {/* ── LINH THÚ ── */}
       {(() => {
-        const ss = readStars() || defaultStars();
-        const th = STAR_THEMES[(ss.skies || 0) % STAR_THEMES.length];
-        const zi = Math.min(ss.zi || 0, ZODIAC.length - 1);
-        const z = ZODIAC[zi];
-        const done = (ss.completed || []).length;
+        const pp = readPet() || defaultPet();
+        const sg = petStage(pp.lv);
+        const drg = pp.lv >= 11;
+        const c = drg ? { a:'#ffcf5c', b:'#ff8f2e', w:['#ffe6a8','#e0951f'] } : { a:'#46c2ad', b:'#2f8f86', w:['#bdeee2','#2f8f86'] };
         return (
-          <div onClick={() => setView('stars')}
+          <div onClick={() => setView('pet')}
             className="relative overflow-hidden rounded-3xl p-5 mb-8 cursor-pointer transition-all hover:scale-[1.01] active:scale-[0.99]"
-            style={{ background:`linear-gradient(135deg, ${th.sky[1]}, ${th.sky[2]})`, boxShadow:'0 14px 38px rgba(8,14,30,0.45)' }}>
-            {useMemo(() => Array.from({length:16},(_,i)=>{const r=_mulberry32(700+i);return{x:r()*100,y:r()*100,s:r()*1.4+0.6,o:r()*0.5+0.2};}),[]).map((s,i)=>(
-              <div key={i} className="absolute rounded-full" style={{ left:s.x+'%', top:s.y+'%', width:s.s+'px', height:s.s+'px', background:'#fff', opacity:s.o }} />
-            ))}
+            style={{ background:`linear-gradient(135deg, ${c.w[0]}, ${c.w[1]})`, boxShadow:'0 14px 38px rgba(20,60,55,0.3)' }}>
             <div className="relative flex items-center gap-4">
-              <div className="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center hanzi-text"
-                style={{ background:`${th.c1}1f`, border:`1px solid ${th.c1}66`, color:th.c1, fontSize:'28px', fontWeight:700 }}>{z.char}</div>
+              <div className="flex-shrink-0 w-16 h-16 rounded-2xl flex items-center justify-center pet-float"
+                style={{ background:'rgba(255,255,255,0.35)', fontSize:'36px' }}>{sg.emoji}</div>
               <div className="flex-1 min-w-0">
-                <div className="text-xs tracking-[0.2em] font-bold mb-0.5" style={{ color:th.c1, opacity:0.9 }}>星空 · {th.name.toUpperCase()}</div>
-                <div className="text-base font-bold mb-1" style={{ color:'white' }}>Tầng {(ss.skies||0)+1} · đã mở {done}/12</div>
-                <div className="text-xs" style={{ color:'rgba(255,255,255,0.72)' }}>✨ {ss.light || 0} ánh sáng · thắp sao mở linh vật</div>
+                <div className="text-xs tracking-[0.2em] font-bold mb-0.5" style={{ color:'#fff', opacity:0.92 }}>灵兽 · LINH THÚ</div>
+                <div className="text-base font-bold mb-1" style={{ color:'#fff' }}>{pp.name || sg.name} · Cấp {pp.lv}</div>
+                <div className="text-xs" style={{ color:'rgba(255,255,255,0.85)' }}>🍱 {pp.food || 0} thức ăn{(pp.food||0)>0 ? ' · cho ăn để lên cấp' : ' · học thêm để có thức ăn'}</div>
               </div>
-              <div style={{ color:th.c1 }}>→</div>
+              <div style={{ color:'#fff' }}>→</div>
             </div>
           </div>
         );
@@ -3899,7 +3873,7 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
       updateSRS(currentWord.id, { ...next, lastRating: rating });
       bumpDaily(wasNew ? 'new' : 'review');
       bumpFcStat(rating >= 3);
-      addStarLight(wasNew ? 2 : 1);
+      feedPetFood(wasNew ? 2 : 1);
     }
 
     const ratingKey = ['', 'forgot', 'hard', 'good', 'easy'][rating] || 'good';
@@ -4380,7 +4354,7 @@ const SentenceView = ({ goHome }) => {
     setSeen(prev => {
       const next = prev.includes(s.id) ? prev.filter(x => x !== s.id) : [...prev, s.id];
       try { localStorage.setItem('hsk:sentdone', JSON.stringify(next)); } catch {}
-      if (!prev.includes(s.id)) addStarLight(4);
+      if (!prev.includes(s.id)) feedPetFood(4);
       return next;
     });
   };
@@ -9074,13 +9048,17 @@ const AccountWidget = ({ supa, session, syncState }) => {
 
 // ============ NỀN BẦU TRỜI ============
 const SkyBackground = ({ dark }) => {
-  const stars = useMemo(() => Array.from({ length: 50 }, () => ({
-    left: (Math.random() * 100).toFixed(2),
-    top: (Math.random() * 72).toFixed(2),
-    s: (Math.random() * 1.6 + 0.7).toFixed(2),
-    td: (Math.random() * 3 + 2).toFixed(2),
-    delay: (Math.random() * 5).toFixed(2),
-  })), []);
+  const stars = useMemo(() => Array.from({ length: 110 }, () => {
+    const bright = Math.random() < 0.14;
+    return {
+      left: (Math.random() * 100).toFixed(2),
+      top: (Math.random() * 96).toFixed(2),
+      s: bright ? (Math.random() * 1.4 + 1.8).toFixed(2) : (Math.random() * 1.3 + 0.5).toFixed(2),
+      td: (Math.random() * 3 + 2).toFixed(2),
+      delay: (Math.random() * 5).toFixed(2),
+      bright,
+    };
+  }), []);
   const clouds = [
     { w: 300, top: '7%',  left: '-6%', op: 0.95, drift: true,  dur: '175s', delay: '-20s' },
     { w: 200, top: '19%', left: '58%', op: 0.70, drift: true,  dur: '230s', delay: '-90s' },
@@ -9112,317 +9090,193 @@ const SkyBackground = ({ dark }) => {
         </svg>
       )}
       {dark && (
-        <div className="sky-stars">
-          {stars.map((st, i) => (
-            <i key={i} style={{ left: st.left + '%', top: st.top + '%', width: st.s + 'px', height: st.s + 'px', '--td': st.td + 's', '--tdelay': st.delay + 's' }} />
-          ))}
-        </div>
+        <>
+          <div className="sky-mw" />
+          <div className="sky-neb sky-neb1" />
+          <div className="sky-neb sky-neb2" />
+          <div className="sky-shoot" />
+          <div className="sky-stars">
+            {stars.map((st, i) => (
+              <i key={i} className={st.bright ? 'bright' : ''} style={{ left: st.left + '%', top: st.top + '%', width: st.s + 'px', height: st.s + 'px', '--td': st.td + 's', '--tdelay': st.delay + 's' }} />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );
 };
 
-// ============ BẦU TRỜI SAO ============
-const ZEMOJI = ['🐭','🐮','🐯','🐰','🐲','🐍','🐴','🐐','🐵','🐔','🐶','🐷'];
-
-// Bảng trời động (canvas): sao lấp lánh, sao băng, phản ứng con trỏ, chòm sao phát sáng
-const SkyCanvas = ({ theme, pts, lit, complete, emoji, zchar, onLightNext, canLight, onHover }) => {
-  const canvasRef = useRef(null);
-  const wrapRef = useRef(null);
-  const sceneRef = useRef({});
-  const mouseRef = useRef({ x: -999, y: -999, on: false });
-  sceneRef.current = { theme, pts, lit, complete, emoji, zchar, canLight };
-
-  // toạ độ sao chòm theo pixel
-  const starPx = (W, H) => sceneRef.current.pts.map(p => ({ x: (p[0] / 100) * W, y: (p[1] / 64) * H }));
-
-  useEffect(() => {
-    const canvas = canvasRef.current; if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const H = 290; let W = canvas.clientWidth || 600;
-    const dpr = Math.min(2, window.devicePixelRatio || 1);
-    const resize = () => { W = canvas.clientWidth || 600; canvas.width = W * dpr; canvas.height = H * dpr; canvas.style.height = H + 'px'; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
-    resize(); window.addEventListener('resize', resize);
-    setTimeout(resize, 60);
-
-    const rnd = _mulberry32(20260616);
-    const N = reduce ? 60 : 140;
-    const bg = Array.from({ length: N }, () => ({ x: rnd(), y: rnd(), r: rnd() * 1.3 + 0.3, ph: rnd() * 6.28, tw: rnd() * 1.4 + 0.4, sp: (rnd() * 0.5 + 0.1) * (rnd() < 0.5 ? -1 : 1), ly: rnd() * 0.7 + 0.3 }));
-    let meteor = null, nextMet = 1500 + rnd() * 3500, t0 = performance.now(), raf;
-
-    const draw = (t) => {
-      const dt = Math.min(0.05, (t - t0) / 1000); t0 = t;
-      const s = sceneRef.current, th = s.theme;
-      const mx = mouseRef.current.x, my = mouseRef.current.y, mon = mouseRef.current.on;
-      ctx.clearRect(0, 0, W, H);
-
-      // sao nền + lấp lánh + phản ứng chuột
-      const R = 90;
-      for (const b of bg) {
-        if (!reduce) { b.x += b.sp * b.ly * dt * 0.012; if (b.x > 1.03) b.x -= 1.06; if (b.x < -0.03) b.x += 1.06; }
-        const px = b.x * W, py = b.y * H;
-        let a = 0.18 + 0.5 * (0.5 + 0.5 * Math.sin(t * 0.001 * b.tw + b.ph)) * b.ly;
-        if (mon) { const d = Math.hypot(px - mx, py - my); if (d < R) { const k = 1 - d / R; a = Math.min(1, a + k * 0.7);
-          ctx.strokeStyle = th.c1 + Math.floor(k * 90).toString(16).padStart(2, '0'); ctx.lineWidth = 0.5;
-          ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(px, py); ctx.stroke(); } }
-        ctx.globalAlpha = a; ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(px, py, b.r, 0, 6.283); ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-
-      // sao băng
-      if (!reduce) {
-        nextMet -= dt * 1000;
-        if (!meteor && nextMet <= 0) { meteor = { x: W * (0.45 + rnd() * 0.5), y: 8 + rnd() * 40, vx: -(180 + rnd() * 120), vy: 95 + rnd() * 55, life: 0 }; nextMet = 3500 + rnd() * 5000; }
-        if (meteor) { meteor.life += dt; const len = 60; const ex = meteor.x - meteor.vx * 0.05, ey = meteor.y - meteor.vy * 0.05;
-          const g = ctx.createLinearGradient(meteor.x, meteor.y, ex, ey); g.addColorStop(0, th.c1); g.addColorStop(1, 'transparent');
-          ctx.strokeStyle = g; ctx.lineWidth = 1.6; ctx.globalAlpha = Math.max(0, 1 - meteor.life / 0.9);
-          ctx.beginPath(); ctx.moveTo(meteor.x, meteor.y); ctx.lineTo(ex, ey); ctx.stroke(); ctx.globalAlpha = 1;
-          meteor.x += meteor.vx * dt; meteor.y += meteor.vy * dt; if (meteor.life > 0.9 || meteor.x < -80) meteor = null; }
-      }
-
-      // emoji con giáp mờ khi hoàn thành
-      const sp = starPx(W, H);
-      if (s.complete) { ctx.globalAlpha = 0.13; ctx.font = (H * 0.55) + 'px serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(s.emoji, W / 2, H / 2); ctx.globalAlpha = 1; }
-
-      // đường nối các sao đã thắp (glow)
-      ctx.save(); ctx.shadowBlur = 10; ctx.shadowColor = th.c1;
-      for (let i = 0; i < s.lit - 1 && i < sp.length - 1; i++) {
-        ctx.strokeStyle = th.c1; ctx.globalAlpha = 0.85; ctx.lineWidth = 1.4; ctx.lineCap = 'round';
-        ctx.beginPath(); ctx.moveTo(sp[i].x, sp[i].y); ctx.lineTo(sp[i + 1].x, sp[i + 1].y); ctx.stroke();
-      }
-      ctx.restore(); ctx.globalAlpha = 1;
-
-      // các sao chòm
-      const pulse = 0.5 + 0.5 * Math.sin(t * 0.0045);
-      sp.forEach((p, i) => {
-        const isLit = i < s.lit, isNext = i === s.lit && !s.complete;
-        const hov = mon && Math.hypot(p.x - mx, p.y - my) < 16;
-        if (isLit) {
-          const gr = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, hov ? 20 : 15);
-          gr.addColorStop(0, th.c1 + 'cc'); gr.addColorStop(0.4, th.c1 + '55'); gr.addColorStop(1, 'transparent');
-          ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(p.x, p.y, hov ? 20 : 15, 0, 6.283); ctx.fill();
-          ctx.save(); ctx.shadowBlur = 12; ctx.shadowColor = th.c1; ctx.fillStyle = '#fffdf5';
-          ctx.beginPath(); ctx.arc(p.x, p.y, hov ? 3.4 : 2.6, 0, 6.283); ctx.fill(); ctx.restore();
-        } else if (isNext) {
-          const rr = (canLight ? 9 : 7) + pulse * 3;
-          ctx.strokeStyle = th.c1; ctx.globalAlpha = 0.35 + pulse * 0.4; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(p.x, p.y, rr, 0, 6.283); ctx.stroke();
-          ctx.globalAlpha = 1; ctx.save(); ctx.shadowBlur = 14; ctx.shadowColor = th.c1; ctx.fillStyle = '#fff7e0';
-          ctx.beginPath(); ctx.arc(p.x, p.y, hov ? 3.6 : 2.8, 0, 6.283); ctx.fill(); ctx.restore();
-        } else {
-          ctx.globalAlpha = hov ? 0.7 : 0.32; ctx.fillStyle = '#d6e4ff'; ctx.beginPath(); ctx.arc(p.x, p.y, hov ? 2 : 1.3, 0, 6.283); ctx.fill(); ctx.globalAlpha = 1;
-        }
-      });
-      raf = requestAnimationFrame(draw);
-    };
-    raf = requestAnimationFrame(draw);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize); };
-  }, []);
-
-  const handleMove = (e) => {
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left, y = e.clientY - rect.top;
-    mouseRef.current = { x, y, on: true };
-    const W = rect.width, H = 290; const sp = starPx(W, H);
-    let hi = -1; sp.forEach((p, i) => { if (Math.hypot(p.x - x, p.y - y) < 16) hi = i; });
-    if (hi >= 0) { const isNext = hi === sceneRef.current.lit && !sceneRef.current.complete;
-      onHover({ x: sp[hi].x, y: sp[hi].y, label: isNext ? (sceneRef.current.canLight ? 'Thắp ✨ −' + STAR_COST : 'Cần thêm ✨') : (hi < sceneRef.current.lit ? 'Sao ' + (hi + 1) + ' ✦' : 'Chưa tới') });
-    } else onHover(null);
-  };
-  const handleLeave = () => { mouseRef.current = { x: -999, y: -999, on: false }; onHover(null); };
-  const handleClick = (e) => {
-    const rect = canvasRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left, y = e.clientY - rect.top;
-    const sp = starPx(rect.width, 290); const ni = sceneRef.current.lit;
-    if (ni < sp.length && Math.hypot(sp[ni].x - x, sp[ni].y - y) < 24) onLightNext();
-  };
-  return (
-    <canvas ref={canvasRef} onMouseMove={handleMove} onMouseLeave={handleLeave} onClick={handleClick}
-      style={{ width: '100%', display: 'block', cursor: canLight ? 'pointer' : 'default' }} />
-  );
-};
-
-const StarView = () => {
-  const [st, setSt] = useState(() => readStars() || defaultStars());
-  const [tab, setTab] = useState('sky');
-  const [pick, setPick] = useState(null);
-  const [hover, setHover] = useState(null);
-  const [justDaily, setJustDaily] = useState(0);
-  const [celebrate, setCelebrate] = useState(false);
-  const [bigCelebrate, setBigCelebrate] = useState(false);
-  const [lastDone, setLastDone] = useState(null);
+// ============ LINH THÚ ĐỒNG HÀNH ============
+const PetView = () => {
+  const [p, setP] = useState(() => readPet() || defaultPet());
+  const [msg, setMsg] = useState('');
+  const [react, setReact] = useState(null);       // happy | excited | sleepy
+  const [floatTxt, setFloatTxt] = useState(null);
+  const [evolveModal, setEvolveModal] = useState(null);
+  const [editing, setEditing] = useState(false);
+  const [nameInput, setNameInput] = useState('');
 
   useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
-    setSt(prev => { if (prev.lastDay === today) return prev;
-      const next = { ...prev, light: (prev.light || 0) + 8, lastDay: today };
-      writeStars(next); setJustDaily(8); setTimeout(() => setJustDaily(0), 2600); return next; });
+    let sleepy = false;
+    setP(prev => {
+      const np = { ...prev };
+      if (np.lastSeen) {
+        const days = Math.round((Date.now() - new Date(np.lastSeen + 'T00:00:00').getTime()) / 86400000);
+        if (days >= 2) sleepy = true;
+      }
+      if (np.bonusDay !== today) { np.food = (np.food || 0) + 8; np.bonusDay = today; setFloatTxt('+8 🍱 hôm nay'); setTimeout(() => setFloatTxt(null), 2600); }
+      np.lastSeen = today; writePet(np); return np;
+    });
+    setTimeout(() => {
+      const cur = readPet() || defaultPet();
+      setReact(sleepy ? 'sleepy' : 'happy');
+      setMsg(sleepy ? 'Lâu rồi không gặp~ cho mình ăn nhé! 🥺' : petStage(cur.lv).line);
+      setTimeout(() => setReact(null), 2800);
+    }, 60);
   }, []);
 
-  const tier = st.skies || 0;
-  const theme = STAR_THEMES[tier % STAR_THEMES.length];
-  const zi = Math.min(st.zi || 0, ZODIAC.length - 1);
-  const z = ZODIAC[zi];
-  const lit = st.lit || 0;
-  const complete = lit >= z.stars;
-  const canLight = (st.light || 0) >= STAR_COST && !complete;
-  const doneCount = (st.completed || []).length;
-  const everDone = (i) => (st.completed || []).includes(i) || tier > 0;
+  const stage = petStage(p.lv);
+  const need = petNeed(p.lv);
+  const isDragon = p.lv >= 11;
+  const C = isDragon
+    ? { a: '#ffcf5c', b: '#ff8f2e', water: ['#fff4d6', '#ffd277', '#e0951f'], gate: '#8a5212', deep: '#a86a1a' }
+    : { a: '#46c2ad', b: '#2f8f86', water: ['#e2f8f1', '#8fd8cb', '#2f8f86'], gate: '#1d5a53', deep: '#236b62' };
 
-  const lightStar = () => {
-    if (!canLight) return;
-    let { light, lit: l = 0, zi: zz = 0, completed = [], skies = 0 } = st;
-    light -= STAR_COST; l += 1; let done = null, big = false;
-    if (l >= ZODIAC[zz].stars) { done = zz; completed = [...completed, zz];
-      if (zz >= ZODIAC.length - 1) { big = true; skies += 1; zz = 0; completed = []; l = 0; } else { zz += 1; l = 0; } }
-    const next = { ...st, light, lit: l, zi: zz, completed, skies }; writeStars(next); setSt(next);
-    if (done != null) { setLastDone(done); if (big) { setBigCelebrate(true); setTimeout(() => setBigCelebrate(false), 4200); } else { setCelebrate(true); setTimeout(() => setCelebrate(false), 2600); } }
+  const tapPet = () => { setReact('excited'); setTimeout(() => setReact(null), 1200); setMsg(PET_CHEERS[Math.floor(Math.random() * PET_CHEERS.length)]); };
+
+  const feed = () => {
+    if ((p.food || 0) <= 0) { setMsg('Hết 🍱 rồi — học thêm để có thức ăn nhé!'); setReact('sleepy'); setTimeout(() => setReact(null), 1200); return; }
+    let { lv, exp, food } = p; const beforeStage = petStage(lv).name; const beforeLv = lv;
+    const amt = food; exp += food; food = 0;
+    while (exp >= petNeed(lv)) { exp -= petNeed(lv); lv++; }
+    const np = { ...p, lv, exp, food }; writePet(np); setP(np);
+    setFloatTxt('+' + amt + ' EXP'); setTimeout(() => setFloatTxt(null), 1500);
+    setReact('happy'); setTimeout(() => setReact(null), 1400);
+    const afterStage = petStage(lv).name;
+    if (afterStage !== beforeStage) setEvolveModal(petStage(lv));
+    else if (lv > beforeLv) setMsg('升级 (shēngjí)! Lên cấp ' + lv + ' rồi! 🎉');
+    else setMsg('好吃 (hǎochī)! Ngon quá~');
   };
 
-  const TabBtn = ({ id, children }) => (
-    <button onClick={() => { setTab(id); setPick(null); }} className="px-4 py-1.5 rounded-xl text-sm font-bold transition-all"
-      style={{ background: tab === id ? 'var(--accent)' : 'var(--surface)', color: tab === id ? 'white' : 'var(--ink)', border: '1px solid var(--border)' }}>{children}</button>
-  );
+  const saveName = () => { const np = { ...p, name: nameInput.trim().slice(0, 16) }; writePet(np); setP(np); setEditing(false); };
+  const displayName = p.name || stage.name;
 
   return (
-    <div className="max-w-2xl mx-auto px-5 py-7">
-      <div className="flex items-start justify-between mb-3">
-        <div>
-          <div className="text-xs tracking-[0.3em] mb-1" style={{ color: 'var(--accent)' }}>星空 · BẦU TRỜI SAO</div>
-          <h1 className="text-2xl" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--ink)' }}>{theme.name}</h1>
-          <div className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>Tầng trời {tier + 1} · đã mở {doneCount}/12 con giáp</div>
-        </div>
-        <div className="text-right">
-          <div className="px-3 py-1.5 rounded-xl font-bold text-sm inline-flex items-center gap-1" style={{ background: `linear-gradient(135deg, ${theme.c1}, ${theme.c2})`, color: '#1a1430' }}>✨ {st.light || 0}</div>
-          {justDaily > 0 && <div className="text-xs mt-1 font-semibold" style={{ color: theme.c2 }}>+{justDaily} hôm nay</div>}
-        </div>
+    <div className="max-w-xl mx-auto px-5 py-7">
+      <div className="mb-4">
+        <div className="text-xs tracking-[0.3em] mb-1" style={{ color: 'var(--accent)' }}>灵兽 · LINH THÚ ĐỒNG HÀNH</div>
+        <h1 className="text-2xl" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--ink)' }}>Cá chép hóa rồng</h1>
+        <div className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>Học để nuôi · vượt Vũ Môn 龙门 hóa rồng</div>
       </div>
 
-      <div className="flex gap-1.5 mb-4">
-        <TabBtn id="sky">🌌 Bầu trời</TabBtn>
-        <TabBtn id="gallery">🗂️ Bộ sưu tập</TabBtn>
-      </div>
+      {/* HỒ CÁ */}
+      <div className="relative rounded-3xl overflow-hidden mb-4" style={{ height: 300, background: `linear-gradient(180deg, ${C.water[0]} 0%, ${C.water[1]} 52%, ${C.water[2]} 100%)`, boxShadow: '0 16px 44px rgba(20,60,55,0.32)' }}>
+        {/* Vũ Môn */}
+        <svg viewBox="0 0 100 70" preserveAspectRatio="xMidYMid meet" className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.22 }}>
+          <rect x="22" y="14" width="6" height="40" rx="1.5" fill={C.gate} />
+          <rect x="72" y="14" width="6" height="40" rx="1.5" fill={C.gate} />
+          <rect x="16" y="12" width="68" height="7" rx="2" fill={C.gate} />
+          <rect x="19" y="21" width="62" height="3.4" rx="1.5" fill={C.gate} />
+          <text x="50" y="40" textAnchor="middle" fontSize="11" fontFamily="Noto Sans SC, serif" fontWeight="700" fill={C.gate} opacity="0.6">龙门</text>
+        </svg>
+        {/* bong bóng */}
+        {[12, 30, 52, 70, 86].map((l, i) => (
+          <span key={i} className="pet-bubble" style={{ left: l + '%', animationDelay: (i * 1.3) + 's', animationDuration: (6 + i) + 's', width: (5 + (i % 3) * 3) + 'px', height: (5 + (i % 3) * 3) + 'px' }} />
+        ))}
+        {/* lá sen */}
+        <div className="absolute" style={{ left: '8%', bottom: '12%', fontSize: 26, opacity: 0.9 }}>🪷</div>
+        <div className="absolute" style={{ right: '10%', bottom: '20%', fontSize: 20, opacity: 0.8 }}>🍃</div>
 
-      {tab === 'sky' && (<>
-        <div ref={null} className="relative rounded-3xl overflow-hidden mb-4"
-          style={{ background: `linear-gradient(180deg, ${theme.sky[0]}, ${theme.sky[1]} 55%, ${theme.sky[2]})`, boxShadow: '0 18px 48px rgba(5,10,25,0.55)' }}>
-          <div className="neb neb1" style={{ background: `radial-gradient(circle, ${theme.c1}33, transparent 70%)` }} />
-          <div className="neb neb2" style={{ background: `radial-gradient(circle, ${theme.c2}2e, transparent 70%)` }} />
-          <SkyCanvasWrap theme={theme} z={z} lit={lit} complete={complete} emoji={ZEMOJI[zi]} canLight={canLight} onLightNext={lightStar} onHover={setHover} hover={hover} />
-          <div className="absolute top-3 left-4 pointer-events-none">
-            <div className="text-[11px] font-semibold" style={{ color: 'rgba(255,255,255,0.5)' }}>Chòm {zi + 1}/12</div>
-            <div className="text-base font-bold" style={{ color: complete ? theme.c1 : 'white' }}>{complete ? (ZEMOJI[zi] + ' ' + z.vi) : '? ? ?'}</div>
+        {/* nhân vật */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          {msg && <div className="mb-2 px-3 py-1.5 rounded-2xl text-xs font-semibold max-w-[80%] text-center" style={{ background: 'rgba(255,255,255,0.92)', color: '#1f4b45', boxShadow: '0 4px 14px rgba(0,0,0,0.12)' }}>{msg}</div>}
+          <div className="relative" onClick={tapPet} style={{ cursor: 'pointer' }}>
+            {/* gợn nước */}
+            <div className="pet-ripple" style={{ borderColor: C.b }} />
+            <div className="pet-ripple" style={{ borderColor: C.b, animationDelay: '1.2s' }} />
+            <div className={'pet-emoji ' + (react === 'excited' ? 'pet-bounce' : 'pet-float')} style={{ fontSize: 92, filter: 'drop-shadow(0 8px 10px rgba(0,0,0,0.18))' }}>{stage.emoji}</div>
+            {react === 'sleepy' && <div className="absolute" style={{ top: -6, right: -10, fontSize: 22 }}>💤</div>}
+            {react === 'excited' && <div className="absolute pet-heart" style={{ top: -4, right: -6, fontSize: 22 }}>❤️</div>}
+            {react === 'happy' && <div className="absolute pet-heart" style={{ top: -4, left: -8, fontSize: 20 }}>✨</div>}
           </div>
-          <div className="absolute bottom-3 right-4 text-[11px] font-semibold pointer-events-none" style={{ color: 'rgba(255,255,255,0.45)' }}>{lit}/{z.stars} sao</div>
+          {floatTxt && <div className="absolute pet-floattxt font-bold text-sm" style={{ color: '#fff', textShadow: '0 1px 3px rgba(0,0,0,0.3)' }}>{floatTxt}</div>}
         </div>
 
-        <div className="rounded-2xl p-4 mb-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-          <div className="h-2.5 rounded-full overflow-hidden mb-3" style={{ background: 'var(--surface-soft)' }}>
-            <div style={{ width: `${(lit / z.stars) * 100}%`, height: '100%', background: `linear-gradient(90deg, ${theme.c1}, ${theme.c2})`, transition: 'width .4s' }} />
-          </div>
-          {canLight ? (
-            <button onClick={lightStar} className="w-full py-3 rounded-2xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
-              style={{ background: `linear-gradient(135deg, ${theme.c1}, ${theme.c2})`, color: '#1a1430' }}>✨ Thắp một ngôi sao (−{STAR_COST})</button>
+        {/* huy hiệu cấp */}
+        <div className="absolute top-3 left-4 px-2.5 py-1 rounded-xl text-xs font-bold" style={{ background: 'rgba(255,255,255,0.9)', color: C.deep }}>Cấp {p.lv} · {stage.name}</div>
+        <div className="absolute top-3 right-4 px-2.5 py-1 rounded-xl text-xs font-bold" style={{ background: `linear-gradient(135deg, ${C.a}, ${C.b})`, color: '#fff' }}>🍱 {p.food || 0}</div>
+      </div>
+
+      {/* TÊN + EXP + CHO ĂN */}
+      <div className="rounded-2xl p-4 mb-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+        <div className="flex items-center justify-between mb-2">
+          {editing ? (
+            <div className="flex items-center gap-2 flex-1">
+              <input autoFocus value={nameInput} onChange={e => setNameInput(e.target.value)} placeholder={stage.name} maxLength={16}
+                className="flex-1 px-3 py-1.5 rounded-xl text-sm outline-none" style={{ background: 'var(--surface-soft)', border: '1px solid var(--border)', color: 'var(--ink)' }} />
+              <button onClick={saveName} className="px-3 py-1.5 rounded-xl text-sm font-bold" style={{ background: 'var(--accent)', color: '#fff' }}>Lưu</button>
+            </div>
           ) : (
-            <div className="w-full py-3 rounded-2xl text-center text-sm font-semibold" style={{ background: 'var(--surface-soft)', color: 'var(--muted)' }}>
-              {complete ? 'Đang mở chòm mới…' : `Học thêm để có ✨ (còn thiếu ${STAR_COST - (st.light || 0)})`}</div>
+            <button onClick={() => { setNameInput(p.name || ''); setEditing(true); }} className="text-left">
+              <span className="text-base font-bold" style={{ color: 'var(--ink)' }}>{displayName}</span>
+              <span className="text-xs ml-2" style={{ color: 'var(--muted)' }}>✎ đổi tên</span>
+            </button>
           )}
-          <div className="text-xs text-center mt-2.5" style={{ color: 'var(--muted)' }}>Di chuột lên bầu trời để xem sao phản ứng · chạm sao sáng để thắp</div>
+          <span className="text-xs font-semibold" style={{ color: 'var(--muted)' }}>EXP {p.exp}/{need}</span>
         </div>
-      </>)}
-
-      {tab === 'gallery' && pick == null && (
-        <div className="rounded-2xl p-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-          <div className="text-sm font-bold mb-1" style={{ color: 'var(--ink)' }}>Bộ sưu tập con giáp</div>
-          <div className="text-xs mb-3" style={{ color: 'var(--muted)' }}>Chạm vào con giáp đã mở để xem lại chòm sao.</div>
-          <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
-            {ZODIAC.map((zz, i) => {
-              const done = everDone(i);
-              return (
-                <button key={i} disabled={!done} onClick={() => done && setPick(i)}
-                  className="rounded-2xl p-3 flex flex-col items-center gap-1 transition-all"
-                  style={{ background: done ? `linear-gradient(160deg, ${theme.sky[1]}, ${theme.sky[2]})` : 'var(--surface-soft)', border: `1px solid ${done ? theme.c1 + '55' : 'var(--border)'}`, cursor: done ? 'pointer' : 'default', opacity: done ? 1 : 0.55 }}>
-                  <span style={{ fontSize: '26px', filter: done ? 'none' : 'grayscale(1)' }}>{done ? ZEMOJI[i] : '🔒'}</span>
-                  <span className="hanzi-text" style={{ fontSize: '15px', fontWeight: 700, color: done ? theme.c1 : 'var(--muted)' }}>{zz.char}</span>
-                  <span className="text-[10px]" style={{ color: done ? 'rgba(255,255,255,0.7)' : 'var(--muted)' }}>{zz.vi.split('·')[0].trim()}</span>
-                </button>
-              );
-            })}
-          </div>
+        <div className="h-2.5 rounded-full overflow-hidden mb-3" style={{ background: 'var(--surface-soft)' }}>
+          <div style={{ width: `${Math.min(100, (p.exp / need) * 100)}%`, height: '100%', background: `linear-gradient(90deg, ${C.a}, ${C.b})`, transition: 'width .5s' }} />
         </div>
-      )}
+        <button onClick={feed} disabled={(p.food || 0) <= 0}
+          className="w-full py-3 rounded-2xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
+          style={{ background: (p.food || 0) > 0 ? `linear-gradient(135deg, ${C.a}, ${C.b})` : 'var(--surface-soft)', color: (p.food || 0) > 0 ? '#fff' : 'var(--muted)' }}>
+          {(p.food || 0) > 0 ? `🍱 Cho ăn (${p.food})` : 'Hết thức ăn — học thêm nhé'}
+        </button>
+        <div className="text-xs text-center mt-2.5" style={{ color: 'var(--muted)' }}>Chạm vào cá để vuốt ve · ôn thẻ +1 · từ mới +2 · thuộc câu +4 · mở app mỗi ngày +8</div>
+      </div>
 
-      {tab === 'gallery' && pick != null && (() => {
-        const zz = ZODIAC[pick];
-        return (
-          <div>
-            <button onClick={() => setPick(null)} className="flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-xl mb-3"
-              style={{ background: 'var(--surface)', color: 'var(--muted)', border: '1px solid var(--border)' }}>← Bộ sưu tập</button>
-            <div className="relative rounded-3xl overflow-hidden mb-3" style={{ background: `linear-gradient(180deg, ${theme.sky[0]}, ${theme.sky[2]})`, boxShadow: '0 16px 40px rgba(5,10,25,0.5)' }}>
-              <svg viewBox="0 0 100 64" style={{ width: '100%', display: 'block' }}>
-                <defs><filter id="gblur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="1.4" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter></defs>
-                <text x="50" y="40" textAnchor="middle" fontSize="34" opacity="0.16">{ZEMOJI[pick]}</text>
-                {zz.pts.map((p, i) => (i < zz.pts.length - 1) && (
-                  <line key={i} x1={p[0]} y1={p[1]} x2={zz.pts[i + 1][0]} y2={zz.pts[i + 1][1]} stroke={theme.c1} strokeWidth="0.6" opacity="0.85" strokeLinecap="round" filter="url(#gblur)" />
-                ))}
-                {zz.pts.map((p, i) => (<circle key={'c' + i} cx={p[0]} cy={p[1]} r="1.6" fill="#fffdf5" stroke={theme.c1} strokeWidth="0.6" filter="url(#gblur)" />))}
-              </svg>
-              <div className="absolute top-3 left-4">
-                <div className="text-2xl">{ZEMOJI[pick]}</div>
-                <div className="text-base font-bold" style={{ color: theme.c1 }}>{zz.vi}</div>
+      {/* PHỤ KIỆN MỞ KHÓA */}
+      <div className="rounded-2xl p-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
+        <div className="text-sm font-bold mb-3" style={{ color: 'var(--ink)' }}>Cột mốc & vật phẩm</div>
+        <div className="grid grid-cols-5 gap-2 mb-3">
+          {PET_GIFTS.map((g, i) => {
+            const got = p.lv >= g.lv;
+            return (
+              <div key={i} className="rounded-xl p-2 flex flex-col items-center gap-0.5" style={{ background: got ? 'var(--surface-soft)' : 'transparent', border: `1px dashed ${got ? 'transparent' : 'var(--border)'}` }}>
+                <span style={{ fontSize: 22, filter: got ? 'none' : 'grayscale(1)', opacity: got ? 1 : 0.4 }}>{got ? g.icon : '🔒'}</span>
+                <span className="text-[10px] text-center" style={{ color: 'var(--muted)' }}>{got ? g.name : 'Cấp ' + g.lv}</span>
               </div>
-            </div>
-            <div className="rounded-2xl p-4 text-sm" style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--ink)', lineHeight: 1.7 }}>
-              <span className="hanzi-text" style={{ fontWeight: 700, color: theme.c2, marginRight: 6 }}>{zz.char} <span style={{ color: 'var(--muted)', fontWeight: 400 }}>{zz.py}</span></span>{zz.note}
-            </div>
-          </div>
-        );
-      })()}
-
-      {hover && tab === 'sky' && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-xl text-xs font-bold pointer-events-none z-[110]"
-          style={{ background: theme.sky[0], color: theme.c1, border: `1px solid ${theme.c1}66` }}>{hover.label}</div>
-      )}
-
-      {celebrate && lastDone != null && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center px-6" style={{ background: 'rgba(7,12,30,0.6)' }} onClick={() => setCelebrate(false)}>
-          <div className="rounded-3xl p-8 text-center max-w-xs" style={{ background: `linear-gradient(160deg, ${theme.sky[1]}, ${theme.sky[0]})`, border: `1px solid ${theme.c1}55`, boxShadow: '0 24px 64px rgba(0,0,0,0.55)' }}>
-            <div className="mb-1" style={{ fontSize: '64px' }}>{ZEMOJI[lastDone]}</div>
-            <div className="hanzi-text mb-2" style={{ fontSize: '34px', color: theme.c1, fontWeight: 700, textShadow: `0 0 24px ${theme.c1}` }}>{ZODIAC[lastDone].char}</div>
-            <div className="text-lg font-bold mb-1" style={{ color: 'white' }}>Chòm sao hoàn thành!</div>
-            <div className="text-sm mb-3" style={{ color: 'rgba(255,255,255,0.82)' }}>{ZODIAC[lastDone].vi}</div>
-            <div className="text-xs px-3 py-2 rounded-xl mb-4" style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.85)', lineHeight: 1.6 }}>{ZODIAC[lastDone].note}</div>
-            <button onClick={() => setCelebrate(false)} className="px-5 py-2 rounded-xl text-sm font-bold" style={{ background: theme.c1, color: theme.sky[0] }}>Tiếp tục ✨</button>
-          </div>
+            );
+          })}
         </div>
-      )}
+        <div className="flex items-center gap-2 flex-wrap">
+          {PET_STAGES.map((s, i) => {
+            const reached = p.lv >= s.lv;
+            return (
+              <div key={i} className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg" style={{ background: reached ? `${C.b}22` : 'var(--surface-soft)', color: reached ? C.deep : 'var(--muted)', fontWeight: reached ? 700 : 400 }}>
+                <span style={{ filter: reached ? 'none' : 'grayscale(1)', opacity: reached ? 1 : 0.5 }}>{s.emoji}</span>{s.name}
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
-      {bigCelebrate && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center px-6" style={{ background: 'rgba(7,12,30,0.72)' }} onClick={() => setBigCelebrate(false)}>
-          <div className="rounded-3xl p-8 text-center max-w-sm" style={{ background: `linear-gradient(160deg, ${theme.sky[1]}, #050a18)`, border: `1px solid ${theme.c1}66`, boxShadow: '0 24px 70px rgba(0,0,0,0.6)' }}>
-            <div className="text-5xl mb-3">🌌</div>
-            <div className="text-xl font-bold mb-1" style={{ color: theme.c1 }}>Trọn một tầng trời!</div>
-            <div className="text-sm mb-3" style={{ color: 'rgba(255,255,255,0.85)' }}>Bạn đã thắp đủ 12 con giáp. Một bầu trời mới đang mở ra…</div>
-            <div className="text-base font-bold mb-4 px-3 py-2 rounded-xl inline-block" style={{ background: 'rgba(255,255,255,0.08)', color: theme.c1 }}>→ {theme.name}</div>
-            <div><button onClick={() => setBigCelebrate(false)} className="px-6 py-2.5 rounded-xl text-sm font-bold" style={{ background: `linear-gradient(135deg, ${theme.c1}, ${theme.c2})`, color: theme.sky[0] }}>Khám phá tầng mới 🌠</button></div>
+      {/* MÀN HÓA THÂN */}
+      {evolveModal && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center px-6" style={{ background: 'rgba(15,30,28,0.62)' }} onClick={() => setEvolveModal(null)}>
+          <div className="rounded-3xl p-8 text-center max-w-xs" style={{ background: `linear-gradient(160deg, ${C.water[0]}, ${C.water[1]})`, border: `2px solid ${C.a}`, boxShadow: '0 24px 64px rgba(0,0,0,0.4)' }}>
+            <div className="pet-evolve mb-2" style={{ fontSize: 80, filter: 'drop-shadow(0 6px 10px rgba(0,0,0,0.2))' }}>{evolveModal.emoji}</div>
+            <div className="text-lg font-bold mb-1" style={{ color: C.deep }}>Tiến hóa! 🎉</div>
+            <div className="text-base font-bold mb-2" style={{ color: '#1f4b45' }}>{displayName} → {evolveModal.name}</div>
+            <div className="text-xs px-3 py-2 rounded-xl mb-4" style={{ background: 'rgba(255,255,255,0.75)', color: '#2a5b54', lineHeight: 1.6 }}>{evolveModal.line}</div>
+            <button onClick={() => setEvolveModal(null)} className="px-5 py-2 rounded-xl text-sm font-bold" style={{ background: `linear-gradient(135deg, ${C.a}, ${C.b})`, color: '#fff' }}>Tuyệt vời! ✨</button>
           </div>
         </div>
       )}
     </div>
   );
 };
-
-// bọc canvas để đo bề rộng
-const SkyCanvasWrap = ({ theme, z, lit, complete, emoji, canLight, onLightNext, onHover, hover }) => {
-  const ref = useRef(null);
-  return (
-    <div ref={ref} className="relative">
-      <SkyCanvas theme={theme} pts={z.pts} lit={lit} complete={complete} emoji={emoji} zchar={z.char} canLight={canLight} onLightNext={onLightNext} onHover={onHover} />
-    </div>
-  );
-};
-
-// ============ MAIN APP ============
 
 // ============ MAIN APP ============
 
@@ -9758,6 +9612,21 @@ function App() {
         @keyframes skyTwinkle { 0%,100% { opacity:.12; transform:scale(.7);} 50% { opacity:.95; transform:scale(1);} }
         .sky-bird { position: absolute; color: #5d80a8; opacity: .35; }
         @media (prefers-reduced-motion: reduce) { .sky-cloud.drift { animation: none; } .sky-stars i { animation: none; opacity: .6; } }
+        .sky-stars i.bright { box-shadow: 0 0 6px 1.5px rgba(255,255,255,0.7); }
+        .sky-mw { position: absolute; inset: -12%; pointer-events: none;
+          background: linear-gradient(118deg, transparent 36%, rgba(176,200,255,0.11) 47%, rgba(150,178,255,0.07) 54%, transparent 67%); filter: blur(11px); }
+        .sky-neb { position: absolute; border-radius: 50%; filter: blur(44px); pointer-events: none; }
+        .sky-neb1 { top: 4%; left: -8%; width: 46%; height: 50%; opacity: 0.55;
+          background: radial-gradient(circle, rgba(86,128,255,0.22), transparent 70%); animation: skyNeb 44s ease-in-out infinite alternate; }
+        .sky-neb2 { bottom: -10%; right: -6%; width: 50%; height: 54%; opacity: 0.5;
+          background: radial-gradient(circle, rgba(150,92,255,0.18), transparent 70%); animation: skyNeb2 56s ease-in-out infinite alternate; }
+        @keyframes skyNeb { from { transform: translate(0,0) scale(1); } to { transform: translate(22px,14px) scale(1.1); } }
+        @keyframes skyNeb2 { from { transform: translate(0,0) scale(1.06); } to { transform: translate(-24px,-12px) scale(1); } }
+        .sky-shoot { position: absolute; top: 13%; left: 72%; width: 90px; height: 1.6px; border-radius: 2px;
+          background: linear-gradient(90deg, #ffffff, transparent); transform: rotate(22deg); opacity: 0; pointer-events: none;
+          animation: skyShoot 14s ease-in infinite; }
+        @keyframes skyShoot { 0% { transform: translate(0,0) rotate(22deg); opacity: 0; } 3% { opacity: .9; } 15% { transform: translate(-230px,115px) rotate(22deg); opacity: 0; } 100% { opacity: 0; } }
+        @media (prefers-reduced-motion: reduce) { .sky-neb1, .sky-neb2 { animation: none; } .sky-shoot { display: none; } }
         .star-next { animation: starNextPulse 1.5s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
         @keyframes starNextPulse { 0%,100% { opacity:.25; } 50% { opacity:.7; } }
         .cst-twinkle { animation: skyTwinkle 3s ease-in-out infinite; }
@@ -9770,6 +9639,22 @@ function App() {
         @keyframes nebDrift { from { transform: translate(0,0) scale(1); } to { transform: translate(16px,12px) scale(1.12); } }
         @keyframes nebDrift2 { from { transform: translate(0,0) scale(1.05); } to { transform: translate(-18px,-10px) scale(1); } }
         @media (prefers-reduced-motion: reduce) { .neb1,.neb2 { animation:none; } }
+        .pet-emoji { display:inline-block; }
+        .pet-float { animation: petFloat 3.4s ease-in-out infinite; }
+        @keyframes petFloat { 0%,100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-10px) rotate(2deg); } }
+        .pet-bounce { animation: petBounce .5s ease; }
+        @keyframes petBounce { 0%{transform:scale(1);} 30%{transform:scale(1.18) translateY(-6px);} 60%{transform:scale(.94);} 100%{transform:scale(1);} }
+        .pet-bubble { position:absolute; bottom:-14px; border-radius:50%; background:rgba(255,255,255,0.55); animation-name: petBubble; animation-timing-function: linear; animation-iteration-count: infinite; }
+        @keyframes petBubble { 0%{ transform: translateY(0) scale(.6); opacity:0; } 12%{ opacity:.7; } 100%{ transform: translateY(-300px) scale(1); opacity:0; } }
+        .pet-ripple { position:absolute; left:50%; top:70%; width:96px; height:26px; margin-left:-48px; border:2px solid; border-radius:50%; opacity:.4; animation: petRipple 2.6s ease-out infinite; }
+        @keyframes petRipple { 0%{ transform: scale(.45); opacity:.5; } 100%{ transform: scale(1.5); opacity:0; } }
+        .pet-heart { animation: petHeart 1.2s ease-out; }
+        @keyframes petHeart { 0%{ transform: translateY(0) scale(.6); opacity:0; } 20%{ opacity:1; } 100%{ transform: translateY(-32px) scale(1.1); opacity:0; } }
+        .pet-floattxt { animation: petFloatTxt 1.5s ease-out; }
+        @keyframes petFloatTxt { 0%{ transform: translateY(12px); opacity:0; } 25%{ opacity:1; } 100%{ transform: translateY(-38px); opacity:0; } }
+        .pet-evolve { display:inline-block; animation: petEvolve 1s ease; }
+        @keyframes petEvolve { 0%{ transform: scale(.4) rotate(-12deg); opacity:0; } 60%{ transform: scale(1.25) rotate(6deg); } 100%{ transform: scale(1) rotate(0); } }
+        @media (prefers-reduced-motion: reduce) { .pet-float,.pet-bounce,.pet-bubble,.pet-ripple,.pet-heart,.pet-floattxt,.pet-evolve { animation:none; } }
       `}</style>
 
       <SkyBackground dark={darkMode} />
@@ -9802,7 +9687,7 @@ function App() {
         {view === 'reading' && <ReadingView onActivity={trackReading} srsData={srsData} updateSRS={updateSRS} learned={learned} toggleLearned={toggleLearned} />}
         {view === 'flashcard' && <FlashcardView srsData={srsData} updateSRS={updateSRS} settings={fcSettings} setSettings={updateFcSettings} daily={fcDaily} bumpDaily={bumpDaily} fcStats={fcStats} bumpFcStat={bumpFcStat} />}
         {view === 'sentence' && <SentenceView />}
-        {view === 'stars' && <StarView />}
+        {view === 'pet' && <PetView />}
         {view === 'quiz' && <QuizView toggleLearned={toggleLearned} learned={learned} addQuizScore={addQuizScore} srsData={srsData} />}
         {view === 'listening' && <ListeningView srsData={srsData} trackActivity={trackActivity} />}
         {view === 'writing' && <WritingView onActivity={trackWriting} />}
