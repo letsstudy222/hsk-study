@@ -1,11 +1,13 @@
-/* Dữ liệu HSK — grammar. Sửa nội dung học tại đây. */
+/* Dữ liệu HSK — grammar (HSK 3.0). Mỗi mục: id, title, tag, structure, explanation, note?, examples. */
 var grammar = {
   hsk1: [
     {
       id: "g1-1",
       title: "Câu khẳng định với 是 (shì) - Là",
+      tag: "Câu cơ bản",
       structure: "A + 是 + B",
       explanation: "Đây là cấu trúc câu cơ bản nhất trong tiếng Trung. 是 (shì) tương đương 'là' trong tiếng Việt, dùng để khẳng định 'A là B'. 是 không thay đổi theo ngôi như tiếng Anh (am/is/are).",
+      note: "Không dùng 是 trước tính từ: nói 我很高, KHÔNG nói 我是高.",
       examples: [
         { hanzi: "我是学生。", pinyin: "Wǒ shì xuésheng.", meaning: "Tôi là học sinh." },
         { hanzi: "他是老师。", pinyin: "Tā shì lǎoshī.", meaning: "Anh ấy là giáo viên." },
@@ -16,8 +18,10 @@ var grammar = {
     {
       id: "g1-2",
       title: "Câu phủ định với 不 (bù) - Không",
+      tag: "Phủ định",
       structure: "Chủ ngữ + 不 + Động từ/Tính từ",
       explanation: "不 (bù) được đặt trước động từ hoặc tính từ để phủ định. Quy tắc biến điệu quan trọng: khi 不 đứng trước thanh 4, nó đọc thành thanh 2 (bú). Ví dụ: 不去 đọc là 'bú qù', 不是 đọc là 'bú shì'.",
+      note: "不 phủ định hiện tại/thói quen/tương lai. Việc đã xảy ra mà \"không làm\" dùng 没 (méi).",
       examples: [
         { hanzi: "我不去。", pinyin: "Wǒ bú qù.", meaning: "Tôi không đi." },
         { hanzi: "他不是中国人。", pinyin: "Tā bú shì Zhōngguó rén.", meaning: "Anh ấy không phải người Trung Quốc." },
@@ -28,6 +32,7 @@ var grammar = {
     {
       id: "g1-3",
       title: "Câu hỏi Yes/No với 吗 (ma)",
+      tag: "Nghi vấn",
       structure: "Câu khẳng định + 吗?",
       explanation: "Cách tạo câu hỏi đơn giản nhất: chỉ cần thêm 吗 (ma) vào cuối câu khẳng định. Câu trả lời thường dùng động từ chính (有/没有, 是/不是, 喜欢/不喜欢).",
       examples: [
@@ -40,6 +45,7 @@ var grammar = {
     {
       id: "g1-4",
       title: "Đại từ nghi vấn 什么 (shénme) - Cái gì",
+      tag: "Nghi vấn",
       structure: "什么 + Danh từ / Động từ + 什么",
       explanation: "什么 (shénme) dùng để hỏi về vật, sự việc, có nghĩa là 'gì, cái gì'. Lưu ý: vị trí của 什么 trong câu hỏi tiếng Trung ở chỗ thông tin cần hỏi (giống như vị trí của câu trả lời).",
       examples: [
@@ -52,6 +58,7 @@ var grammar = {
     {
       id: "g1-5",
       title: "Đại từ nghi vấn 谁 (shéi) - Ai",
+      tag: "Nghi vấn",
       structure: "谁 + Động từ / Động từ + 谁 / 是 + 谁",
       explanation: "谁 (shéi) dùng để hỏi về người. Vị trí của 谁 trong câu cũng giống như vị trí của câu trả lời.",
       examples: [
@@ -63,6 +70,7 @@ var grammar = {
     {
       id: "g1-6",
       title: "Đại từ nghi vấn 哪 (nǎ) và 哪儿 (nǎr)",
+      tag: "Nghi vấn",
       structure: "哪 + Lượng từ + Danh từ / Động từ + 哪儿",
       explanation: "哪 (nǎ) hỏi về 'cái nào' trong nhiều lựa chọn, thường đi kèm lượng từ. 哪儿 (nǎr) hoặc 哪里 (nǎlǐ) hỏi về 'ở đâu'.",
       examples: [
@@ -75,6 +83,7 @@ var grammar = {
     {
       id: "g1-7",
       title: "Cấu trúc sở hữu với 的 (de)",
+      tag: "Trợ từ",
       structure: "A + 的 + B = B của A",
       explanation: "的 (de) biểu thị quan hệ sở hữu, có nghĩa là 'của'. A là chủ sở hữu, B là vật/người được sở hữu. Lưu ý: với người thân và mối quan hệ thân mật, có thể bỏ 的 (我妈妈, 我朋友).",
       examples: [
@@ -87,8 +96,10 @@ var grammar = {
     {
       id: "g1-8",
       title: "Phó từ 很 (hěn) với tính từ",
+      tag: "Phó từ",
       structure: "Chủ ngữ + 很 + Tính từ",
       explanation: "Trong tiếng Trung, tính từ trực tiếp làm vị ngữ mà KHÔNG cần 是. Phó từ 很 (rất) thường được dùng để cân bằng câu, kể cả khi không thực sự muốn nhấn mạnh 'rất'. Không có 很, câu có thể mang ý so sánh.",
+      note: "Tính từ làm vị ngữ thường cần phó từ đứng trước; 很 ở đây nhiều khi chỉ là từ đệm, không nghĩa \"rất\" mạnh.",
       examples: [
         { hanzi: "我很好。", pinyin: "Wǒ hěn hǎo.", meaning: "Tôi (rất) khỏe." },
         { hanzi: "今天很热。", pinyin: "Jīntiān hěn rè.", meaning: "Hôm nay (rất) nóng." },
@@ -99,6 +110,7 @@ var grammar = {
     {
       id: "g1-9",
       title: "Số từ + Lượng từ + Danh từ",
+      tag: "Số & lượng từ",
       structure: "Số từ + Lượng từ + Danh từ",
       explanation: "Khi đếm danh từ trong tiếng Trung, BẮT BUỘC phải có lượng từ giữa số và danh từ. Mỗi loại danh từ có lượng từ riêng. 个 (gè) là lượng từ phổ biến và đa năng nhất.",
       examples: [
@@ -111,6 +123,7 @@ var grammar = {
     {
       id: "g1-10",
       title: "二 (èr) và 两 (liǎng) - Cả hai đều là 'hai'",
+      tag: "Số & lượng từ",
       structure: "二 dùng để đếm số / 两 dùng trước lượng từ",
       explanation: "Đây là điểm dễ nhầm cho người mới học. 二 (èr) dùng cho số học và số thứ tự (số hai, tháng hai). 两 (liǎng) dùng khi đếm vật cụ thể với lượng từ (hai cái, hai người).",
       examples: [
@@ -123,6 +136,7 @@ var grammar = {
     {
       id: "g1-11",
       title: "Câu với 有 (yǒu) - Có",
+      tag: "Phủ định",
       structure: "Khẳng định: A + 有 + B / Phủ định: A + 没有 + B",
       explanation: "有 (yǒu) có nghĩa là 'có' (sở hữu hoặc tồn tại). Phủ định CHỈ dùng 没有 (méiyǒu), KHÔNG dùng 不有.",
       examples: [
@@ -135,6 +149,7 @@ var grammar = {
     {
       id: "g1-12",
       title: "Câu với 在 (zài) - Ở, đang ở",
+      tag: "Câu cơ bản",
       structure: "Chủ ngữ + 在 + Địa điểm",
       explanation: "在 (zài) chỉ vị trí, có nghĩa 'ở đâu đó'. Đây là động từ, không phải giới từ trong cấu trúc này.",
       examples: [
@@ -147,6 +162,7 @@ var grammar = {
     {
       id: "g1-13",
       title: "Hỏi tuổi với 几岁 và 多大",
+      tag: "Nghi vấn",
       structure: "Trẻ em: 几岁? / Người lớn: 多大?",
       explanation: "Tiếng Trung phân biệt cách hỏi tuổi theo độ tuổi. 几岁 (jǐ suì) dùng cho trẻ em dưới 10 tuổi. 多大 (duō dà) dùng cho người lớn hoặc thanh thiếu niên. Với người cao tuổi, dùng 多大年纪 (duō dà niánjì) để lịch sự.",
       examples: [
@@ -159,6 +175,7 @@ var grammar = {
     {
       id: "g1-14",
       title: "Hỏi giờ với 几点 (jǐ diǎn)",
+      tag: "Nghi vấn",
       structure: "现在 + 几点? / Số + 点 + Số + 分",
       explanation: "几点 (jǐ diǎn) dùng để hỏi mấy giờ. Trả lời: số + 点 (giờ) + số + 分 (phút). 半 (bàn) = ba mươi (rưỡi), 一刻 (yí kè) = mười lăm phút.",
       examples: [
@@ -171,6 +188,7 @@ var grammar = {
     {
       id: "g1-15",
       title: "Hỏi giá với 多少钱 (duōshao qián)",
+      tag: "Nghi vấn",
       structure: "Vật + 多少钱? / Số + 块/元",
       explanation: "多少钱 (duōshao qián) hỏi 'bao nhiêu tiền'. Trong văn nói dùng 块 (kuài), văn viết dùng 元 (yuán). Cả hai cùng nghĩa.",
       examples: [
@@ -182,6 +200,7 @@ var grammar = {
     {
       id: "g1-16",
       title: "Hỏi ngày, thứ với 几月几号 và 星期几",
+      tag: "Nghi vấn",
       structure: "今天 + 几月几号? / 今天 + 星期几?",
       explanation: "Cách hỏi ngày tháng và thứ trong tuần. Lưu ý thứ tự ngày tháng trong tiếng Trung: NĂM → THÁNG → NGÀY (ngược với tiếng Việt).",
       examples: [
@@ -194,6 +213,7 @@ var grammar = {
     {
       id: "g1-17",
       title: "Cấu trúc 喜欢 (xǐhuan) - Thích",
+      tag: "Trợ động từ",
       structure: "Chủ ngữ + 喜欢 + Danh từ / Động từ",
       explanation: "喜欢 (xǐhuan) có thể đi với danh từ (thích vật) hoặc động từ (thích làm gì). Phủ định: 不喜欢.",
       examples: [
@@ -206,6 +226,7 @@ var grammar = {
     {
       id: "g1-18",
       title: "Cấu trúc 想 (xiǎng) - Muốn",
+      tag: "Trợ động từ",
       structure: "Chủ ngữ + 想 + Động từ",
       explanation: "想 (xiǎng) đứng trước động từ biểu thị mong muốn. Khác với 要 (yào) mang nghĩa quyết tâm hơn, 想 nhẹ nhàng hơn.",
       examples: [
@@ -218,6 +239,7 @@ var grammar = {
     {
       id: "g1-19",
       title: "Trợ động từ 会 (huì) - Biết (kỹ năng)",
+      tag: "Trợ động từ",
       structure: "Chủ ngữ + 会 + Động từ",
       explanation: "会 (huì) chỉ kỹ năng/khả năng học được (nói, đọc, viết, lái xe...). Phủ định: 不会.",
       examples: [
@@ -230,6 +252,7 @@ var grammar = {
     {
       id: "g1-20",
       title: "Trợ động từ 能 (néng) - Có thể",
+      tag: "Trợ động từ",
       structure: "Chủ ngữ + 能 + Động từ",
       explanation: "能 (néng) chỉ khả năng hoặc điều kiện cho phép thực hiện hành động. Khác 会 (kỹ năng học được), 能 chỉ tình huống có thể làm hay không.",
       examples: [
@@ -241,6 +264,7 @@ var grammar = {
     {
       id: "g1-21",
       title: "Câu mệnh lệnh và đề nghị với 请 (qǐng)",
+      tag: "Câu cơ bản",
       structure: "请 + Động từ + ...",
       explanation: "请 (qǐng) là cách lịch sự để mời, yêu cầu hoặc đề nghị, tương đương 'please' tiếng Anh.",
       examples: [
@@ -252,6 +276,7 @@ var grammar = {
     {
       id: "g1-22",
       title: "Cấu trúc 也 (yě) - Cũng",
+      tag: "Phó từ",
       structure: "Chủ ngữ + 也 + Động từ/Tính từ",
       explanation: "也 (yě) có nghĩa 'cũng', biểu thị sự GIỐNG NHAU giữa các đối tượng. Đặt SAU chủ ngữ và TRƯỚC động từ/tính từ. KHÔNG đặt 也 đầu câu. Phủ định: 也 + 不/没 (cũng không / cũng chưa). Đây là phó từ rất phổ biến trong giao tiếp.",
       examples: [
@@ -263,6 +288,7 @@ var grammar = {
     {
       id: "g1-23",
       title: "Cấu trúc 都 (dōu) - Đều, tất cả",
+      tag: "Phó từ",
       structure: "Chủ ngữ (số nhiều) + 都 + Động từ/Tính từ",
       explanation: "都 (dōu) có nghĩa 'đều, tất cả', đặt SAU chủ ngữ và TRƯỚC động từ. Dùng khi chủ ngữ là số nhiều.",
       examples: [
@@ -274,6 +300,7 @@ var grammar = {
     {
       id: "g1-24",
       title: "Phó từ 太...了 (tài...le) - Quá...",
+      tag: "Trợ từ",
       structure: "太 + Tính từ + 了",
       explanation: "Cấu trúc 太...了 biểu thị mức độ cao, có thể mang ý khen ngợi tích cực hoặc phàn nàn tiêu cực tùy ngữ cảnh.",
       examples: [
@@ -286,6 +313,7 @@ var grammar = {
     {
       id: "g1-25",
       title: "Trợ từ thì 了 (le) cuối câu - Thay đổi tình huống",
+      tag: "Trợ từ",
       structure: "Câu + 了",
       explanation: "了 đặt CUỐI CÂU biểu thị thay đổi trạng thái hoặc tình huống mới (khác với 了 sau động từ chỉ hành động đã hoàn thành - sẽ học ở HSK 2). Lưu ý: KHÔNG nhầm với 了 sau động từ. Câu 'Trời mưa rồi' nhấn mạnh tình huống mới (trước không mưa, giờ mưa).",
       examples: [
@@ -298,6 +326,7 @@ var grammar = {
     {
       id: "g1-26",
       title: "Đại từ nghi vấn 怎么样 (zěnmeyàng) - Thế nào",
+      tag: "Nghi vấn",
       structure: "Chủ ngữ + 怎么样? / Câu + 怎么样?",
       explanation: "怎么样 dùng để HỎI Ý KIẾN, ĐÁNH GIÁ về một sự vật/sự việc, tương đương 'thế nào', 'ra sao'. Đặt CUỐI CÂU. Khác với 怎么 (cách nào), 怎么样 hỏi về tình trạng/chất lượng. KHÔNG cần 吗 ở cuối khi đã có 怎么样.",
       examples: [
@@ -310,6 +339,7 @@ var grammar = {
     {
       id: "g1-27",
       title: "Hỏi mức độ với 多 + Tính từ",
+      tag: "Nghi vấn",
       structure: "Chủ ngữ + 多 + Tính từ?",
       explanation: "Cấu trúc '多 + Tính từ' dùng để HỎI VỀ MỨC ĐỘ. Thường gặp: 多大 (lớn cỡ nào, mấy tuổi), 多高 (cao bao nhiêu), 多远 (xa bao nhiêu), 多长 (dài bao lâu/bao xa). Đặt SAU chủ ngữ. Đây là một trong những cách hỏi về số lượng/kích thước phổ biến nhất.",
       examples: [
@@ -324,8 +354,10 @@ var grammar = {
     {
       id: "g2-1",
       title: "Cấu trúc so sánh với 比 (bǐ)",
+      tag: "So sánh",
       structure: "A + 比 + B + Tính từ (+ Mức độ)",
       explanation: "比 (bǐ) so sánh hai đối tượng. KHÔNG dùng 很/非常 với cấu trúc 比, mà dùng các từ chỉ mức độ như 一点 (một chút), 得多 (nhiều hơn nhiều), 多了 (nhiều hơn).",
+      note: "Câu so sánh với 比 KHÔNG dùng 很/非常. Nói 他比我高一点儿 / 高得多, KHÔNG nói 他比我很高.",
       examples: [
         { hanzi: "我比你高。", pinyin: "Wǒ bǐ nǐ gāo.", meaning: "Tôi cao hơn bạn." },
         { hanzi: "今天比昨天热。", pinyin: "Jīntiān bǐ zuótiān rè.", meaning: "Hôm nay nóng hơn hôm qua." },
@@ -336,6 +368,7 @@ var grammar = {
     {
       id: "g2-2",
       title: "So sánh phủ định: 没有 (méiyǒu) + Tính từ",
+      tag: "So sánh",
       structure: "A + 没有 + B + (那么) + Tính từ",
       explanation: "Để nói 'A không bằng B' (không = nhau), dùng 没有. Có thể thêm 那么 (nàme) - 'như thế', để nhấn mạnh.",
       examples: [
@@ -347,6 +380,7 @@ var grammar = {
     {
       id: "g2-3",
       title: "So sánh ngang bằng: A 跟 B 一样",
+      tag: "So sánh",
       structure: "A + 跟 + B + 一样 + (Tính từ)",
       explanation: "跟...一样 (gēn...yíyàng) biểu thị hai đối tượng GIỐNG NHAU. Có thể thêm tính từ phía sau để chỉ rõ giống ở khía cạnh nào (vd: 一样高 - cao như nhau, 一样大 - lớn như nhau). Có thể thay 跟 bằng 和. Phủ định: 跟...不一样 (không giống). Đây là cấu trúc so sánh ngang bằng cơ bản nhất, khác với 比 (so sánh hơn-kém).",
       examples: [
@@ -358,8 +392,10 @@ var grammar = {
     {
       id: "g2-4",
       title: "Trợ từ 了 sau động từ - Hành động đã hoàn thành",
+      tag: "Trợ từ",
       structure: "Động từ + 了 + (Tân ngữ)",
       explanation: "了 ngay SAU ĐỘNG TỪ biểu thị hành động đã xảy ra/hoàn thành. KHÁC với 了 cuối câu (thay đổi tình huống). Phủ định: 没(有) + Động từ (KHÔNG dùng 了).",
+      note: "Phủ định hành động quá khứ dùng 没(有) và BỎ 了: 我没去, KHÔNG nói 我没去了.",
       examples: [
         { hanzi: "我吃了一个苹果。", pinyin: "Wǒ chī le yí ge píngguǒ.", meaning: "Tôi đã ăn một quả táo." },
         { hanzi: "他买了三本书。", pinyin: "Tā mǎi le sān běn shū.", meaning: "Anh ấy đã mua ba quyển sách." },
@@ -370,8 +406,10 @@ var grammar = {
     {
       id: "g2-5",
       title: "Trợ từ kinh nghiệm 过 (guo) - Đã từng",
+      tag: "Trợ từ",
       structure: "Động từ + 过 + (Tân ngữ)",
       explanation: "过 (guo) sau động từ biểu thị KINH NGHIỆM đã từng làm gì đó (ít nhất một lần) trong quá khứ. Phủ định: 没(有) + Động từ + 过.",
+      note: "Phủ định dùng 没(有)…过: 我没去过北京.",
       examples: [
         { hanzi: "我去过北京。", pinyin: "Wǒ qù guo Běijīng.", meaning: "Tôi đã từng đi Bắc Kinh." },
         { hanzi: "他吃过中国菜。", pinyin: "Tā chī guo Zhōngguó cài.", meaning: "Anh ấy đã từng ăn món Trung Quốc." },
@@ -382,6 +420,7 @@ var grammar = {
     {
       id: "g2-6",
       title: "Cấu trúc 正在 (zhèngzài) - Đang làm",
+      tag: "Trợ từ",
       structure: "(正)在 + Động từ + (呢)",
       explanation: "正在 / 在 / 呢 đều biểu thị hành động ĐANG TIẾP DIỄN. Có thể kết hợp 正在...呢 để nhấn mạnh. Phủ định: 没(有) + 在 + Động từ.",
       examples: [
@@ -394,6 +433,7 @@ var grammar = {
     {
       id: "g2-7",
       title: "Trợ từ 着 (zhe) - Trạng thái duy trì",
+      tag: "Trợ từ",
       structure: "Động từ + 着",
       explanation: "着 sau động từ biểu thị TRẠNG THÁI đang được duy trì (khác với 正在 là HÀNH ĐỘNG đang diễn ra). Thường dùng với động từ chỉ tư thế: 坐, 站, 躺, 拿, 穿...",
       examples: [
@@ -405,8 +445,10 @@ var grammar = {
     {
       id: "g2-8",
       title: "Liên từ 因为...所以... (vì...nên...)",
+      tag: "Liên từ / Câu phức",
       structure: "因为 + Lý do, 所以 + Kết quả",
       explanation: "因为 (yīnwèi) dẫn ra nguyên nhân, 所以 (suǒyǐ) dẫn ra kết quả. Có thể dùng cả hai hoặc chỉ một trong hai. Khi dùng cả hai, dấu phẩy ngăn cách.",
+      note: "Tiếng Trung dùng được CẢ HAI vế 因为…所以…, không bị coi là thừa.",
       examples: [
         { hanzi: "因为下雨,所以我不去。", pinyin: "Yīnwèi xiàyǔ, suǒyǐ wǒ bú qù.", meaning: "Vì trời mưa nên tôi không đi." },
         { hanzi: "因为很累,所以我休息。", pinyin: "Yīnwèi hěn lèi, suǒyǐ wǒ xiūxi.", meaning: "Vì rất mệt nên tôi nghỉ ngơi." },
@@ -416,8 +458,10 @@ var grammar = {
     {
       id: "g2-9",
       title: "Liên từ 虽然...但是... (mặc dù...nhưng...)",
+      tag: "Liên từ / Câu phức",
       structure: "虽然 + Mệnh đề 1, 但是 + Mệnh đề 2",
       explanation: "虽然 (suīrán) - 但是 (dànshì) biểu thị quan hệ tương phản. Có thể chỉ dùng 但是 mà không cần 虽然.",
+      note: "Dùng đồng thời 虽然…但是… là chuẩn mực, không thừa.",
       examples: [
         { hanzi: "虽然累,但是很开心。", pinyin: "Suīrán lèi, dànshì hěn kāixīn.", meaning: "Tuy mệt nhưng rất vui." },
         { hanzi: "虽然下雨,但是我还是去。", pinyin: "Suīrán xiàyǔ, dànshì wǒ háishi qù.", meaning: "Mặc dù trời mưa nhưng tôi vẫn đi." },
@@ -427,6 +471,7 @@ var grammar = {
     {
       id: "g2-10",
       title: "Câu hỏi chính phản: 是不是 / 有没有",
+      tag: "Nghi vấn",
       structure: "Khẳng định + 不/没 + Khẳng định ?",
       explanation: "Câu hỏi chính phản (正反问句) là một cách hỏi cơ bản trong tiếng Trung, dùng cấu trúc V + 不 + V hoặc 是不是, 有没有. Tương đương 'có...không'. KHÔNG cần dùng 吗 ở cuối câu. Phủ định trước thì dùng 没 cho động từ trạng thái/sở hữu (有), 不 cho các động từ khác. Mang sắc thái thông tục, tự nhiên hơn 吗.",
       examples: [
@@ -439,6 +484,7 @@ var grammar = {
     {
       id: "g2-11",
       title: "Cấu trúc 给 (gěi) - Cho/đưa",
+      tag: "Giới từ",
       structure: "Chủ ngữ + 给 + Người nhận + Động từ + Vật",
       explanation: "给 có hai vai trò chính: (1) ĐỘNG TỪ CHÍNH với nghĩa 'cho, đưa' (我给他一本书 - Tôi đưa cho anh ấy một cuốn sách); (2) GIỚI TỪ đặt trước người nhận, đứng trước động từ chính (我给妈妈打电话 - Tôi gọi điện cho mẹ). Phủ định 不 đặt trước 给.",
       examples: [
@@ -451,6 +497,7 @@ var grammar = {
     {
       id: "g2-12",
       title: "Cấu trúc 离 (lí) - Cách",
+      tag: "Giới từ",
       structure: "A + 离 + B + 远/近 / Khoảng cách",
       explanation: "离 (lí) biểu thị khoảng cách giữa hai địa điểm hoặc thời điểm. Khác với 从 (cóng - từ).",
       examples: [
@@ -462,6 +509,7 @@ var grammar = {
     {
       id: "g2-13",
       title: "Cấu trúc 从...到... (từ...đến...)",
+      tag: "Giới từ",
       structure: "从 + Điểm bắt đầu + 到 + Điểm kết thúc",
       explanation: "从...到... biểu thị KHOẢNG từ đâu đến đâu, dùng cho cả thời gian (从早到晚 - từ sáng đến tối) và không gian/địa điểm (从北京到上海 - từ Bắc Kinh đến Thượng Hải). Có thể chỉ dùng 从 hoặc 到 độc lập. Đặt ĐẦU CÂU hoặc giữa câu.",
       examples: [
@@ -473,8 +521,10 @@ var grammar = {
     {
       id: "g2-14",
       title: "Bổ ngữ trạng thái với 得 (de)",
+      tag: "Bổ ngữ",
       structure: "Động từ + 得 + Tính từ/Bổ ngữ",
       explanation: "得 (de) nối động từ với mô tả về cách/mức độ thực hiện hành động đó. Nếu có tân ngữ: lặp lại động từ. VD: 他说汉语说得很好.",
+      note: "Bổ ngữ trạng thái: 动词 + 得 + (很)形容词 (说得很好); phủ định đặt sau 得: 说得不好.",
       examples: [
         { hanzi: "他跑得很快。", pinyin: "Tā pǎo de hěn kuài.", meaning: "Anh ấy chạy rất nhanh." },
         { hanzi: "你说得很好。", pinyin: "Nǐ shuō de hěn hǎo.", meaning: "Bạn nói rất hay." },
@@ -485,6 +535,7 @@ var grammar = {
     {
       id: "g2-15",
       title: "Bổ ngữ kết quả: 完, 到, 见, 懂",
+      tag: "Bổ ngữ",
       structure: "Động từ + Bổ ngữ kết quả",
       explanation: "Một số động từ thường được thêm bổ ngữ kết quả để chỉ rõ kết quả hành động: 完 (xong), 到 (đạt được), 见 (cảm nhận được), 懂 (hiểu).",
       examples: [
@@ -497,6 +548,7 @@ var grammar = {
     {
       id: "g2-16",
       title: "一边...一边... (vừa...vừa...)",
+      tag: "Liên từ / Câu phức",
       structure: "一边 + Động từ 1 + 一边 + Động từ 2",
       explanation: "一边...一边... (yìbiān...yìbiān...) biểu thị HAI HÀNH ĐỘNG đang xảy ra đồng thời. Cả hai vế thường có cùng chủ ngữ. Khác với 又...又... (HSK 3 - tính chất song song), 一边...一边... chỉ DÀNH CHO HÀNH ĐỘNG cụ thể như ăn, uống, nói... Văn nói có thể rút gọn thành 边...边...",
       examples: [
@@ -508,6 +560,7 @@ var grammar = {
     {
       id: "g2-17",
       title: "再 (zài) - Lại, lần nữa (tương lai)",
+      tag: "Phó từ",
       structure: "再 + Động từ",
       explanation: "再 dùng cho việc lặp lại trong TƯƠNG LAI hoặc chưa xảy ra. (Khác 又 (yòu) - đã lặp lại trong quá khứ).",
       examples: [
@@ -519,6 +572,7 @@ var grammar = {
     {
       id: "g2-18",
       title: "就 (jiù) - Ngay, liền, là",
+      tag: "Phó từ",
       structure: "Chủ ngữ + 就 + Động từ",
       explanation: "就 có nhiều nghĩa: 'ngay', 'liền', nhấn mạnh sự nhanh chóng hoặc chắc chắn của hành động.",
       examples: [
@@ -530,6 +584,7 @@ var grammar = {
     {
       id: "g2-19",
       title: "已经...了 (yǐjīng...le) - Đã...rồi",
+      tag: "Trợ từ",
       structure: "已经 + Động từ/Tính từ + 了",
       explanation: "已经 (yǐjīng) nhấn mạnh hành động/trạng thái ĐÃ XẢY RA hoặc đạt đến mức nào đó, thường đi kèm 了 ở cuối câu. Phủ định: 还没 (chưa). Câu hỏi: 已经...了吗 (đã...chưa). Đặt SAU chủ ngữ và TRƯỚC động từ.",
       examples: [
@@ -541,6 +596,7 @@ var grammar = {
     {
       id: "g2-20",
       title: "要 (yào) - Sẽ, cần, muốn",
+      tag: "Trợ động từ",
       structure: "Chủ ngữ + 要 + Động từ / Danh từ",
       explanation: "要 (yào) có nhiều nghĩa: muốn (dứt khoát hơn 想), cần, sắp/sẽ (tương lai gần). Phủ định: 不要 (đừng) hoặc 不想 (không muốn).",
       examples: [
@@ -553,6 +609,7 @@ var grammar = {
     {
       id: "g2-21",
       title: "可以 (kěyǐ) - Có thể (xin phép)",
+      tag: "Trợ động từ",
       structure: "Chủ ngữ + 可以 + Động từ",
       explanation: "可以 (kěyǐ) chỉ sự CHO PHÉP, được phép làm gì đó (về mặt quy định, lễ phép). Khác với 能 (khả năng vật lý/điều kiện) và 会 (kỹ năng đã học). Phủ định: 不可以 (không được phép) hoặc 不能 (không thể). Trong câu hỏi xin phép thường dùng 可以...吗?",
       examples: [
@@ -564,6 +621,7 @@ var grammar = {
     {
       id: "g2-22",
       title: "为什么 (wèishénme) - Tại sao",
+      tag: "Nghi vấn",
       structure: "为什么 + Động từ?",
       explanation: "为什么 hỏi LÝ DO, nguyên nhân của hành động/sự việc. Đặt SAU chủ ngữ và TRƯỚC động từ. Câu trả lời thường dùng 因为 (yīnwèi - bởi vì) hoặc 因为...所以... (bởi vì...nên...). Khác với 怎么 (hỏi cách thức), 为什么 hỏi nguyên nhân.",
       examples: [
@@ -575,6 +633,7 @@ var grammar = {
     {
       id: "g2-23",
       title: "怎么 (zěnme) - Thế nào, làm sao",
+      tag: "Nghi vấn",
       structure: "怎么 + Động từ?",
       explanation: "怎么 hỏi cách thức, phương pháp. Khác với 怎么样 (zěnmeyàng) hỏi 'thế nào, ra sao' (đánh giá).",
       examples: [
@@ -586,8 +645,10 @@ var grammar = {
     {
       id: "g2-24",
       title: "有点儿 (yǒudiǎnr) vs 一点儿 (yìdiǎnr)",
+      tag: "Phó từ",
       structure: "有点儿 + Tính từ (tiêu cực) / Tính từ + 一点儿",
       explanation: "有点儿 đứng TRƯỚC tính từ, mang nghĩa than phiền, hơi không như ý. 一点儿 đứng SAU tính từ trong so sánh, hoặc làm 'một chút'.",
+      note: "有点儿 + tính từ (than phiền): 有点儿贵. Tính từ + 一点儿 (so sánh/đề nghị): 便宜一点儿.",
       examples: [
         { hanzi: "今天有点儿冷。", pinyin: "Jīntiān yǒudiǎnr lěng.", meaning: "Hôm nay hơi lạnh." },
         { hanzi: "这个有点儿贵。", pinyin: "Zhège yǒudiǎnr guì.", meaning: "Cái này hơi đắt." },
@@ -598,6 +659,7 @@ var grammar = {
     {
       id: "g2-25",
       title: "Lượng từ thường gặp HSK 2",
+      tag: "Số & lượng từ",
       structure: "Số + Lượng từ + Danh từ",
       explanation: "Mỗi danh từ có lượng từ riêng. Học thuộc các lượng từ phổ biến: 个 (chung), 本 (sách), 张 (giấy/bàn/vé), 件 (áo/việc), 杯 (cốc), 瓶 (chai), 只 (con vật), 辆 (xe), 双 (đôi).",
       examples: [
@@ -611,8 +673,10 @@ var grammar = {
     {
       id: "g2-26",
       title: "把 (bǎ) - Câu chữ Bả (cơ bản)",
+      tag: "Câu đặc biệt",
       structure: "Chủ ngữ + 把 + Tân ngữ + Động từ + Bổ ngữ",
       explanation: "Câu chữ 把 nhấn mạnh tác động/kết quả lên tân ngữ. Tân ngữ phải XÁC ĐỊNH (cụ thể, biết rõ). Sau động từ thường có bổ ngữ (了, 完, ở đâu đó...).",
+      note: "Câu 把 cần tân ngữ XÁC ĐỊNH và động từ phải có thành phần đi kèm (了/补语/lặp lại).",
       examples: [
         { hanzi: "我把书放在桌子上。", pinyin: "Wǒ bǎ shū fàng zài zhuōzi shàng.", meaning: "Tôi đặt sách lên bàn." },
         { hanzi: "请把门关上。", pinyin: "Qǐng bǎ mén guān shàng.", meaning: "Xin hãy đóng cửa lại." },
@@ -622,6 +686,7 @@ var grammar = {
     {
       id: "g2-27",
       title: "Cách dùng 第 (dì) - Số thứ tự",
+      tag: "Số & lượng từ",
       structure: "第 + Số + Lượng từ + Danh từ",
       explanation: "第 dùng để biểu thị SỐ THỨ TỰ (thứ nhất, thứ hai...). Đặt TRƯỚC số đếm. Sau số đếm thường có lượng từ. Khác với số đếm thông thường (一, 二) chỉ số lượng, 第一, 第二 chỉ vị trí thứ tự.",
       examples: [
@@ -634,8 +699,10 @@ var grammar = {
     {
       id: "g2-28",
       title: "Cấu trúc 觉得 (juéde) - Cảm thấy, nghĩ rằng",
+      tag: "Câu cơ bản",
       structure: "Chủ ngữ + 觉得 + Mệnh đề/Tính từ",
       explanation: "觉得 biểu thị cảm xúc, ý kiến chủ quan của người nói. Sau 觉得 có thể là tính từ hoặc cả một mệnh đề. Tương đương 'cảm thấy', 'nghĩ rằng', 'thấy là'. Phủ định: 不觉得 (không cảm thấy/nghĩ rằng).",
+      note: "Bổ ngữ trạng thái: 动词 + 得 + (很)形容词 (说得很好); phủ định đặt sau 得: 说得不好.",
       examples: [
         { hanzi: "我觉得这个菜很好吃。", pinyin: "Wǒ juéde zhège cài hěn hǎochī.", meaning: "Tôi thấy món này rất ngon." },
         { hanzi: "你觉得怎么样?", pinyin: "Nǐ juéde zěnmeyàng?", meaning: "Bạn thấy thế nào?" },
@@ -646,6 +713,7 @@ var grammar = {
     {
       id: "g2-29",
       title: "Cấu trúc 要...了 (sắp...rồi)",
+      tag: "Trợ từ",
       structure: "(快/就) + 要 + Động từ/Mệnh đề + 了",
       explanation: "Cấu trúc biểu thị hành động/sự việc SẮP XẢY RA trong tương lai gần. Có thể thêm 快 (sắp - chung chung) hoặc 就 (sắp - cụ thể, có thời gian). Tương đương 'sắp...rồi'. KHÔNG dùng được với cụm thời gian xa (vd: '明天要下雨了' KHÔNG đúng).",
       examples: [
@@ -660,6 +728,7 @@ var grammar = {
     {
       id: "g3-1",
       title: "Câu chữ 把 (bǎ) - Nâng cao",
+      tag: "Câu đặc biệt",
       structure: "Chủ ngữ + 把 + Tân ngữ + Động từ + Bổ ngữ",
       explanation: "Câu chữ 把 nhấn mạnh kết quả/tác động lên tân ngữ. Tân ngữ phải XÁC ĐỊNH (cụ thể, đã biết). Sau động từ BẮT BUỘC có bổ ngữ (了, 完, 在...). Lưu ý: phủ định và trợ động từ (能/会/想) đặt TRƯỚC 把.",
       examples: [
@@ -672,8 +741,10 @@ var grammar = {
     {
       id: "g3-2",
       title: "Câu bị động với 被 (bèi)",
+      tag: "Câu đặc biệt",
       structure: "Chủ ngữ + 被 + (Tác nhân) + Động từ + Bổ ngữ",
       explanation: "被 (bèi) tạo câu bị động, tương đương 'bị/được'. Có thể lược bỏ tác nhân. Câu bị động trong tiếng Trung thường mang sắc thái không mong muốn (xấu, tiêu cực). Phủ định: 没被 (KHÔNG dùng 不被).",
+      note: "Câu 被 thường dùng cho việc ngoài ý muốn; tác nhân có thể lược bỏ: 杯子被打破了.",
       examples: [
         { hanzi: "杯子被他打破了。", pinyin: "Bēizi bèi tā dǎ pò le.", meaning: "Cái cốc bị anh ấy làm vỡ." },
         { hanzi: "蛋糕被吃完了。", pinyin: "Dàngāo bèi chī wán le.", meaning: "Bánh đã bị ăn hết." },
@@ -683,6 +754,7 @@ var grammar = {
     {
       id: "g3-3",
       title: "Bổ ngữ kết quả mở rộng (开, 上, 下, 走, 在)",
+      tag: "Bổ ngữ",
       structure: "Động từ + Bổ ngữ kết quả",
       explanation: "Một số bổ ngữ kết quả phổ biến: 开 (mở/tách ra), 上 (đóng/lên trên), 下 (xuống/giữ lại), 走 (đi mất), 在 (ở). Mỗi bổ ngữ thay đổi nghĩa của động từ chính.",
       examples: [
@@ -695,6 +767,7 @@ var grammar = {
     {
       id: "g3-4",
       title: "Bổ ngữ xu hướng đơn (来 / 去)",
+      tag: "Bổ ngữ",
       structure: "Động từ + 来/去",
       explanation: "来 (lái) = hướng về phía người nói. 去 (qù) = hướng ra xa khỏi người nói. Dùng để chỉ hướng di chuyển của hành động.",
       examples: [
@@ -707,6 +780,7 @@ var grammar = {
     {
       id: "g3-5",
       title: "Bổ ngữ xu hướng kép (上来, 下去, 出来...)",
+      tag: "Bổ ngữ",
       structure: "Động từ + Hướng + 来/去",
       explanation: "Kết hợp hướng (上/下/进/出/回...) với 来/去 tạo bổ ngữ phức hợp. Ví dụ: 走过来 (đi tới), 跑出去 (chạy ra ngoài), 拿回来 (mang về đây).",
       examples: [
@@ -718,6 +792,7 @@ var grammar = {
     {
       id: "g3-6",
       title: "Bổ ngữ khả năng (得/不 + Bổ ngữ)",
+      tag: "Bổ ngữ",
       structure: "Động từ + 得/不 + Bổ ngữ kết quả/xu hướng",
       explanation: "Biểu thị có thể hay không thể đạt được kết quả nào đó. 得 = có thể, 不 = không thể. Khác với 能 (tổng thể), bổ ngữ khả năng nhấn mạnh kết quả cụ thể.",
       examples: [
@@ -730,6 +805,7 @@ var grammar = {
     {
       id: "g3-7",
       title: "Bổ ngữ số lượng và thời lượng",
+      tag: "Bổ ngữ",
       structure: "Động từ + (了) + Số + Lượng từ + (Tân ngữ)",
       explanation: "Đặt thời lượng/số lần SAU động từ. Nếu có tân ngữ là người/đại từ: Động từ + Tân ngữ + Thời lượng. Nếu là vật: Động từ + (了) + Thời lượng + 的 + Tân ngữ.",
       examples: [
@@ -739,19 +815,9 @@ var grammar = {
       ]
     },
     {
-      id: "g3-8",
-      title: "一边...一边... (vừa...vừa...)",
-      structure: "一边 + Động từ 1 + 一边 + Động từ 2",
-      explanation: "Biểu thị hai hành động xảy ra ĐỒNG THỜI bởi cùng một chủ thể. Hai động từ thường có mối liên hệ tự nhiên (không loại trừ nhau).",
-      examples: [
-        { hanzi: "他一边吃饭一边看电视。", pinyin: "Tā yìbiān chīfàn yìbiān kàn diànshì.", meaning: "Anh ấy vừa ăn cơm vừa xem TV." },
-        { hanzi: "我一边走一边想。", pinyin: "Wǒ yìbiān zǒu yìbiān xiǎng.", meaning: "Tôi vừa đi vừa suy nghĩ." },
-        { hanzi: "她一边唱歌一边跳舞。", pinyin: "Tā yìbiān chànggē yìbiān tiàowǔ.", meaning: "Cô ấy vừa hát vừa nhảy." }
-      ]
-    },
-    {
       id: "g3-9",
       title: "如果...就... (nếu...thì...)",
+      tag: "Liên từ / Câu phức",
       structure: "如果 + Điều kiện, (那) 就 + Kết quả",
       explanation: "Biểu thị quan hệ giả thiết-kết quả. 如果 (rúguǒ) = nếu, 就 (jiù) = thì. Có thể dùng 要是 (yàoshi) thay 如果 trong văn nói.",
       examples: [
@@ -763,6 +829,7 @@ var grammar = {
     {
       id: "g3-10",
       title: "只要...就... (chỉ cần...là...)",
+      tag: "Liên từ / Câu phức",
       structure: "只要 + Điều kiện + 就 + Kết quả",
       explanation: "Biểu thị điều kiện đủ tối thiểu để đạt được kết quả. Khác 只有...才... (chỉ khi...mới...) là điều kiện cần thiết.",
       examples: [
@@ -774,6 +841,7 @@ var grammar = {
     {
       id: "g3-11",
       title: "越来越 (yuè lái yuè) - Càng ngày càng",
+      tag: "Phó từ",
       structure: "Chủ ngữ + 越来越 + Tính từ/Động từ tâm lý",
       explanation: "Biểu thị MỨC ĐỘ TĂNG DẦN theo thời gian. Sau 越来越 KHÔNG dùng 很/非常 (vì 越来越 đã chứa nghĩa mức độ). Thường dùng với tính từ và động từ tâm lý (喜欢, 爱, 恨...). Khác với 越...越... (chỉ tỷ lệ giữa hai sự việc), 越来越 chỉ sự thay đổi theo thời gian.",
       examples: [
@@ -785,6 +853,7 @@ var grammar = {
     {
       id: "g3-12",
       title: "越...越... (càng...càng...)",
+      tag: "Phó từ",
       structure: "越 + Tính từ/Động từ A + 越 + Tính từ/Động từ B",
       explanation: "Biểu thị hai sự việc tăng tiến cùng nhau: A càng tăng thì B càng tăng. A và B có thể cùng chủ ngữ hoặc khác chủ ngữ.",
       examples: [
@@ -796,6 +865,7 @@ var grammar = {
     {
       id: "g3-13",
       title: "一...就... (vừa...là...)",
+      tag: "Phó từ",
       structure: "一 + Hành động/Sự kiện 1 + 就 + Hành động/Sự kiện 2",
       explanation: "Biểu thị hai hành động xảy ra LIÊN TIẾP nhau, hành động 2 xảy ra ngay sau hành động 1. Có thể cùng chủ ngữ hoặc khác chủ ngữ.",
       examples: [
@@ -807,6 +877,7 @@ var grammar = {
     {
       id: "g3-14",
       title: "先...然后... / 先...再... (trước...sau đó...)",
+      tag: "Phó từ",
       structure: "先 + Hành động 1 + 然后/再 + Hành động 2",
       explanation: "Biểu thị thứ tự thực hiện hành động. 然后 (ránhòu) thường dùng cho việc đã xảy ra. 再 (zài) thường dùng cho việc sẽ xảy ra trong tương lai.",
       examples: [
@@ -817,6 +888,7 @@ var grammar = {
     {
       id: "g3-15",
       title: "为了 (wèile) - Vì, để",
+      tag: "Trợ từ",
       structure: "为了 + Mục đích, Chủ ngữ + Động từ",
       explanation: "为了 dẫn ra mục đích, đứng đầu câu. Khác 因为 (vì lý do/nguyên nhân), 为了 chỉ mục tiêu cần đạt.",
       examples: [
@@ -828,6 +900,7 @@ var grammar = {
     {
       id: "g3-16",
       title: "对...感兴趣 (cảm thấy hứng thú với...)",
+      tag: "Giới từ",
       structure: "Chủ ngữ + 对 + Đối tượng + 感兴趣",
       explanation: "Cấu trúc cố định để diễn tả sự quan tâm/yêu thích. 对 (duì) là giới từ chỉ đối tượng. Phủ định: 不感兴趣 hoặc 没兴趣.",
       examples: [
@@ -839,8 +912,10 @@ var grammar = {
     {
       id: "g3-17",
       title: "Trợ từ 地 (de) - Bổ trợ trạng ngữ",
+      tag: "Trợ từ",
       structure: "Tính từ/Phó từ + 地 + Động từ",
       explanation: "地 (de) nối tính từ hoặc phó từ với động từ, biến chúng thành trạng ngữ chỉ cách thức. Phân biệt: 的 (sở hữu) + danh từ, 地 (cách thức) + động từ, 得 (mức độ) sau động từ.",
+      note: "形容词/cụm + 地 + động từ (trạng ngữ). Phân biệt: 的 (định ngữ) / 地 (trạng ngữ) / 得 (bổ ngữ).",
       examples: [
         { hanzi: "请慢慢地说。", pinyin: "Qǐng mànman de shuō.", meaning: "Xin nói chậm chậm." },
         { hanzi: "他认真地学习。", pinyin: "Tā rènzhēn de xuéxí.", meaning: "Anh ấy học tập một cách nghiêm túc." },
@@ -850,6 +925,7 @@ var grammar = {
     {
       id: "g3-18",
       title: "差点儿 (chàdiǎnr) - Suýt nữa",
+      tag: "Phủ định",
       structure: "差点儿 + (没) + Động từ",
       explanation: "Diễn tả sự việc rất gần xảy ra nhưng chưa xảy ra. Lưu ý: với việc KHÔNG mong muốn, 差点儿 và 差点儿没 có nghĩa GIỐNG nhau (đều = suýt). Với việc MONG muốn, 差点儿 = suýt không, 差点儿没 = suýt không xảy ra (kết quả là đã xảy ra).",
       examples: [
@@ -861,6 +937,7 @@ var grammar = {
     {
       id: "g3-19",
       title: "几乎 (jīhū) - Gần như, hầu như",
+      tag: "Nghi vấn",
       structure: "几乎 + Động từ/Tính từ",
       explanation: "Biểu thị mức độ rất gần với một mức nào đó. Khác 差点儿 (chỉ một sự kiện cụ thể), 几乎 thường mô tả trạng thái chung.",
       examples: [
@@ -872,6 +949,7 @@ var grammar = {
     {
       id: "g3-20",
       title: "应该 (yīnggāi) - Nên, phải",
+      tag: "Trợ động từ",
       structure: "Chủ ngữ + 应该 + Động từ",
       explanation: "应该 biểu thị nghĩa vụ, lời khuyên ('nên làm gì'). Cũng có thể mang nghĩa suy đoán ('chắc là, hẳn là'). Phủ định: 不应该.",
       examples: [
@@ -883,6 +961,7 @@ var grammar = {
     {
       id: "g3-21",
       title: "其实 (qíshí) - Thực ra, kỳ thực",
+      tag: "Phó từ",
       structure: "其实 + Mệnh đề",
       explanation: "Đứng đầu câu hoặc giữa câu để bộc lộ sự thật khác với những gì người ta tưởng. Mang sắc thái đính chính/làm rõ.",
       examples: [
@@ -894,6 +973,7 @@ var grammar = {
     {
       id: "g3-22",
       title: "还是 (háishi) - Vẫn / Hay là",
+      tag: "Câu cơ bản",
       structure: "1. Vẫn: Chủ ngữ + 还是 + Động từ/Tính từ\n2. Hay là: A + 还是 + B?",
       explanation: "还是 có 2 nghĩa chính: (1) 'vẫn' (giống 还), (2) 'hay là' trong câu lựa chọn. Trong câu hỏi lựa chọn, KHÔNG dùng 吗.",
       examples: [
@@ -905,6 +985,7 @@ var grammar = {
     {
       id: "g3-23",
       title: "一点儿也不/没 (chẳng...gì cả)",
+      tag: "Phủ định",
       structure: "一点儿 + 也/都 + 不/没 + Động từ/Tính từ",
       explanation: "Cấu trúc nhấn mạnh phủ định tuyệt đối, 'hoàn toàn không', 'chẳng chút nào'. 也 và 都 có thể thay thế nhau.",
       examples: [
@@ -916,6 +997,7 @@ var grammar = {
     {
       id: "g3-24",
       title: "让/叫 (ràng/jiào) - Để, bảo (câu cầu khiến)",
+      tag: "Câu cơ bản",
       structure: "Chủ ngữ + 让/叫 + Người + Động từ",
       explanation: "Câu cầu khiến: yêu cầu/cho phép ai đó làm gì. 让 mang nghĩa lịch sự hơn (để, cho phép). 叫 mang nghĩa mệnh lệnh hơn (bảo, sai khiến).",
       examples: [
@@ -927,6 +1009,7 @@ var grammar = {
     {
       id: "g3-25",
       title: "终于 (zhōngyú) - Cuối cùng",
+      tag: "Trợ từ",
       structure: "Chủ ngữ + 终于 + Động từ + (了)",
       explanation: "Biểu thị một sự việc cuối cùng cũng xảy ra sau thời gian dài chờ đợi/nỗ lực. Thường đi kèm 了 cuối câu để nhấn mạnh sự kết thúc.",
       examples: [
@@ -938,6 +1021,7 @@ var grammar = {
     {
       id: "g3-26",
       title: "用 (yòng) - Dùng để, bằng (giới từ)",
+      tag: "Giới từ",
       structure: "Chủ ngữ + 用 + Công cụ + Động từ + Tân ngữ",
       explanation: "用 trong câu này hoạt động như giới từ, chỉ công cụ/phương tiện thực hiện hành động. Có thể là động từ độc lập (dùng) hoặc giới từ. Phủ định: 不用 đặt trước 用 (我不用筷子吃 - Tôi không dùng đũa ăn).",
       examples: [
@@ -949,6 +1033,7 @@ var grammar = {
     {
       id: "g3-27",
       title: "Cấu trúc 又...又... (vừa...vừa...)",
+      tag: "Liên từ / Câu phức",
       structure: "Chủ ngữ + 又 + Tính từ/Động từ A + 又 + Tính từ/Động từ B",
       explanation: "Biểu thị hai đặc điểm/hành động ĐỒNG THỜI tồn tại. Hai vế phải CÙNG TÍNH CHẤT (cùng tích cực hoặc cùng tiêu cực). Khác với 一边...一边... (chỉ hành động đồng thời), 又...又... dùng cả cho tính chất tĩnh và động. Phổ biến hơn 既...又... (HSK 4) trong văn nói.",
       examples: [
@@ -961,6 +1046,7 @@ var grammar = {
     {
       id: "g3-28",
       title: "Cấu trúc 像...一样 (giống như, như là)",
+      tag: "So sánh",
       structure: "A + 像 + B + 一样 + (Tính từ)",
       explanation: "Cấu trúc SO SÁNH biểu thị A giống B. Có thể thêm tính từ phía sau để chỉ rõ giống về điểm gì. Phủ định: 不像...一样 (không giống như). Khác với 跟...一样 (đối tượng giống nhau hoàn toàn), 像...一样 mang tính ẩn dụ/ví von hơn.",
       examples: [
@@ -973,6 +1059,7 @@ var grammar = {
     {
       id: "g3-29",
       title: "Giới từ 关于 (guānyú) - Về, liên quan đến",
+      tag: "Giới từ",
       structure: "关于 + Đối tượng/Chủ đề + Mệnh đề",
       explanation: "Giới từ chỉ chủ đề/phạm vi của câu, tương đương 'về', 'liên quan đến'. Đặt ĐẦU CÂU hoặc đầu cụm danh từ. Khác với 对 (đối với - chỉ hướng tác động), 关于 chỉ chủ đề được thảo luận.",
       examples: [
@@ -986,6 +1073,7 @@ var grammar = {
     {
       id: "g4-1",
       title: "不但...而且... (không những...mà còn...)",
+      tag: "Liên từ / Câu phức",
       structure: "不但 + Mệnh đề 1, 而且 + Mệnh đề 2",
       explanation: "Cấu trúc liên kết tăng tiến, biểu thị vế sau bổ sung và nâng cao thêm so với vế trước. Khi hai vế CÙNG chủ ngữ, 不但 đặt SAU chủ ngữ. Khi KHÁC chủ ngữ, 不但 đặt TRƯỚC chủ ngữ. Có thể thay 而且 bằng 也, 还, 并且. Lưu ý: nếu là phủ định kép thì dùng 不但不/不但没有 ở vế đầu để tạo nghĩa mạnh hơn.",
       examples: [
@@ -998,6 +1086,7 @@ var grammar = {
     {
       id: "g4-2",
       title: "既...又... (vừa...vừa...)",
+      tag: "Liên từ / Câu phức",
       structure: "Chủ ngữ + 既 + Tính từ/Động từ A + 又 + Tính từ/Động từ B",
       explanation: "Biểu thị một chủ thể có HAI ĐẶC ĐIỂM/HÀNH ĐỘNG cùng tồn tại. Khác với 一边...一边... (hai hành động đồng thời), 既...又... thường dùng cho TÍNH CHẤT hoặc TRẠNG THÁI tĩnh. Hai vế phải có TÍNH CHẤT TƯƠNG ĐƯƠNG (cùng tích cực hoặc cùng tiêu cực).",
       examples: [
@@ -1009,6 +1098,7 @@ var grammar = {
     {
       id: "g4-3",
       title: "无论...都... (dù...cũng...)",
+      tag: "Liên từ / Câu phức",
       structure: "无论 + Câu hỏi/Lựa chọn, (Chủ ngữ) + 都/也 + Động từ",
       explanation: "Cấu trúc nhượng bộ tuyệt đối: bất kể tình huống thế nào, kết quả vẫn không thay đổi. Sau 无论 phải là CÂU HỎI (有谁/什么/哪) hoặc cụm LỰA CHỌN (是A还是B). KHÔNG dùng câu khẳng định sau 无论. Có thể thay 无论 bằng 不管 (thông tục hơn).",
       examples: [
@@ -1020,6 +1110,7 @@ var grammar = {
     {
       id: "g4-4",
       title: "尽管...但是/可是... (mặc dù...nhưng...)",
+      tag: "Liên từ / Câu phức",
       structure: "尽管 + Mệnh đề 1, 但是/可是/还是 + Mệnh đề 2",
       explanation: "Biểu thị quan hệ nhượng bộ - chuyển ý. Khác với 虽然...但是... (giống nghĩa), 尽管 mang sắc thái VĂN VIẾT HƠN và nhấn mạnh sự thật của vế đầu. Sau 尽管 thường là sự việc KHÁCH QUAN, có thật.",
       examples: [
@@ -1031,6 +1122,7 @@ var grammar = {
     {
       id: "g4-5",
       title: "即使...也... (cho dù...cũng...)",
+      tag: "Liên từ / Câu phức",
       structure: "即使 + Giả thiết, (Chủ ngữ) + 也 + Hành động",
       explanation: "Biểu thị giả thiết-nhượng bộ về sự việc CHƯA xảy ra (hoặc khó xảy ra). Khác với 虽然 (sự việc đã có thật), 即使 nói về điều giả định trong tương lai. Có thể thay bằng 就算 trong văn nói.",
       examples: [
@@ -1042,6 +1134,7 @@ var grammar = {
     {
       id: "g4-6",
       title: "由于 (yóuyú) - Do, vì",
+      tag: "Liên từ / Câu phức",
       structure: "由于 + Nguyên nhân, (所以) + Kết quả",
       explanation: "Liên từ chỉ NGUYÊN NHÂN, mang sắc thái TRANG TRỌNG/VĂN VIẾT hơn 因为. Đặt ở ĐẦU CÂU. Vế sau có thể có 所以, 因此, 因而. Lưu ý: 由于 KHÔNG dùng được ở vế sau (khác với 因为 có thể dùng cả 因为...的关系).",
       examples: [
@@ -1053,6 +1146,7 @@ var grammar = {
     {
       id: "g4-7",
       title: "因此 / 因而 (do đó, vì thế)",
+      tag: "Liên từ / Câu phức",
       structure: "Câu nguyên nhân, 因此/因而 + Câu kết quả",
       explanation: "Liên từ chỉ KẾT QUẢ. 因此 phổ biến hơn, dùng cả văn nói lẫn văn viết. 因而 chỉ dùng văn viết, kết quả mang tính LOGIC chặt chẽ. Đứng đầu vế thứ hai. Khác với 所以 (thông dụng), 因此/因而 trang trọng hơn.",
       examples: [
@@ -1063,6 +1157,7 @@ var grammar = {
     {
       id: "g4-8",
       title: "只有...才... (chỉ có...mới...)",
+      tag: "Liên từ / Câu phức",
       structure: "只有 + Điều kiện duy nhất + 才 + Kết quả",
       explanation: "Biểu thị ĐIỀU KIỆN CẦN THIẾT DUY NHẤT - không có điều kiện này thì không có kết quả. Khác với 只要...就... (điều kiện đủ tối thiểu), 只有...才... nhấn mạnh tính DUY NHẤT của điều kiện.",
       examples: [
@@ -1074,6 +1169,7 @@ var grammar = {
     {
       id: "g4-9",
       title: "除了...以外,还/都/也... (ngoài...ra, còn/đều...)",
+      tag: "So sánh",
       structure: "除了 + Đối tượng + 以外, ... + 还/都/也 + ...",
       explanation: "Có 2 nghĩa quan trọng: (1) BAO GỒM cả → dùng 还 (Ngoài X, còn cả Y); (2) NGOẠI TRỪ → dùng 都 (Trừ X ra, mọi thứ đều...). Phân biệt theo 还/也 hay 都. Có thể lược bỏ 以外.",
       examples: [
@@ -1085,6 +1181,7 @@ var grammar = {
     {
       id: "g4-10",
       title: "非...不可 (nhất định phải...)",
+      tag: "Phủ định",
       structure: "Chủ ngữ + 非 + Động từ + 不可",
       explanation: "Cấu trúc phủ định kép tạo nghĩa khẳng định MẠNH MẼ - nhất định phải làm gì đó, không thể không làm. Có thể thay bằng 非...不行 hoặc thêm 不能/不行. Mang sắc thái QUYẾT TÂM cao.",
       examples: [
@@ -1096,6 +1193,7 @@ var grammar = {
     {
       id: "g4-11",
       title: "好像 (hǎoxiàng) - Dường như, hình như",
+      tag: "So sánh",
       structure: "Chủ ngữ + 好像 + Mệnh đề (+ 似的/一样)",
       explanation: "Biểu thị sự PHỎNG ĐOÁN không chắc chắn (dường như, hình như) hoặc SO SÁNH (giống như). Có thể thêm 似的 (shìde) hoặc 一样 (yíyàng) ở cuối câu để nhấn mạnh sự so sánh.",
       examples: [
@@ -1107,6 +1205,7 @@ var grammar = {
     {
       id: "g4-12",
       title: "看起来 / 听起来 (trông có vẻ / nghe có vẻ)",
+      tag: "Câu cơ bản",
       structure: "Chủ ngữ + 看/听/吃/闻 + 起来 + Tính từ/Mệnh đề",
       explanation: "Cấu trúc 'V + 起来' biểu thị NHẬN ĐỊNH/CẢM NHẬN dựa trên giác quan tương ứng. 看起来 (trông), 听起来 (nghe), 吃起来 (ăn vào), 闻起来 (ngửi). Có thể đặt đầu câu hoặc giữa câu.",
       examples: [
@@ -1118,6 +1217,7 @@ var grammar = {
     {
       id: "g4-13",
       title: "一方面...另一方面... (một mặt...mặt khác...)",
+      tag: "Liên từ / Câu phức",
       structure: "一方面 + Vế 1, (另)一方面 + Vế 2",
       explanation: "Biểu thị việc xem xét vấn đề từ HAI KHÍA CẠNH song song. Hai vế thường có quan hệ tương đương hoặc bổ sung lẫn nhau. Mang sắc thái VĂN VIẾT/PHÂN TÍCH.",
       examples: [
@@ -1128,6 +1228,7 @@ var grammar = {
     {
       id: "g4-14",
       title: "于是 (yúshì) - Thế là, do đó",
+      tag: "Liên từ / Câu phức",
       structure: "Câu 1, 于是 + Câu 2",
       explanation: "Liên từ chỉ HÀNH ĐỘNG TIẾP NỐI một cách tự nhiên/tất yếu sau sự việc trước. Khác với 所以 (chỉ kết quả logic), 于là biểu thị CHUỖI HÀNH ĐỘNG. Đứng đầu vế thứ hai.",
       examples: [
@@ -1138,6 +1239,7 @@ var grammar = {
     {
       id: "g4-15",
       title: "不过 (búguò) - Nhưng, có điều",
+      tag: "Trợ từ",
       structure: "Câu 1, 不过 + Câu 2",
       explanation: "Liên từ chỉ sự CHUYỂN Ý NHẸ NHÀNG hơn 但是. Vế sau là điều BỔ SUNG, ĐÍNH CHÍNH cho vế trước, chứ không hoàn toàn đối lập. Mang sắc thái mềm mỏng, lịch sự.",
       examples: [
@@ -1148,6 +1250,7 @@ var grammar = {
     {
       id: "g4-16",
       title: "拿...来说 (lấy...làm ví dụ)",
+      tag: "Giới từ",
       structure: "拿/就 + Đối tượng + 来说",
       explanation: "Cấu trúc dẫn ra ví dụ cụ thể từ một đối tượng. Đứng ĐẦU CÂU, sau đó là phần phân tích/mô tả về đối tượng đó. Tương đương 'lấy X mà nói', 'đối với X mà nói'.",
       examples: [
@@ -1158,6 +1261,7 @@ var grammar = {
     {
       id: "g4-17",
       title: "至于 (zhìyú) - Còn về phần",
+      tag: "Câu cơ bản",
       structure: "Câu 1。至于 + Đối tượng mới, + Mệnh đề",
       explanation: "Dùng để CHUYỂN CHỦ ĐỀ sang một khía cạnh/đối tượng khác có liên quan. Đứng đầu câu mới. Tương đương 'còn về phần', 'còn đối với'.",
       examples: [
@@ -1168,6 +1272,7 @@ var grammar = {
     {
       id: "g4-18",
       title: "在...看来 (theo...mà thấy/nói)",
+      tag: "Giới từ",
       structure: "在 + Người + 看来, + Quan điểm/Nhận định",
       explanation: "Cấu trúc cố định để dẫn ra QUAN ĐIỂM CHỦ QUAN của ai đó. Tương đương 'theo X mà thấy', 'theo quan điểm của X'. Đứng đầu câu, sau đó là nội dung quan điểm.",
       examples: [
@@ -1179,6 +1284,7 @@ var grammar = {
     {
       id: "g4-19",
       title: "尤其是 (yóuqí shì) - Đặc biệt là, nhất là",
+      tag: "Phó từ",
       structure: "Câu chung。尤其是 + Đối tượng/Tình huống cụ thể",
       explanation: "Dùng để NHẤN MẠNH một trường hợp đặc biệt trong tổng thể đã đề cập. Tương đương 'đặc biệt là', 'nhất là'. Có thể đứng đầu câu hoặc giữa câu.",
       examples: [
@@ -1189,8 +1295,10 @@ var grammar = {
     {
       id: "g4-20",
       title: "Cấu trúc 是...的 (nhấn mạnh thông tin)",
+      tag: "Trợ từ",
       structure: "Chủ ngữ + 是 + (Thời gian/Nơi/Cách thức/Người) + Động từ + 的",
       explanation: "Cấu trúc 是...的 dùng để NHẤN MẠNH một thông tin cụ thể (thời gian, địa điểm, cách thức, mục đích...) của một sự việc đã xảy ra TRONG QUÁ KHỨ. KHÔNG dùng cho tương lai. Tân ngữ có thể đặt trước hoặc sau 的.",
+      note: "Nhấn mạnh THỜI GIAN / NƠI CHỐN / CÁCH THỨC của việc ĐÃ xảy ra: 我是昨天来的.",
       examples: [
         { hanzi: "我是昨天来的。", pinyin: "Wǒ shì zuótiān lái de.", meaning: "Tôi đến vào hôm qua. (Nhấn mạnh thời gian)" },
         { hanzi: "他是从北京来的。", pinyin: "Tā shì cóng Běijīng lái de.", meaning: "Anh ấy đến từ Bắc Kinh. (Nhấn mạnh nơi xuất phát)" },
@@ -1201,6 +1309,7 @@ var grammar = {
     {
       id: "g4-21",
       title: "Phó từ 究竟 / 到底 (rốt cuộc, cuối cùng)",
+      tag: "Phó từ",
       structure: "Chủ ngữ + 究竟/到底 + Câu hỏi",
       explanation: "Dùng trong CÂU HỎI để nhấn mạnh sự sốt ruột, truy vấn đến cùng (tương đương 'rốt cuộc'). 到底 thông tục hơn, 究竟 trang trọng hơn. Đặt SAU chủ ngữ và TRƯỚC từ để hỏi (谁/什么/哪/怎么/为什么/几).",
       examples: [
@@ -1212,6 +1321,7 @@ var grammar = {
     {
       id: "g4-22",
       title: "Cấu trúc 不是...就是... (không phải...thì là...)",
+      tag: "Phó từ",
       structure: "不是 + A + 就是 + B",
       explanation: "Biểu thị HAI KHẢ NĂNG, chắc chắn 1 trong 2 đúng (không có lựa chọn thứ 3). Mang sắc thái KHẲNG ĐỊNH MẠNH. Có thể dùng cho người, vật, sự kiện.",
       examples: [
@@ -1223,6 +1333,7 @@ var grammar = {
     {
       id: "g4-23",
       title: "Bổ ngữ trạng thái với 得 (de) - Mở rộng",
+      tag: "Bổ ngữ",
       structure: "Động từ + 得 + Bổ ngữ trạng thái (Tính từ/Cụm từ)",
       explanation: "Cấu trúc 得 nâng cao mô tả mức độ/cách thức của hành động. Khi có TÂN NGỮ, phải LẶP LẠI ĐỘNG TỪ: Động từ + Tân ngữ + Động từ + 得 + Bổ ngữ. Phủ định: Động từ + 得 + 不 + Bổ ngữ (không dùng 不得).",
       examples: [
@@ -1235,6 +1346,7 @@ var grammar = {
     {
       id: "g4-24",
       title: "Cụm 跟...一样 / 不一样 (giống/khác)",
+      tag: "So sánh",
       structure: "A + 跟/和 + B + (不)一样 + (Tính từ)",
       explanation: "So sánh hai đối tượng GIỐNG NHAU hoặc KHÁC NHAU. Có thể thêm tính từ phía sau để chỉ rõ giống/khác ở khía cạnh nào. Có thể thay 跟 bằng 和.",
       examples: [
@@ -1246,6 +1358,7 @@ var grammar = {
     {
       id: "g4-25",
       title: "Cấu trúc 比...还/更 (so sánh hơn)",
+      tag: "So sánh",
       structure: "A + 比 + B + 还/更 + Tính từ + (Số lượng/Mức độ)",
       explanation: "Câu so sánh 比 nâng cao có thêm 还/更 nhấn mạnh mức độ hơn nữa. Sau tính từ có thể thêm cụm chỉ MỨC ĐỘ chênh lệch như 一点儿, 一些, 多了, 得多, hoặc số lượng cụ thể (3 岁, 10 公斤). KHÔNG dùng 很/非常 trong câu so sánh.",
       examples: [
@@ -1258,6 +1371,7 @@ var grammar = {
     {
       id: "g4-26",
       title: "随着 (suízhe) - Cùng với, theo",
+      tag: "Trợ từ",
       structure: "随着 + Sự thay đổi/Tiến trình, + Mệnh đề",
       explanation: "Biểu thị sự thay đổi xảy ra ĐỒNG THỜI/THEO một quá trình khác. Sau 随着 thường là cụm danh từ chỉ thời gian, công nghệ, sự phát triển... Đứng ĐẦU CÂU. Mang sắc thái VĂN VIẾT.",
       examples: [
@@ -1269,6 +1383,7 @@ var grammar = {
     {
       id: "g4-27",
       title: "然而 (rán'ér) - Tuy nhiên, nhưng",
+      tag: "Liên từ / Câu phức",
       structure: "Câu 1。然而 + Câu 2 (chuyển ý)",
       explanation: "Liên từ chỉ sự CHUYỂN Ý mạnh, tương đương 'tuy nhiên', 'thế nhưng'. Mang sắc thái TRANG TRỌNG/VĂN VIẾT hơn 但是, 可是. Đứng đầu vế thứ hai. Thường dùng trong văn bản nghị luận, báo chí.",
       examples: [
@@ -1280,6 +1395,7 @@ var grammar = {
     {
       id: "g4-28",
       title: "Cấu trúc 动词 + 看 (thử ...xem)",
+      tag: "Bổ ngữ",
       structure: "Động từ + 看 / Động từ + 看看 / Động từ + 一下 + 看",
       explanation: "看 đặt SAU động từ tạo nghĩa 'thử ... xem'. Có thể lặp lại 看看 hoặc thêm 一下 để mềm hơn. Tương đương 'thử nghiệm', 'làm thử'. Lưu ý: KHÁC với 看 = nhìn/xem độc lập. Trong cấu trúc này, 看 đã hư hóa thành ngữ pháp.",
       examples: [
@@ -1292,6 +1408,7 @@ var grammar = {
     {
       id: "g4-29",
       title: "Cấu trúc 把...当作... (coi...như là...)",
+      tag: "Câu đặc biệt",
       structure: "Chủ ngữ + 把 + A + 当作/当成 + B",
       explanation: "Cấu trúc đặc biệt biểu thị COI A NHƯ LÀ B / xem A là B. 当作 và 当成 có thể thay thế nhau, ý nghĩa giống nhau. Mang tính nhận thức/đánh giá chủ quan.",
       examples: [
@@ -1305,6 +1422,7 @@ var grammar = {
     {
       id: "g5-1",
       title: "万一 (wànyī) - Lỡ, vạn nhất",
+      tag: "Phó từ",
       structure: "万一 + Tình huống bất ngờ, (就) + Hậu quả/Phương án",
       explanation: "Biểu thị một tình huống bất lợi có XÁC SUẤT THẤP nhưng vẫn đáng đề phòng. Mạnh hơn 如果 (nếu) - mang sắc thái lo lắng, dự phòng. Đặt ở ĐẦU CÂU. Thường đi kèm 怎么办 (làm sao) hoặc 就 + giải pháp.",
       examples: [
@@ -1316,6 +1434,7 @@ var grammar = {
     {
       id: "g5-2",
       title: "宁可...也不... (thà...chứ không...)",
+      tag: "Liên từ / Câu phức",
       structure: "宁可 + Phương án A + 也不 + Phương án B",
       explanation: "Biểu thị sự LỰA CHỌN ưu tiên A hơn B trong tình huống bất đắc dĩ. Khi cả hai phương án đều không lý tưởng, người nói chọn A vì A ít tệ hơn. Có thể thay 宁可 bằng 宁愿. Mang sắc thái QUYẾT ĐOÁN, kiên định.",
       examples: [
@@ -1327,6 +1446,7 @@ var grammar = {
     {
       id: "g5-3",
       title: "与其...不如... (thay vì...chi bằng...)",
+      tag: "Liên từ / Câu phức",
       structure: "与其 + Phương án A, 不如 + Phương án B",
       explanation: "So sánh hai phương án và CHỌN PHƯƠNG ÁN B (sau 不如) là tốt hơn. Khác với 宁可...也不... (chọn A bất đắc dĩ), 与其...不如... mang nghĩa B THẬT SỰ TỐT HƠN A. Mang tính lời khuyên.",
       examples: [
@@ -1338,6 +1458,7 @@ var grammar = {
     {
       id: "g5-4",
       title: "一旦...就... (một khi...là...)",
+      tag: "Liên từ / Câu phức",
       structure: "一旦 + Sự kiện kích hoạt, (chủ ngữ) + 就 + Kết quả",
       explanation: "Biểu thị một khi điều kiện xảy ra thì kết quả LẬP TỨC theo sau, mang tính TẤT YẾU và KHÔNG THỂ ĐẢO NGƯỢC. Sự kiện sau 一旦 thường là điều có thể xảy ra trong tương lai. Khác với 一...就... (hai hành động liên tiếp đơn giản), 一旦 nhấn mạnh tính NGHIÊM TRỌNG/QUAN TRỌNG.",
       examples: [
@@ -1349,6 +1470,7 @@ var grammar = {
     {
       id: "g5-5",
       title: "Cấu trúc 在...下 (dưới...)",
+      tag: "Giới từ",
       structure: "在 + Cụm danh từ (sự giúp đỡ/lãnh đạo/tình huống) + 下, + Mệnh đề",
       explanation: "Cấu trúc cố định biểu thị ĐIỀU KIỆN/HOÀN CẢNH ảnh hưởng đến hành động. Cụm giữa 在 và 下 thường là: 帮助下 (sự giúp đỡ), 领导下 (lãnh đạo), 支持下 (hỗ trợ), 影响下 (ảnh hưởng), 情况下 (tình huống). Văn viết.",
       examples: [
@@ -1360,6 +1482,7 @@ var grammar = {
     {
       id: "g5-6",
       title: "对...来说 (đối với...mà nói)",
+      tag: "Giới từ",
       structure: "对 + Đối tượng + 来说, + Quan điểm/Tình trạng",
       explanation: "Cấu trúc cố định để dẫn ra QUAN ĐIỂM/TÌNH TRẠNG từ góc nhìn của một đối tượng cụ thể. Đặt ở ĐẦU CÂU. Khác với 在...看来 (chỉ là quan điểm cá nhân), 对...来说 mở rộng cho cả tình trạng khách quan đối với đối tượng đó.",
       examples: [
@@ -1371,6 +1494,7 @@ var grammar = {
     {
       id: "g5-7",
       title: "Cấu trúc 是否 (yes/no - phải hay không)",
+      tag: "Nghi vấn",
       structure: "Chủ ngữ + 是否 + Động từ/Tính từ",
       explanation: "Tương đương 'có ... không' / 'phải hay không phải' nhưng MANG SẮC THÁI VĂN VIẾT/TRANG TRỌNG. Thường dùng trong câu hỏi gián tiếp, báo cáo, văn bản chính thức. KHÔNG dùng 吗 ở cuối câu khi đã có 是否.",
       examples: [
@@ -1382,6 +1506,7 @@ var grammar = {
     {
       id: "g5-8",
       title: "Cấu trúc 不见得 (chưa chắc, không hẳn)",
+      tag: "Phủ định",
       structure: "Chủ ngữ + 不见得 + Động từ/Tính từ",
       explanation: "Biểu thị sự PHẢN BÁC NHẸ NHÀNG, không đồng tình hoàn toàn. Tương đương 'chưa chắc', 'không hẳn'. Lịch sự hơn 不一定. Thường dùng để đáp lại quan điểm của người khác. Có thể đứng đầu câu hoặc giữa câu.",
       examples: [
@@ -1393,6 +1518,7 @@ var grammar = {
     {
       id: "g5-9",
       title: "宁愿...也要... (thà...cũng phải...)",
+      tag: "Liên từ / Câu phức",
       structure: "宁愿 + Hy sinh + 也要 + Mục tiêu",
       explanation: "Biểu thị sự QUYẾT TÂM cao - sẵn sàng chịu hy sinh để đạt mục tiêu. Khác 宁可...也不... (tránh điều xấu hơn), 宁愿...也要... nhấn mạnh KHÁT VỌNG đạt được. Mang sắc thái mạnh mẽ, kiên định.",
       examples: [
@@ -1404,6 +1530,7 @@ var grammar = {
     {
       id: "g5-10",
       title: "通过 (tōngguò) - Thông qua, qua",
+      tag: "Trợ từ",
       structure: "通过 + Phương tiện/Cách thức/Quá trình, + Mệnh đề kết quả",
       explanation: "Giới từ chỉ PHƯƠNG TIỆN/CÁCH THỨC để đạt được điều gì đó. Sau 通过 là cụm danh từ hoặc danh động từ. Khác với 用 (dùng vật cụ thể) hay 经过 (trải qua thời gian/quá trình), 通过 nhấn mạnh CƠ CHẾ/PHƯƠNG TIỆN.",
       examples: [
@@ -1415,6 +1542,7 @@ var grammar = {
     {
       id: "g5-11",
       title: "本来 (běnlái) - Vốn dĩ, lẽ ra",
+      tag: "Phó từ",
       structure: "Chủ ngữ + 本来 + Mệnh đề (+ 但是/可是 + Tình hình thực tế)",
       explanation: "Biểu thị (1) Trạng thái BAN ĐẦU/VỐN DĨ; (2) Kế hoạch ban đầu nhưng KHÔNG xảy ra như dự kiến (có chuyển ý). Có thể đứng đầu câu hoặc giữa câu. Phân biệt với 原来 (mới nhận ra sự thật).",
       examples: [
@@ -1426,6 +1554,7 @@ var grammar = {
     {
       id: "g5-12",
       title: "原来 (yuánlái) - Hóa ra, thì ra",
+      tag: "Phó từ",
       structure: "原来 + Sự thật vừa nhận ra",
       explanation: "Biểu thị NHẬN RA SỰ THẬT đã tồn tại nhưng trước đó không biết. Mang sắc thái 'aha moment'. Khác 本来 (vốn là, trạng thái ban đầu), 原来 nhấn mạnh sự PHÁT HIỆN. Còn có nghĩa 'ban đầu, ngày trước'.",
       examples: [
@@ -1437,6 +1566,7 @@ var grammar = {
     {
       id: "g5-13",
       title: "幸亏 (xìngkuī) - May mà, may sao",
+      tag: "Phó từ",
       structure: "幸亏 + Sự kiện may mắn, + Kết quả tốt",
       explanation: "Biểu thị sự MAY MẮN khi một điều kiện thuận lợi đã giúp tránh được hậu quả xấu. Đặt ĐẦU CÂU. Vế sau thường có 不然/否则 (nếu không thì). Tương đương 'may mà', 'may sao'.",
       examples: [
@@ -1448,6 +1578,7 @@ var grammar = {
     {
       id: "g5-14",
       title: "Cấu trúc 不仅...而且... (không chỉ...mà còn...)",
+      tag: "Liên từ / Câu phức",
       structure: "不仅 + Mệnh đề 1, 而且 + Mệnh đề 2",
       explanation: "Phiên bản TRANG TRỌNG/VĂN VIẾT của 不但...而且... Cấu trúc tăng tiến nhấn mạnh thêm thông tin ở vế thứ hai. Có thể thay 而且 bằng 还/也. Khi cùng chủ ngữ, 不仅 đặt SAU chủ ngữ; khi khác chủ ngữ, đặt TRƯỚC chủ ngữ.",
       examples: [
@@ -1459,6 +1590,7 @@ var grammar = {
     {
       id: "g5-15",
       title: "Phó từ 简直 (jiǎnzhí) - Đơn giản là, thật là",
+      tag: "Trợ từ",
       structure: "Chủ ngữ + 简直 + Tính từ/Mệnh đề (thường có 太...了 hoặc 不...)",
       explanation: "Biểu thị sự PHÓNG ĐẠI/CẢM THÁN mạnh mẽ - hoàn toàn đến mức không thể tin được. Tương đương 'thật là', 'đến nỗi'. Thường đi kèm với cấu trúc 太...了 hoặc cấu trúc phủ định mạnh. Mang sắc thái cảm xúc cao.",
       examples: [
@@ -1470,6 +1602,7 @@ var grammar = {
     {
       id: "g5-16",
       title: "Cấu trúc 是...是... (cứ là... nhưng...)",
+      tag: "Câu cơ bản",
       structure: "Chủ ngữ + 是 + Tính từ/Động từ + 是 + Tính từ/Động từ + (但是/可是)",
       explanation: "Cấu trúc đặc biệt biểu thị NHƯỢNG BỘ - đồng ý điểm A nhưng có ý kiến khác. Tương đương 'X thì X đấy, nhưng...'. Phía sau thường có 但是/可是/不过. Mang sắc thái thừa nhận một phần nhưng còn ý phản biện.",
       examples: [
@@ -1481,6 +1614,7 @@ var grammar = {
     {
       id: "g5-17",
       title: "Cấu trúc 难免 (khó tránh khỏi)",
+      tag: "Trợ động từ",
       structure: "Chủ ngữ + 难免 + (会) + Sự việc tất yếu",
       explanation: "Biểu thị một sự việc TẤT YẾU/KHÔNG THỂ TRÁNH KHỎI dù không mong muốn. Sau 难免 thường là việc TIÊU CỰC nhẹ. Có thể thêm 会 sau 难免. Mang sắc thái chấp nhận thực tế.",
       examples: [
@@ -1492,6 +1626,7 @@ var grammar = {
     {
       id: "g5-18",
       title: "Cấu trúc 看来 (xem ra, có vẻ)",
+      tag: "Phó từ",
       structure: "看来, + Mệnh đề suy đoán",
       explanation: "Biểu thị sự SUY ĐOÁN dựa trên những gì quan sát được. Khác với 好像 (mơ hồ), 看来 dựa trên BẰNG CHỨNG cụ thể nên chắc chắn hơn. Đặt đầu câu hoặc sau chủ ngữ. Tương đương 'xem ra', 'có vẻ'.",
       examples: [
@@ -1503,6 +1638,7 @@ var grammar = {
     {
       id: "g5-19",
       title: "Cấu trúc 算是 (suànshì) - Coi như, kể là",
+      tag: "Phó từ",
       structure: "Chủ ngữ + 算是 + Đặc điểm/Phân loại",
       explanation: "Biểu thị sự PHÂN LOẠI/ĐÁNH GIÁ tương đối. Tương đương 'coi như là', 'có thể tính là'. Mang sắc thái khiêm tốn, không khẳng định tuyệt đối. Thường dùng để định vị ai/cái gì trong một nhóm.",
       examples: [
@@ -1514,6 +1650,7 @@ var grammar = {
     {
       id: "g5-20",
       title: "Trợ từ ngữ khí 罢了 (bàle) - Chỉ vậy thôi",
+      tag: "Trợ từ",
       structure: "Mệnh đề + 罢了 (有时 + 不过/只是 + Mệnh đề + 罢了)",
       explanation: "Trợ từ ngữ khí cuối câu mang nghĩa GIẢM NHẸ - chỉ là vậy thôi, không có gì đáng kể. Thường đi kèm 不过/只是/无非 ở đầu câu. Văn viết và văn nói lịch sự. Tương đương 'mà thôi'.",
       examples: [
@@ -1525,6 +1662,7 @@ var grammar = {
     {
       id: "g5-21",
       title: "Phó từ 居然 / 竟然 (jūrán/jìngrán) - Không ngờ, lại",
+      tag: "Phó từ",
       structure: "Chủ ngữ + 居然/竟然 + Mệnh đề bất ngờ",
       explanation: "Biểu thị sự NGẠC NHIÊN cao độ về một điều bất ngờ, vượt ngoài dự đoán. 居然 nhấn mạnh sự kinh ngạc của người nói; 竟然 trang trọng hơn. Đặt SAU chủ ngữ và TRƯỚC động từ. Sự việc có thể tích cực hoặc tiêu cực.",
       examples: [
@@ -1536,6 +1674,7 @@ var grammar = {
     {
       id: "g5-22",
       title: "毕竟 (bìjìng) - Suy cho cùng, dù sao",
+      tag: "Phó từ",
       structure: "毕竟 + Lý do quan trọng (giải thích tại sao thông cảm)",
       explanation: "Biểu thị việc DẪN RA LÝ DO CƠ BẢN/QUAN TRỌNG để giải thích, thường đi với sự thông cảm. Khác 到底 (truy vấn), 毕竟 nhấn mạnh sự THẬT KHÁCH QUAN không thể bỏ qua. Đặt đầu câu hoặc sau chủ ngữ.",
       examples: [
@@ -1547,6 +1686,7 @@ var grammar = {
     {
       id: "g5-23",
       title: "Cấu trúc 经过 (jīngguò) - Trải qua",
+      tag: "Trợ từ",
       structure: "经过 + Cụm danh từ/Quá trình, + Kết quả",
       explanation: "Giới từ chỉ TRẢI QUA một quá trình/thời gian/sự kiện trước khi đạt kết quả. Sau 经过 thường là cụm chỉ thời gian dài hoặc nỗ lực. Khác 通过 (phương tiện/cách thức), 经过 nhấn mạnh THỜI GIAN/QUÁ TRÌNH trải qua.",
       examples: [
@@ -1558,6 +1698,7 @@ var grammar = {
     {
       id: "g5-24",
       title: "Cấu trúc 否则 / 不然 (nếu không thì)",
+      tag: "Liên từ / Câu phức",
       structure: "Mệnh đề điều kiện, 否则/不然 + Hậu quả",
       explanation: "Liên từ chỉ HẬU QUẢ tiêu cực nếu không thực hiện điều kiện ở vế trước. 否则 trang trọng hơn (văn viết); 不然 thông tục hơn (văn nói). Tương đương 'nếu không thì'. Đứng đầu vế thứ hai.",
       examples: [
@@ -1569,6 +1710,7 @@ var grammar = {
     {
       id: "g5-25",
       title: "Cấu trúc 似的 (shìde) - Giống như, tựa như",
+      tag: "So sánh",
       structure: "Cụm so sánh + 似的 (thường đi với 像/好像)",
       explanation: "Trợ từ kết thúc CỤM SO SÁNH, tương đương 'giống như', 'như là'. Thường đi với 像 hoặc 好像 ở đầu cụm. Đặt SAU đối tượng được so sánh. Có thể thay bằng 一样 nhưng 似的 mang tính ẩn dụ hơn.",
       examples: [
@@ -1580,6 +1722,7 @@ var grammar = {
     {
       id: "g5-26",
       title: "Cấu trúc 哪怕...也... (cho dù...cũng...)",
+      tag: "Nghi vấn",
       structure: "哪怕 + Giả thiết cực đoan, + (Chủ ngữ) + 也 + Hành động",
       explanation: "Biểu thị nhượng bộ TRONG TÌNH HUỐNG CỰC ĐOAN/khó khăn nhất, kết quả vẫn không thay đổi. Mạnh hơn 即使...也... vì 哪怕 đặt giả thiết ở MỨC ĐỘ tối đa. Mang sắc thái QUYẾT TÂM cao độ.",
       examples: [
@@ -1591,6 +1734,7 @@ var grammar = {
     {
       id: "g5-27",
       title: "Giới từ 凭 (píng) - Dựa vào, căn cứ vào",
+      tag: "Giới từ",
       structure: "凭 + Cơ sở/Bằng chứng, + Mệnh đề",
       explanation: "Giới từ chỉ CƠ SỞ/CĂN CỨ để làm điều gì đó, tương đương 'dựa vào', 'căn cứ vào'. Có thể là khả năng, kinh nghiệm, bằng chứng, giấy tờ. Đặt ĐẦU CÂU hoặc trước động từ. Cũng có thể đứng độc lập trong câu hỏi: 凭什么 (dựa vào đâu).",
       examples: [
@@ -1603,6 +1747,7 @@ var grammar = {
     {
       id: "g5-28",
       title: "Phó từ 索性 (suǒxìng) - Luôn thể, đành",
+      tag: "Phó từ",
       structure: "Chủ ngữ + 索性 + Hành động quyết đoán",
       explanation: "Phó từ biểu thị QUYẾT ĐỊNH DỨT KHOÁT khi đối mặt với tình huống không thuận lợi - 'đã đến nước này thì làm luôn cho xong'. Tương đương 'luôn thể', 'đành', 'thôi thì'. Đặt SAU chủ ngữ và TRƯỚC động từ. Mang sắc thái thông tục.",
       examples: [
@@ -1614,6 +1759,7 @@ var grammar = {
     {
       id: "g5-29",
       title: "Cấu trúc 一来...二来... (một là...hai là...)",
+      tag: "Liên từ / Câu phức",
       structure: "一来 + Lý do 1, 二来 + Lý do 2 (+ 三来 + Lý do 3)",
       explanation: "Cấu trúc liệt kê NHIỀU LÝ DO/MỤC ĐÍCH song song. Tương đương 'một là...hai là...'. Có thể mở rộng thành 三来, 四来. Mang sắc thái logic, dùng để giải thích nhiều khía cạnh cùng lúc. Phổ biến trong văn nói tự nhiên.",
       examples: [
@@ -1625,6 +1771,7 @@ var grammar = {
     {
       id: "g5-30",
       title: "Liên từ 何况 (hékuàng) - Huống chi, huống hồ",
+      tag: "Liên từ / Câu phức",
       structure: "Câu 1 (đã đủ mạnh)。何况 + Câu 2 (mức độ cao hơn)",
       explanation: "Liên từ tăng tiến mạnh, biểu thị 'việc A đã vậy, huống chi việc B (mạnh hơn)'. Đặt đầu vế thứ hai. Thường đi với 都 hoặc 也. Mang sắc thái VĂN VIẾT/TRANG TRỌNG. Khác với 而且 (bổ sung), 何况 nhấn mạnh sự BẤT KHẢ KHÁNG của lý lẽ.",
       examples: [
@@ -1638,6 +1785,7 @@ var grammar = {
     {
       id: "g6-1",
       title: "凡是...都... (phàm là...đều...)",
+      tag: "Liên từ / Câu phức",
       structure: "凡是 + Đối tượng/Tình huống + 都 + Mệnh đề",
       explanation: "Cấu trúc TUYỆT ĐỐI HÓA - không có ngoại lệ. Sau 凡是 là phạm vi/tiêu chí, sau 都 là tính chất/quy tắc áp dụng cho TẤT CẢ. Mang sắc thái khẳng định mạnh, văn viết. Không thể bỏ 都/全部. Tương đương 'phàm là', 'hễ là'.",
       examples: [
@@ -1649,6 +1797,7 @@ var grammar = {
     {
       id: "g6-2",
       title: "向来 / 从来 (xưa nay, từ trước đến giờ)",
+      tag: "Phủ định",
       structure: "Chủ ngữ + 向来/从来 + (不/没) + Động từ/Tính từ",
       explanation: "Phó từ chỉ sự VIỆC KÉO DÀI từ quá khứ đến hiện tại không thay đổi. 向来 thường đi với câu KHẲNG ĐỊNH (xưa nay vẫn vậy); 从来 thường đi với câu PHỦ ĐỊNH 不/没 (từ trước đến giờ chưa từng). Đặt sau chủ ngữ, trước động từ.",
       examples: [
@@ -1660,6 +1809,7 @@ var grammar = {
     {
       id: "g6-3",
       title: "Liên từ 而 (ér) - Mà, nhưng, và",
+      tag: "Liên từ / Câu phức",
       structure: "Vế A + 而 + Vế B (đối lập/tăng tiến/song song)",
       explanation: "Liên từ VĂN NGÔN/TRANG TRỌNG có nhiều ý nghĩa: (1) Đối lập nhẹ - nhưng; (2) Tiếp nối - và; (3) Tăng tiến - rồi còn. Đặt giữa hai vế, KHÔNG đứng đầu vế. Thường dùng trong văn viết, báo chí, văn học.",
       examples: [
@@ -1671,6 +1821,7 @@ var grammar = {
     {
       id: "g6-4",
       title: "Liên từ 反而 (fǎn'ér) - Trái lại, ngược lại",
+      tag: "Liên từ / Câu phức",
       structure: "Câu 1 (kỳ vọng A), 反而 + Vế ngược với kỳ vọng",
       explanation: "Biểu thị KẾT QUẢ NGƯỢC với mong đợi/dự đoán. Khác với 但是 (chỉ chuyển ý thông thường), 反而 nhấn mạnh sự BẤT NGỜ TRÁI CHIỀU. Thường đi với 不但不/不但没 ở vế trước. Đứng sau chủ ngữ vế hai.",
       examples: [
@@ -1682,6 +1833,7 @@ var grammar = {
     {
       id: "g6-5",
       title: "况且 (kuàngqiě) - Hơn nữa, vả lại",
+      tag: "Liên từ / Câu phức",
       structure: "Lý do 1, 况且 + Lý do bổ sung mạnh hơn",
       explanation: "Liên từ DẪN RA LÝ DO BỔ SUNG để củng cố quan điểm đã nêu. Khác 而且 (tăng tiến trung tính), 况且 nhấn mạnh lý do MỚI mạnh hơn nữa. Văn viết. Thường ở đầu vế bổ sung.",
       examples: [
@@ -1693,6 +1845,7 @@ var grammar = {
     {
       id: "g6-6",
       title: "Cấu trúc 至于 (zhìyú) nâng cao",
+      tag: "Phủ định",
       structure: "至于 + (说) + Mệnh đề khuếch đại / phủ định",
       explanation: "Ngoài nghĩa 'còn về phần' (HSK 4), 至于 ở HSK 6 mang thêm nghĩa MỨC ĐỘ - thường trong câu phủ định 'không đến nỗi'. Cấu trúc 不至于 = không đến mức như vậy. Diễn tả người nói cho rằng tình hình KHÔNG NGHIÊM TRỌNG đến vậy.",
       examples: [
@@ -1704,6 +1857,7 @@ var grammar = {
     {
       id: "g6-7",
       title: "Cấu trúc 以...为... (lấy...làm...)",
+      tag: "Giới từ",
       structure: "以 + A + 为 + B",
       explanation: "Cấu trúc văn ngôn cố định mang nghĩa 'lấy A làm B' / 'coi A là B'. A là phương tiện/đối tượng, B là vai trò/chức năng. Thường dùng trong văn viết, các cụm cố định: 以...为主 (lấy...làm chính), 以...为荣 (lấy...làm vinh), 以...为例 (lấy...làm ví dụ).",
       examples: [
@@ -1715,6 +1869,7 @@ var grammar = {
     {
       id: "g6-8",
       title: "Cấu trúc 不得不 (không thể không)",
+      tag: "Phủ định",
       structure: "Chủ ngữ + 不得不 + Động từ",
       explanation: "Phủ định kép tạo nghĩa khẳng định MẠNH MẼ về sự BẮT BUỘC. Diễn tả việc làm vì hoàn cảnh ép buộc, không có lựa chọn khác. Mang sắc thái BẤT ĐẮC DĨ. Khác với 必须 (phải làm chủ động), 不得不 nhấn mạnh sự ÉP BUỘC từ ngoại cảnh.",
       examples: [
@@ -1726,6 +1881,7 @@ var grammar = {
     {
       id: "g6-9",
       title: "Cấu trúc 以便 / 以免 (để tiện / để tránh)",
+      tag: "Liên từ / Câu phức",
       structure: "Mệnh đề 1, 以便 / 以免 + Mục đích",
       explanation: "Liên từ chỉ MỤC ĐÍCH ở vế sau. 以便 = để tiện, để có thể (mục đích tích cực); 以免 = để tránh, kẻo (mục đích tiêu cực). Văn viết, trang trọng. Đứng đầu vế thứ hai.",
       examples: [
@@ -1737,6 +1893,7 @@ var grammar = {
     {
       id: "g6-10",
       title: "Cấu trúc 鉴于 (jiànyú) - Xét thấy, do",
+      tag: "Giới từ",
       structure: "鉴于 + Tình hình/Lý do, + Quyết định/Hành động",
       explanation: "Liên từ trang trọng dùng dẫn ra LÝ DO/CĂN CỨ trước khi đưa ra kết luận, quyết định. Văn viết chính thức (báo chí, công văn). Đứng đầu câu. Tương đương 'xét thấy', 'căn cứ vào'.",
       examples: [
@@ -1748,6 +1905,7 @@ var grammar = {
     {
       id: "g6-11",
       title: "Cấu trúc 总而言之 (zǒng'éryánzhī) - Tóm lại",
+      tag: "Liên từ / Câu phức",
       structure: "总而言之 / 总之, + Kết luận tổng quát",
       explanation: "Cụm từ TỔNG KẾT sau khi đã trình bày nhiều ý. 总而言之 trang trọng (văn viết); 总之 thông dụng hơn. Đứng đầu câu kết luận. Có thể dùng các biến thể: 总的来说, 综上所述.",
       examples: [
@@ -1759,6 +1917,7 @@ var grammar = {
     {
       id: "g6-12",
       title: "Cấu trúc 何尝 (hécháng) - Nào có, đâu phải",
+      tag: "Phó từ",
       structure: "Chủ ngữ + 何尝 + (不) + Động từ/Tính từ",
       explanation: "Phó từ VĂN NGÔN dùng trong CÂU HỎI TU TỪ để KHẲNG ĐỊNH mạnh ngược lại. 何尝不... = chính là... rồi (khẳng định mạnh). Tương đương 'nào phải không', 'làm gì có chuyện không...'. Mang sắc thái cảm xúc.",
       examples: [
@@ -1770,6 +1929,7 @@ var grammar = {
     {
       id: "g6-13",
       title: "Cấu trúc 莫非 (mòfēi) - Lẽ nào, chẳng lẽ",
+      tag: "Phó từ",
       structure: "莫非 + Mệnh đề suy đoán + (不成?)",
       explanation: "Phó từ VĂN NGÔN diễn tả SUY ĐOÁN có chút bất ngờ/lo lắng. Tương đương 'lẽ nào', 'chẳng lẽ'. Đứng đầu câu. Đôi khi đi kèm 不成 ở cuối câu để nhấn mạnh thêm. Sắc thái: nửa hỏi nửa khẳng định.",
       examples: [
@@ -1781,6 +1941,7 @@ var grammar = {
     {
       id: "g6-14",
       title: "Cấu trúc 总算 (zǒngsuàn) - Cuối cùng cũng",
+      tag: "Trợ từ",
       structure: "Chủ ngữ + 总算 + Mệnh đề + (了)",
       explanation: "Phó từ biểu thị một điều mong đợi LÂU CUỐI CÙNG cũng đạt được, kèm sự nhẹ nhõm/thỏa mãn. Khác 终于 (trung tính), 总算 mang thêm cảm xúc CHỦ QUAN sau gian truân. Đặt sau chủ ngữ, trước động từ.",
       examples: [
@@ -1792,6 +1953,7 @@ var grammar = {
     {
       id: "g6-15",
       title: "Cấu trúc 不料 (búliào) - Không ngờ",
+      tag: "Phủ định",
       structure: "Câu 1, 不料 + Sự việc bất ngờ",
       explanation: "Liên từ chỉ TÌNH HUỐNG XẢY RA NGOÀI DỰ ĐOÁN. Khác 没想到 (thông tục), 不料 trang trọng hơn (văn viết). Vế trước thường là dự định/kỳ vọng, vế sau là kết quả ngoài ý muốn. Đứng đầu vế thứ hai.",
       examples: [
@@ -1803,6 +1965,7 @@ var grammar = {
     {
       id: "g6-16",
       title: "Cấu trúc 倒 (dào) - Trái lại, ngược lại (nhẹ)",
+      tag: "Phó từ",
       structure: "Chủ ngữ + 倒 + Tính từ/Mệnh đề (ngược với mong đợi)",
       explanation: "Phó từ chỉ điều TRÁI VỚI DỰ ĐOÁN một cách NHẸ NHÀNG. Khác 反而 (mạnh, trái chiều rõ rệt), 倒 mang sắc thái nhẹ, đôi khi mỉa mai nhẹ. Đặt sau chủ ngữ, trước động từ. Còn dùng để nhượng bộ tạm thời: 倒是.",
       examples: [
@@ -1814,6 +1977,7 @@ var grammar = {
     {
       id: "g6-17",
       title: "Cấu trúc 偏偏 (piānpiān) - Lại cứ, không hiểu sao lại",
+      tag: "Phó từ",
       structure: "Chủ ngữ + 偏偏 + Mệnh đề (ngoài ý muốn / cố ý làm khác)",
       explanation: "Phó từ biểu thị (1) sự việc XẢY RA NGÓ ÝI MUỐN của người nói; (2) ai đó CỐ Ý làm khác. Mang sắc thái BỰC BỘI/KHÓ CHỊU. Đặt sau chủ ngữ. Khác 居然 (kinh ngạc trung tính), 偏偏 mang cảm xúc tiêu cực.",
       examples: [
@@ -1825,6 +1989,7 @@ var grammar = {
     {
       id: "g6-18",
       title: "Cấu trúc 与...有关 / 无关 (có/không liên quan)",
+      tag: "Giới từ",
       structure: "A + 与/和/跟 + B + 有关 / 无关",
       explanation: "Cấu trúc cố định biểu thị MỐI LIÊN HỆ giữa hai sự vật. Có thể thay 与 bằng 和/跟 (thông tục). Trong văn viết thường dùng 与. Có thể thêm phó từ mức độ: 密切相关 (liên quan mật thiết), 毫无关系 (không có quan hệ gì).",
       examples: [
@@ -1834,30 +1999,9 @@ var grammar = {
       ]
     },
     {
-      id: "g6-19",
-      title: "Cấu trúc 一来...二来... (thứ nhất...thứ hai...)",
-      structure: "一来 + Lý do 1, 二来 + Lý do 2 (+ 三来...)",
-      explanation: "Cấu trúc liệt kê NHIỀU LÝ DO cùng dẫn đến một kết luận. Nhấn mạnh việc cân nhắc đa chiều trước khi đưa ra quyết định. Văn viết và văn nói trang trọng. Có thể mở rộng đến 三来.",
-      examples: [
-        { hanzi: "我不想去,一来太远,二来太贵。", pinyin: "Wǒ bù xiǎng qù, yīlái tài yuǎn, èrlái tài guì.", meaning: "Tôi không muốn đi, thứ nhất quá xa, thứ hai quá đắt." },
-        { hanzi: "学汉语,一来兴趣,二来工作需要。", pinyin: "Xué Hànyǔ, yīlái xìngqù, èrlái gōngzuò xūyào.", meaning: "Học tiếng Trung, một là vì sở thích, hai là vì công việc cần." },
-        { hanzi: "搬家,一来房子小,二来交通不便。", pinyin: "Bānjiā, yīlái fángzi xiǎo, èrlái jiāotōng bú biàn.", meaning: "Chuyển nhà, một là nhà chật, hai là giao thông bất tiện." }
-      ]
-    },
-    {
-      id: "g6-20",
-      title: "Cấu trúc 索性 (suǒxìng) - Cứ thế, dứt khoát",
-      structure: "Chủ ngữ + 索性 + Hành động dứt khoát",
-      explanation: "Phó từ biểu thị quyết định DỨT KHOÁT/CỰC ĐOAN sau khi đã cân nhắc. Tương đương 'cứ thế', 'thôi thì'. Mang sắc thái: vì tình hình đã vậy, quyết định đi đến cùng. Tương tự 干脆 nhưng 索性 mang tính cảm xúc hơn.",
-      examples: [
-        { hanzi: "既然不能睡了,索性起来工作。", pinyin: "Jìrán bùnéng shuì le, suǒxìng qǐlái gōngzuò.", meaning: "Đã không ngủ được, thôi thì dậy làm việc." },
-        { hanzi: "天气太热,索性把空调打开。", pinyin: "Tiānqì tài rè, suǒxìng bǎ kōngtiáo dǎkāi.", meaning: "Trời nóng quá, dứt khoát bật điều hòa lên." },
-        { hanzi: "等不到他,我索性走了。", pinyin: "Děng bú dào tā, wǒ suǒxìng zǒu le.", meaning: "Không đợi được anh ấy, tôi cứ thế đi luôn." }
-      ]
-    },
-    {
       id: "g6-21",
       title: "Cấu trúc 难道 (nándào) - Chẳng lẽ, lẽ nào",
+      tag: "Nghi vấn",
       structure: "难道 + Mệnh đề + (吗/不成)?",
       explanation: "Phó từ NHẤN MẠNH SỰ NGẠC NHIÊN/PHẢN ĐỐI trong câu hỏi tu từ. Câu hỏi có 难道 không cần trả lời - tự thân nó đã là KHẲNG ĐỊNH NGƯỢC LẠI. Có thể đi kèm 吗 ở cuối hoặc 不成 (cổ điển). Đứng đầu câu hoặc sau chủ ngữ.",
       examples: [
@@ -1867,19 +2011,9 @@ var grammar = {
       ]
     },
     {
-      id: "g6-22",
-      title: "Cấu trúc 何况 (hékuàng) - Huống hồ, huống chi",
-      structure: "Lập luận 1, 何况 + Lập luận mạnh hơn nữa",
-      explanation: "Liên từ TĂNG TIẾN MẠNH - đưa ra trường hợp cực đoan hơn để củng cố lý lẽ. Tương đương 'huống hồ', 'huống chi'. Vế đầu thường có 连...都/也. Mang sắc thái suy luận từ A đến A+, mạnh hơn 而且.",
-      examples: [
-        { hanzi: "连他都不会,何况我呢?", pinyin: "Lián tā dōu bú huì, hékuàng wǒ ne?", meaning: "Đến anh ấy còn không biết, huống chi là tôi?" },
-        { hanzi: "大人都觉得难,何况是孩子。", pinyin: "Dàrén dōu juéde nán, hékuàng shì háizi.", meaning: "Người lớn còn thấy khó, huống chi là trẻ con." },
-        { hanzi: "这话连朋友都不能说,何况是陌生人。", pinyin: "Zhè huà lián péngyou dōu bùnéng shuō, hékuàng shì mòshēng rén.", meaning: "Lời này đến bạn còn không thể nói, huống chi với người lạ." }
-      ]
-    },
-    {
       id: "g6-23",
       title: "Cấu trúc 不免 (bùmiǎn) - Không khỏi, không tránh được",
+      tag: "Phủ định",
       structure: "Chủ ngữ + 不免 + Cảm xúc/Phản ứng tự nhiên",
       explanation: "Phó từ chỉ phản ứng/cảm xúc TỰ NHIÊN, không thể tránh khỏi trong tình huống nào đó. Khác 难免 (sự việc khó tránh khỏi nói chung), 不免 nhấn mạnh CẢM XÚC chủ quan tất yếu. Sắc thái nhẹ nhàng hơn 必然.",
       examples: [
@@ -1891,6 +2025,7 @@ var grammar = {
     {
       id: "g6-24",
       title: "Cấu trúc 一...而... (vừa...đã...)",
+      tag: "Liên từ / Câu phức",
       structure: "Chủ ngữ + 一 + Động từ A + 而 + Động từ B",
       explanation: "Cấu trúc văn ngôn cho thấy hai hành động xảy ra GẦN NHAU và liên quan logic. Tương đương 'vừa A đã B'. Văn viết, mang tính trang trọng. Phổ biến trong các cụm cố định: 一目了然, 一举两得, 一蹴而就 (làm xong ngay tức khắc).",
       examples: [
@@ -1902,6 +2037,7 @@ var grammar = {
     {
       id: "g6-25",
       title: "Trợ từ ngữ khí 嘛 (ma) - Mà",
+      tag: "Trợ từ",
       structure: "Mệnh đề + 嘛 (cuối câu)",
       explanation: "Trợ từ ngữ khí có nhiều chức năng: (1) Khẳng định điều rõ ràng - 'mà'; (2) Nhắc nhở nhẹ nhàng; (3) Yêu cầu/đề nghị (làm dịu giọng). KHÔNG dùng trong văn viết trang trọng. Mang tính KHẨU NGỮ thân mật. Phân biệt với 吗 (câu hỏi).",
       examples: [
@@ -1913,6 +2049,7 @@ var grammar = {
     {
       id: "g6-26",
       title: "Cấu trúc trùng điệp ABAB / AABB (làm thử / nhấn mạnh)",
+      tag: "Câu cơ bản",
       structure: "Động từ trùng điệp: 看看, 想想, 试试 / 来来回回, 干干净净",
       explanation: "Hai dạng trùng điệp tiếng Trung: (1) ABAB cho động từ 1-2 âm tiết - làm gì đó NGẮN/NHẸ, mang nghĩa thử; (2) AABB cho tính từ - NHẤN MẠNH, sinh động hóa. Lưu ý: tính từ đã trùng điệp (好好) KHÔNG dùng kèm 很/非常.",
       examples: [
@@ -1921,6 +2058,103 @@ var grammar = {
         { hanzi: "把房间打扫得干干净净。", pinyin: "Bǎ fángjiān dǎsǎo de gānganjìngjìng.", meaning: "Quét phòng sạch sẽ tinh tươm." },
         { hanzi: "他高高兴兴地回家了。", pinyin: "Tā gāogāoxìngxìng de huí jiā le.", meaning: "Anh ấy vui vẻ phấn khởi về nhà." }
       ]
+    },
+    {
+      id: "g6-100",
+      title: "以至于 - Đến mức, đến nỗi",
+      tag: "Liên từ / Câu phức",
+      structure: "... + 以至于 + (kết quả)",
+      explanation: "Nối nguyên nhân/mức độ ở vế trước với kết quả phát sinh ở vế sau, nhấn mạnh kết quả đi xa hơn dự tính ('đến mức/đến nỗi'). Thường dùng trong văn viết.",
+      note: "Khác 甚至 (thậm chí): 以至于 luôn dẫn ra một KẾT QUẢ, còn 甚至 nêu một trường hợp cực đoan.",
+      examples: [
+        { hanzi: "他工作太投入,以至于忘了吃饭。", pinyin: "Tā gōngzuò tài tóurù, yǐzhìyú wàng le chīfàn.", meaning: "Anh ấy làm việc quá tập trung, đến mức quên cả ăn." },
+        { hanzi: "雨下得很大,以至于路上积满了水。", pinyin: "Yǔ xià de hěn dà, yǐzhìyú lù shàng jī mǎn le shuǐ.", meaning: "Mưa rất to, đến nỗi đường ngập đầy nước." }
+      ]
+    },
+    {
+      id: "g6-101",
+      title: "固然...但是... - Cố nhiên... nhưng...",
+      tag: "Liên từ / Câu phức",
+      structure: "固然 + A,但是/可是 + B",
+      explanation: "Thừa nhận A là đúng/hợp lý (固然), rồi chuyển sang nhấn mạnh rằng B mới là điều quan trọng hơn. Giọng điệu khách quan, nhã nhặn.",
+      note: "固然 thiên về 'thừa nhận tạm thời'; sắc thái nhượng bộ có cân nhắc.",
+      examples: [
+        { hanzi: "这个方法固然好,但是太费时间。", pinyin: "Zhège fāngfǎ gùrán hǎo, dànshì tài fèi shíjiān.", meaning: "Cách này cố nhiên hay, nhưng tốn quá nhiều thời gian." },
+        { hanzi: "钱固然重要,但健康更重要。", pinyin: "Qián gùrán zhòngyào, dàn jiànkāng gèng zhòngyào.", meaning: "Tiền cố nhiên quan trọng, nhưng sức khỏe còn quan trọng hơn." }
+      ]
+    },
+    {
+      id: "g6-102",
+      title: "无非(是) - Chẳng qua là",
+      tag: "Phó từ",
+      structure: "无非(是) + ...",
+      explanation: "Biểu thị 'chỉ là, chẳng qua là', dùng để hạ thấp mức độ hoặc tầm quan trọng của sự việc, ngụ ý 'không có gì hơn thế'.",
+      note: "Thường đi với 是: 无非是…; mang sắc thái xem nhẹ.",
+      examples: [
+        { hanzi: "他这么说,无非是想引起注意。", pinyin: "Tā zhème shuō, wúfēi shì xiǎng yǐnqǐ zhùyì.", meaning: "Anh ta nói vậy, chẳng qua là muốn gây chú ý." },
+        { hanzi: "我担心的无非是你的安全。", pinyin: "Wǒ dānxīn de wúfēi shì nǐ de ānquán.", meaning: "Điều tôi lo chẳng qua chỉ là sự an toàn của bạn." }
+      ]
+    },
+    {
+      id: "g6-103",
+      title: "势必 - Ắt sẽ, tất sẽ",
+      tag: "Phó từ",
+      structure: "... + 势必 + (kết quả tất yếu)",
+      explanation: "Khẳng định một kết quả tất yếu sẽ xảy ra theo logic, mang sắc thái dự đoán chắc chắn. Dùng nhiều trong văn viết, văn nghị luận.",
+      note: "Chủ ngữ thường là sự việc, không dùng cho ý chí cá nhân (khác 一定).",
+      examples: [
+        { hanzi: "不改变现状,势必会被淘汰。", pinyin: "Bù gǎibiàn xiànzhuàng, shìbì huì bèi táotài.", meaning: "Không thay đổi hiện trạng, ắt sẽ bị đào thải." },
+        { hanzi: "这项政策势必引起广泛讨论。", pinyin: "Zhè xiàng zhèngcè shìbì yǐnqǐ guǎngfàn tǎolùn.", meaning: "Chính sách này tất sẽ gây tranh luận rộng rãi." }
+      ]
+    },
+    {
+      id: "g6-104",
+      title: "多亏(了) - May nhờ, nhờ có",
+      tag: "Trợ từ",
+      structure: "多亏(了) + (người/việc),(才/否则)...",
+      explanation: "Biểu thị nhờ có sự giúp đỡ hoặc điều may mắn nào đó mà tránh được hậu quả xấu; mang sắc thái biết ơn.",
+      note: "Vế sau hay đi với 才 (mới) hoặc hàm ý 'nếu không thì đã…'.",
+      examples: [
+        { hanzi: "多亏你提醒,我才没迟到。", pinyin: "Duōkuī nǐ tíxǐng, wǒ cái méi chídào.", meaning: "May nhờ bạn nhắc, tôi mới không đến muộn." },
+        { hanzi: "多亏了这场雨,庄稼得救了。", pinyin: "Duōkuī le zhè chǎng yǔ, zhuāngjia déjiù le.", meaning: "Nhờ có trận mưa này, mùa màng được cứu." }
+      ]
+    },
+    {
+      id: "g6-105",
+      title: "时而...时而... - Lúc... lúc...",
+      tag: "Liên từ / Câu phức",
+      structure: "时而 + A,时而 + B",
+      explanation: "Diễn tả hai tình huống hoặc động tác luân phiên xuất hiện, thay đổi không cố định, mang nhịp 'lúc thế này lúc thế kia'.",
+      note: "A và B thường trái nghĩa hoặc tương phản; dùng cho hiện tượng lặp lại.",
+      examples: [
+        { hanzi: "天气时而晴,时而阴。", pinyin: "Tiānqì shí'ér qíng, shí'ér yīn.", meaning: "Thời tiết lúc nắng, lúc âm u." },
+        { hanzi: "他时而高兴,时而沉默。", pinyin: "Tā shí'ér gāoxìng, shí'ér chénmò.", meaning: "Anh ấy lúc vui vẻ, lúc lại trầm lặng." }
+      ]
+    },
+    {
+      id: "g6-106",
+      title: "反之 - Ngược lại, trái lại",
+      tag: "Liên từ / Câu phức",
+      structure: "...;反之,...",
+      explanation: "Dùng nối hai vế đối lập, đưa ra trường hợp ngược lại với điều vừa nêu. Trang trọng, hay gặp trong văn nghị luận.",
+      note: "Đứng đầu vế sau; tương đương 'ngược lại thì…'.",
+      examples: [
+        { hanzi: "努力就会进步;反之,懒惰只会退步。", pinyin: "Nǔlì jiù huì jìnbù; fǎnzhī, lǎnduò zhǐ huì tuìbù.", meaning: "Nỗ lực thì tiến bộ; ngược lại, lười biếng chỉ thụt lùi." },
+        { hanzi: "供应多,价格就低;反之则高。", pinyin: "Gōngyìng duō, jiàgé jiù dī; fǎnzhī zé gāo.", meaning: "Cung nhiều thì giá thấp; ngược lại thì cao." }
+      ]
+    },
+    {
+      id: "g6-107",
+      title: "一律 - Nhất loạt, đều như nhau",
+      tag: "Phó từ",
+      structure: "... + 一律 + ...",
+      explanation: "Biểu thị không có ngoại lệ, tất cả được đối xử hoặc áp dụng như nhau.",
+      note: "Mang tính quy định/mệnh lệnh; khác 都 ở sắc thái 'không trừ ai/cái nào'.",
+      examples: [
+        { hanzi: "迟到者一律不得入场。", pinyin: "Chídào zhě yílǜ bùdé rùchǎng.", meaning: "Người đến muộn nhất loạt không được vào." },
+        { hanzi: "这些商品一律打八折。", pinyin: "Zhèxiē shāngpǐn yílǜ dǎ bā zhé.", meaning: "Những mặt hàng này đều giảm 20%." }
+      ]
     }
   ]
 };
+if (typeof window !== "undefined") window.grammar = grammar;
