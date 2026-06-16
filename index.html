@@ -453,18 +453,37 @@ const sentDayInfo = () => {
 // ===== BẦU TRỜI SAO (12 con giáp) =====
 const STAR_COST = 5; // ánh sáng cần để thắp 1 sao
 const ZODIAC = [
-  { char:'鼠', py:'shǔ', vi:'Tý · Chuột', stars:5, seed:101, note:'Đứng đầu 12 con giáp, tượng trưng cho sự nhanh nhẹn và mưu trí.' },
-  { char:'牛', py:'niú', vi:'Sửu · Trâu', stars:5, seed:202, note:'Biểu tượng của sự cần cù, chăm chỉ và bền bỉ.' },
-  { char:'虎', py:'hǔ', vi:'Dần · Hổ', stars:6, seed:303, note:'Chúa tể sơn lâm, đại diện cho dũng khí và uy quyền.' },
-  { char:'兔', py:'tù', vi:'Mão · Mèo (Thỏ)', stars:6, seed:404, note:'Hiền lành, nhanh nhẹn; ở Việt Nam là Mèo, ở Trung Quốc là Thỏ.' },
-  { char:'龙', py:'lóng', vi:'Thìn · Rồng', stars:7, seed:505, note:'Linh vật cao quý nhất, gắn với mây mưa, đế vương và may mắn.' },
-  { char:'蛇', py:'shé', vi:'Tỵ · Rắn', stars:7, seed:606, note:'Còn gọi là "tiểu long", tượng trưng trí tuệ và sự huyền bí.' },
-  { char:'马', py:'mǎ', vi:'Ngọ · Ngựa', stars:7, seed:707, note:'Đại diện cho tự do, sức mạnh và tinh thần tiến lên.' },
-  { char:'羊', py:'yáng', vi:'Mùi · Dê', stars:8, seed:808, note:'Dịu dàng, hòa thuận, gắn với sự an lành.' },
-  { char:'猴', py:'hóu', vi:'Thân · Khỉ', stars:8, seed:909, note:'Thông minh, hoạt bát; nổi tiếng qua hình tượng Tôn Ngộ Không.' },
-  { char:'鸡', py:'jī', vi:'Dậu · Gà', stars:8, seed:110, note:'Cần mẫn, đúng giờ; tiếng gà gáy báo hiệu bình minh.' },
-  { char:'狗', py:'gǒu', vi:'Tuất · Chó', stars:9, seed:211, note:'Trung thành, tận tụy, người bạn thân thiết của con người.' },
-  { char:'猪', py:'zhū', vi:'Hợi · Lợn', stars:9, seed:312, note:'Khép lại vòng giáp, tượng trưng cho sung túc và phúc hậu.' },
+  { char:'鼠', py:'shǔ', vi:'Tý · Chuột', note:'Đứng đầu 12 con giáp, tượng trưng cho sự nhanh nhẹn và mưu trí.',
+    pts:[[24,42],[36,31],[50,27],[63,33],[72,46]] },
+  { char:'牛', py:'niú', vi:'Sửu · Trâu', note:'Biểu tượng của sự cần cù, chăm chỉ và bền bỉ.',
+    pts:[[22,46],[31,32],[46,25],[61,31],[78,44]] },
+  { char:'虎', py:'hǔ', vi:'Dần · Hổ', note:'Chúa tể sơn lâm, đại diện cho dũng khí và uy quyền.',
+    pts:[[20,47],[30,35],[43,28],[57,30],[69,40],[79,51]] },
+  { char:'兔', py:'tù', vi:'Mão · Mèo (Thỏ)', note:'Hiền lành, nhanh nhẹn; ở Việt Nam là Mèo, ở Trung Quốc là Thỏ.',
+    pts:[[27,50],[34,36],[43,25],[56,21],[67,29],[74,43]] },
+  { char:'龙', py:'lóng', vi:'Thìn · Rồng', note:'Linh vật cao quý nhất, gắn với mây mưa, đế vương và may mắn.',
+    pts:[[16,48],[27,39],[39,43],[51,31],[62,38],[73,27],[83,36]] },
+  { char:'蛇', py:'shé', vi:'Tỵ · Rắn', note:'Còn gọi là "tiểu long", tượng trưng cho trí tuệ và sự huyền bí.',
+    pts:[[17,30],[28,40],[40,31],[52,42],[63,33],[74,44],[84,34]] },
+  { char:'马', py:'mǎ', vi:'Ngọ · Ngựa', note:'Đại diện cho tự do, sức mạnh và tinh thần tiến lên.',
+    pts:[[19,51],[30,36],[42,30],[54,34],[64,25],[74,33],[83,48]] },
+  { char:'羊', py:'yáng', vi:'Mùi · Dê', note:'Dịu dàng, hòa thuận, gắn với sự an lành.',
+    pts:[[21,48],[29,36],[39,42],[48,29],[58,29],[67,42],[75,33],[83,47]] },
+  { char:'猴', py:'hóu', vi:'Thân · Khỉ', note:'Thông minh, hoạt bát; nổi tiếng qua hình tượng Tôn Ngộ Không.',
+    pts:[[22,31],[31,43],[41,36],[50,48],[60,39],[69,49],[77,39],[85,30]] },
+  { char:'鸡', py:'jī', vi:'Dậu · Gà', note:'Cần mẫn, đúng giờ; tiếng gà gáy báo hiệu bình minh.',
+    pts:[[21,46],[28,34],[38,28],[48,33],[56,22],[65,30],[74,27],[83,40]] },
+  { char:'狗', py:'gǒu', vi:'Tuất · Chó', note:'Trung thành, tận tụy, người bạn thân thiết của con người.',
+    pts:[[17,45],[25,34],[35,39],[44,28],[54,33],[62,24],[71,33],[79,28],[87,41]] },
+  { char:'猪', py:'zhū', vi:'Hợi · Lợn', note:'Khép lại vòng giáp, tượng trưng cho sung túc và phúc hậu.',
+    pts:[[19,41],[27,30],[38,35],[46,26],[56,31],[64,23],[73,33],[81,28],[89,39]] },
+].map(z => ({ ...z, stars: z.pts.length }));
+const STAR_THEMES = [
+  { name:'Trời Vàng Kim', c1:'#ffe08a', c2:'#f7b733', sky:['#060e22','#0e1c38','#13254a'] },
+  { name:'Trời Lục Bảo', c1:'#9af5e1', c2:'#23b59e', sky:['#04171a','#0a2630','#0f3040'] },
+  { name:'Trời Hồng Hà', c1:'#ffc2d6', c2:'#e85a8a', sky:['#19091a','#2a0f26','#3a1633'] },
+  { name:'Trời Tử Vi', c1:'#d6c8ff', c2:'#8b5cf6', sky:['#0d0922','#160f38','#201652'] },
+  { name:'Trời Băng Lam', c1:'#c2e6ff', c2:'#3d8bd1', sky:['#050f1f','#0a1a30','#102746'] },
 ];
 const ZTOTAL = ZODIAC.reduce((s, z) => s + z.stars, 0);
 const _mulberry32 = (a) => () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
@@ -2047,25 +2066,26 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount, habit, go
       {/* ── BẦU TRỜI SAO ── */}
       {(() => {
         const ss = readStars() || defaultStars();
+        const th = STAR_THEMES[(ss.skies || 0) % STAR_THEMES.length];
         const zi = Math.min(ss.zi || 0, ZODIAC.length - 1);
         const z = ZODIAC[zi];
         const done = (ss.completed || []).length;
         return (
           <div onClick={() => setView('stars')}
             className="relative overflow-hidden rounded-3xl p-5 mb-8 cursor-pointer transition-all hover:scale-[1.01] active:scale-[0.99]"
-            style={{ background:'linear-gradient(135deg,#0e1c38,#1c3463)', boxShadow:'0 14px 38px rgba(14,28,56,0.45)' }}>
-            {useMemo(() => Array.from({length:14},(_,i)=>{const r=_mulberry32(700+i);return{x:r()*100,y:r()*100,s:r()*1.4+0.6,o:r()*0.5+0.2};}),[]).map((s,i)=>(
+            style={{ background:`linear-gradient(135deg, ${th.sky[1]}, ${th.sky[2]})`, boxShadow:'0 14px 38px rgba(8,14,30,0.45)' }}>
+            {useMemo(() => Array.from({length:16},(_,i)=>{const r=_mulberry32(700+i);return{x:r()*100,y:r()*100,s:r()*1.4+0.6,o:r()*0.5+0.2};}),[]).map((s,i)=>(
               <div key={i} className="absolute rounded-full" style={{ left:s.x+'%', top:s.y+'%', width:s.s+'px', height:s.s+'px', background:'#fff', opacity:s.o }} />
             ))}
             <div className="relative flex items-center gap-4">
               <div className="flex-shrink-0 w-14 h-14 rounded-2xl flex items-center justify-center hanzi-text"
-                style={{ background:'rgba(255,224,138,0.12)', border:'1px solid rgba(255,224,138,0.4)', color:'#ffe08a', fontSize:'28px', fontWeight:700 }}>{z.char}</div>
+                style={{ background:`${th.c1}1f`, border:`1px solid ${th.c1}66`, color:th.c1, fontSize:'28px', fontWeight:700 }}>{z.char}</div>
               <div className="flex-1 min-w-0">
-                <div className="text-xs tracking-[0.2em] font-bold mb-0.5" style={{ color:'rgba(255,224,138,0.85)' }}>星空 · BẦU TRỜI SAO</div>
-                <div className="text-base font-bold mb-1" style={{ color:'white' }}>Đã mở {done}/12 con giáp</div>
-                <div className="text-xs" style={{ color:'rgba(255,255,255,0.7)' }}>✨ {ss.light || 0} ánh sáng · thắp sao để mở linh vật</div>
+                <div className="text-xs tracking-[0.2em] font-bold mb-0.5" style={{ color:th.c1, opacity:0.9 }}>星空 · {th.name.toUpperCase()}</div>
+                <div className="text-base font-bold mb-1" style={{ color:'white' }}>Tầng {(ss.skies||0)+1} · đã mở {done}/12</div>
+                <div className="text-xs" style={{ color:'rgba(255,255,255,0.72)' }}>✨ {ss.light || 0} ánh sáng · thắp sao mở linh vật</div>
               </div>
-              <div style={{ color:'#ffe08a' }}>→</div>
+              <div style={{ color:th.c1 }}>→</div>
             </div>
           </div>
         );
@@ -9107,8 +9127,9 @@ const StarView = () => {
   const [st, setSt] = useState(() => readStars() || defaultStars());
   const [justDaily, setJustDaily] = useState(0);
   const [celebrate, setCelebrate] = useState(false);
+  const [bigCelebrate, setBigCelebrate] = useState(false);
+  const [lastDone, setLastDone] = useState(null);
 
-  // thưởng "ánh sáng ban ngày" 1 lần/ngày khi mở
   useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
     setSt(prev => {
@@ -9119,148 +9140,168 @@ const StarView = () => {
     });
   }, []);
 
+  const tier = st.skies || 0;
+  const theme = STAR_THEMES[tier % STAR_THEMES.length];
   const zi = Math.min(st.zi || 0, ZODIAC.length - 1);
   const z = ZODIAC[zi];
-  const allDone = (st.completed || []).length >= ZODIAC.length;
-  const pts = useMemo(() => constellationStars(z.seed, z.stars), [z.seed, z.stars]);
+  const pts = z.pts;
   const lit = st.lit || 0;
-  const canLight = (st.light || 0) >= STAR_COST && lit < z.stars;
-  const totalLitEver = (st.completed || []).reduce((s, i) => s + ZODIAC[i].stars, 0) + lit;
+  const complete = lit >= z.stars;
+  const canLight = (st.light || 0) >= STAR_COST && !complete;
+  const doneCount = (st.completed || []).length;
+
+  // sao nền theo tầng (đổi mỗi tầng cho tươi mới)
+  const bgStars = useMemo(() => {
+    const r = _mulberry32(z.char.charCodeAt(0) * 13 + tier * 97 + zi * 7);
+    return Array.from({ length: 44 }, () => ({ x: r() * 100, y: r() * 64, s: r() * 0.7 + 0.25, o: r() * 0.45 + 0.12, t: (r() * 3 + 2).toFixed(1), d: (r() * 4).toFixed(1) }));
+  }, [z.char, tier, zi]);
 
   const lightStar = () => {
     if (!canLight) return;
-    setSt(prev => {
-      let light = prev.light - STAR_COST;
-      let newLit = (prev.lit || 0) + 1;
-      let completed = prev.completed || [];
-      let zzi = prev.zi || 0, skies = prev.skies || 0;
-      if (newLit >= ZODIAC[zzi].stars) {
-        completed = [...completed, zzi];
-        setCelebrate(true); setTimeout(() => setCelebrate(false), 2800);
-        if (zzi >= ZODIAC.length - 1) { skies += 1; zzi = 0; completed = []; newLit = 0; }
-        else { zzi += 1; newLit = 0; }
-      }
-      const next = { ...prev, light, lit: newLit, completed, zi: zzi, skies };
-      writeStars(next); return next;
-    });
+    let { light, lit: l = 0, zi: zz = 0, completed = [], skies = 0 } = st;
+    light -= STAR_COST; l += 1;
+    let done = null, big = false;
+    if (l >= ZODIAC[zz].stars) {
+      done = zz; completed = [...completed, zz];
+      if (zz >= ZODIAC.length - 1) { big = true; skies += 1; zz = 0; completed = []; l = 0; }
+      else { zz += 1; l = 0; }
+    }
+    const next = { ...st, light, lit: l, zi: zz, completed, skies };
+    writeStars(next); setSt(next);
+    if (done != null) {
+      setLastDone(done);
+      if (big) { setBigCelebrate(true); setTimeout(() => setBigCelebrate(false), 4000); }
+      else { setCelebrate(true); setTimeout(() => setCelebrate(false), 2600); }
+    }
   };
 
-  const litColor = '#ffe08a';
   return (
     <div className="max-w-2xl mx-auto px-5 py-7">
       <div className="flex items-start justify-between mb-4">
         <div>
           <div className="text-xs tracking-[0.3em] mb-1" style={{ color:'var(--accent)' }}>星空 · BẦU TRỜI SAO</div>
-          <h1 className="text-3xl" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>Thắp sao 12 con giáp</h1>
+          <h1 className="text-2xl" style={{ fontFamily:'var(--font-display)', fontWeight:700, color:'var(--ink)' }}>{theme.name}</h1>
+          <div className="text-xs mt-0.5" style={{ color:'var(--muted)' }}>Tầng trời {tier + 1} · đã mở {doneCount}/12 con giáp</div>
         </div>
         <div className="text-right">
-          <div className="px-3 py-1.5 rounded-xl font-bold text-sm inline-flex items-center gap-1" style={{ background:'linear-gradient(135deg,#f7b733,#fc4a1a)', color:'white' }}>
-            ✨ {st.light || 0}
-          </div>
-          {justDaily > 0 && <div className="text-xs mt-1 font-semibold" style={{ color:'#e08e0a' }}>+{justDaily} hôm nay</div>}
+          <div className="px-3 py-1.5 rounded-xl font-bold text-sm inline-flex items-center gap-1" style={{ background:`linear-gradient(135deg, ${theme.c1}, ${theme.c2})`, color:'#1a1430' }}>✨ {st.light || 0}</div>
+          {justDaily > 0 && <div className="text-xs mt-1 font-semibold" style={{ color:theme.c2 }}>+{justDaily} hôm nay</div>}
         </div>
       </div>
 
       {/* bảng trời */}
-      <div className="relative rounded-3xl overflow-hidden mb-4" style={{ background:'linear-gradient(180deg,#070f24,#0e1c38 60%,#13254a)', boxShadow:'0 16px 44px rgba(7,15,36,0.5)' }}>
-        <div className="absolute inset-0 pointer-events-none" style={{ background:'radial-gradient(circle at 80% 12%, rgba(190,212,255,0.16), transparent 45%)' }} />
-        <svg viewBox="0 0 100 70" style={{ width:'100%', display:'block' }}>
-          {/* sao nền lấp lánh nhỏ */}
-          {useMemo(() => Array.from({length:26},(_,i)=>{const r=_mulberry32(z.seed*7+i);return {x:r()*100,y:r()*70,s:r()*0.5+0.2,o:r()*0.4+0.1};}),[z.seed]).map((s,i)=>(
-            <circle key={'bg'+i} cx={s.x} cy={s.y} r={s.s} fill="#ffffff" opacity={s.o} />
+      <div className="relative rounded-3xl overflow-hidden mb-4"
+        style={{ background:`linear-gradient(180deg, ${theme.sky[0]}, ${theme.sky[1]} 55%, ${theme.sky[2]})`, boxShadow:'0 18px 48px rgba(5,10,25,0.55)' }}>
+        {/* dải ngân hà */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background:`linear-gradient(115deg, transparent 30%, ${theme.c1}22 48%, ${theme.c2}14 56%, transparent 72%)`, filter:'blur(8px)' }} />
+        <div className="absolute inset-0 pointer-events-none" style={{ background:`radial-gradient(circle at 82% 14%, ${theme.c1}26, transparent 42%)` }} />
+        {/* sao băng */}
+        <div className="cst-shoot" style={{ background:`linear-gradient(90deg, ${theme.c1}, transparent)` }} />
+
+        <svg viewBox="0 0 100 64" style={{ width:'100%', display:'block', position:'relative' }}>
+          {bgStars.map((s, i) => (
+            <circle key={'bg'+i} cx={s.x} cy={s.y} r={s.s} fill="#ffffff" opacity={s.o} className="cst-twinkle"
+              style={{ animationDuration:s.t+'s', animationDelay:s.d+'s' }} />
           ))}
-          {/* chữ con giáp mờ làm nền */}
-          <text x="50" y="42" textAnchor="middle" fontSize="40" fontFamily="Noto Sans SC, serif" fontWeight="700"
-            fill={litColor} opacity={lit >= z.stars ? 0.22 : 0.07}>{z.char}</text>
-          {/* đường nối các sao đã thắp */}
+          {/* chữ con giáp mờ */}
+          <text x="50" y="40" textAnchor="middle" fontSize="34" fontFamily="Noto Sans SC, serif" fontWeight="700"
+            fill={theme.c1} opacity={complete ? 0.2 : 0.06}>{z.char}</text>
+          {/* đường nối (glow + nét) giữa các sao đã thắp */}
           {pts.map((p, i) => (i < lit - 1) && (
-            <line key={'l'+i} x1={p.x} y1={p.y} x2={pts[i+1].x} y2={pts[i+1].y}
-              stroke={litColor} strokeWidth="0.5" opacity="0.6" strokeLinecap="round" />
+            <g key={'l'+i}>
+              <line x1={p[0]} y1={p[1]} x2={pts[i+1][0]} y2={pts[i+1][1]} stroke={theme.c1} strokeWidth="1.6" opacity="0.18" strokeLinecap="round" />
+              <line x1={p[0]} y1={p[1]} x2={pts[i+1][0]} y2={pts[i+1][1]} stroke={theme.c1} strokeWidth="0.5" opacity="0.85" strokeLinecap="round" />
+            </g>
           ))}
           {/* các sao */}
           {pts.map((p, i) => {
-            const isLit = i < lit;
-            const isNext = i === lit && lit < z.stars;
+            const isLit = i < lit, isNext = i === lit && !complete;
             return (
               <g key={'s'+i} onClick={isNext ? lightStar : undefined} style={{ cursor: isNext && canLight ? 'pointer' : 'default' }}>
-                {isLit && <circle cx={p.x} cy={p.y} r="3.4" fill={litColor} opacity="0.28" />}
-                {isNext && <circle cx={p.x} cy={p.y} r="3.6" fill={litColor} opacity="0.35" className="star-next" />}
-                <circle cx={p.x} cy={p.y} r={isLit ? 1.7 : isNext ? 1.5 : 1.1}
-                  fill={isLit ? litColor : isNext ? '#fff7da' : '#cfe0ff'}
-                  opacity={isLit ? 1 : isNext ? 0.95 : 0.3}
-                  stroke={isNext ? litColor : 'none'} strokeWidth={isNext ? 0.5 : 0} />
+                {isLit && <circle cx={p[0]} cy={p[1]} r="3.8" fill={theme.c1} opacity="0.22" />}
+                {isLit && <circle cx={p[0]} cy={p[1]} r="2.2" fill={theme.c1} opacity="0.45" />}
+                {isNext && <circle cx={p[0]} cy={p[1]} r="4" fill={theme.c1} className="star-next" />}
+                <circle cx={p[0]} cy={p[1]} r={isLit ? 1.5 : isNext ? 1.4 : 1}
+                  fill={isLit ? '#fffdf5' : isNext ? '#fff7e0' : '#d6e4ff'}
+                  opacity={isLit ? 1 : isNext ? 0.95 : 0.32}
+                  stroke={isLit || isNext ? theme.c1 : 'none'} strokeWidth={isLit ? 0.6 : isNext ? 0.5 : 0} />
               </g>
             );
           })}
         </svg>
-        {/* nhãn chòm */}
+
         <div className="absolute top-3 left-4">
-          <div className="text-xs font-semibold" style={{ color:'rgba(255,255,255,0.55)' }}>Chòm {zi + 1}/12{st.skies > 0 ? ` · vòng ${st.skies + 1}` : ''}</div>
-          <div className="text-base font-bold" style={{ color:'white' }}>{lit >= z.stars ? z.vi : '???'}</div>
+          <div className="text-[11px] font-semibold" style={{ color:'rgba(255,255,255,0.5)' }}>Chòm {zi + 1}/12</div>
+          <div className="text-base font-bold" style={{ color: complete ? theme.c1 : 'white' }}>{complete ? z.vi : '? ? ?'}</div>
         </div>
+        <div className="absolute bottom-3 right-4 text-[11px] font-semibold" style={{ color:'rgba(255,255,255,0.45)' }}>{lit}/{z.stars} sao</div>
       </div>
 
-      {/* tiến độ + nút thắp */}
+      {/* nút thắp */}
       <div className="rounded-2xl p-4 mb-4" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-        <div className="flex items-center justify-between mb-2 text-sm">
-          <span style={{ color:'var(--ink)', fontWeight:600 }}>Sao đã thắp: {lit}/{z.stars}</span>
-          <span style={{ color:'var(--muted)' }}>Mỗi sao cần ✨{STAR_COST}</span>
-        </div>
         <div className="h-2.5 rounded-full overflow-hidden mb-3" style={{ background:'var(--surface-soft)' }}>
-          <div style={{ width:`${(lit / z.stars) * 100}%`, height:'100%', background:'linear-gradient(90deg,#f7b733,#fc4a1a)', transition:'width .4s' }} />
+          <div style={{ width:`${(lit / z.stars) * 100}%`, height:'100%', background:`linear-gradient(90deg, ${theme.c1}, ${theme.c2})`, transition:'width .4s' }} />
         </div>
         {canLight ? (
           <button onClick={lightStar} className="w-full py-3 rounded-2xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
-            style={{ background:'linear-gradient(135deg,#f7b733,#fc4a1a)', color:'white' }}>
+            style={{ background:`linear-gradient(135deg, ${theme.c1}, ${theme.c2})`, color:'#1a1430' }}>
             ✨ Thắp một ngôi sao (−{STAR_COST})
           </button>
         ) : (
           <div className="w-full py-3 rounded-2xl text-center text-sm font-semibold" style={{ background:'var(--surface-soft)', color:'var(--muted)' }}>
-            {lit >= z.stars ? 'Chòm này đã sáng — đang mở chòm mới…' : `Học thêm để có ✨ (còn thiếu ${STAR_COST - (st.light||0)})`}
+            {complete ? 'Đang mở chòm mới…' : `Học thêm để có ✨ (còn thiếu ${STAR_COST - (st.light||0)})`}
           </div>
         )}
-        <div className="text-xs text-center mt-2.5" style={{ color:'var(--muted)' }}>
-          Ôn thẻ +1 · từ mới +2 · thuộc 1 câu +4 · mở app mỗi ngày +8
-        </div>
+        <div className="text-xs text-center mt-2.5" style={{ color:'var(--muted)' }}>Ôn thẻ +1 · từ mới +2 · thuộc 1 câu +4 · mở app mỗi ngày +8</div>
       </div>
 
-      {/* bộ sưu tập 12 con giáp */}
+      {/* bộ sưu tập */}
       <div className="rounded-2xl p-4" style={{ background:'var(--surface)', border:'1px solid var(--border)' }}>
-        <div className="text-sm font-bold mb-3" style={{ color:'var(--ink)' }}>Bộ sưu tập con giáp · {(st.completed||[]).length}/12</div>
+        <div className="flex items-center justify-between mb-3">
+          <div className="text-sm font-bold" style={{ color:'var(--ink)' }}>Con giáp tầng này · {doneCount}/12</div>
+          {tier > 0 && <div className="text-xs px-2 py-0.5 rounded-md font-semibold" style={{ background:'var(--surface-soft)', color:theme.c2 }}>Đã qua {tier} tầng trời</div>}
+        </div>
         <div className="grid grid-cols-6 gap-2">
           {ZODIAC.map((zz, i) => {
-            const done = (st.completed || []).includes(i) || st.skies > 0;
+            const done = (st.completed || []).includes(i);
             const cur = i === zi && !done;
             return (
-              <div key={i} className="aspect-square rounded-xl flex flex-col items-center justify-center"
-                style={{ background: done ? 'linear-gradient(145deg,#1a2a4d,#26406e)' : 'var(--surface-soft)', border: cur ? '1.5px solid #f7b733' : '1px solid var(--border)' }}>
-                <span className="hanzi-text" style={{ fontSize:'20px', color: done ? '#ffe08a' : 'var(--muted)', opacity: done ? 1 : 0.4, fontWeight:700 }}>{zz.char}</span>
+              <div key={i} className="aspect-square rounded-xl flex items-center justify-center"
+                style={{ background: done ? `linear-gradient(145deg, ${theme.sky[1]}, ${theme.sky[2]})` : 'var(--surface-soft)', border: cur ? `1.5px solid ${theme.c2}` : '1px solid var(--border)' }}>
+                <span className="hanzi-text" style={{ fontSize:'20px', color: done ? theme.c1 : 'var(--muted)', opacity: done ? 1 : 0.4, fontWeight:700 }}>{zz.char}</span>
               </div>
             );
           })}
         </div>
-        {(st.completed || []).length > 0 && (
+        {lastDone != null && (
           <div className="mt-3 text-xs" style={{ color:'var(--muted)' }}>
-            Đã mở gần nhất: <strong style={{ color:'var(--ink)' }}>{ZODIAC[(st.completed)[(st.completed).length-1]].vi}</strong> — {ZODIAC[(st.completed)[(st.completed).length-1]].note}
+            <strong style={{ color:'var(--ink)' }}>{ZODIAC[lastDone].vi}</strong> — {ZODIAC[lastDone].note}
           </div>
         )}
       </div>
 
-      {/* chúc mừng hoàn thành chòm */}
-      {celebrate && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center px-6" style={{ background:'rgba(7,15,36,0.55)' }} onClick={() => setCelebrate(false)}>
-          <div className="rounded-3xl p-8 text-center max-w-xs" style={{ background:'linear-gradient(160deg,#16264a,#0e1c38)', border:'1px solid #f7b73355', boxShadow:'0 20px 60px rgba(0,0,0,0.5)' }}>
-            <div className="hanzi-text mb-2" style={{ fontSize:'72px', color:'#ffe08a', fontWeight:700, textShadow:'0 0 30px #f7b73388' }}>
-              {ZODIAC[((st.completed||[]).length ? (st.completed)[(st.completed).length-1] : (zi>0?zi-1:11))].char}
-            </div>
+      {/* mừng hoàn thành 1 chòm */}
+      {celebrate && lastDone != null && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center px-6" style={{ background:'rgba(7,12,30,0.6)' }} onClick={() => setCelebrate(false)}>
+          <div className="rounded-3xl p-8 text-center max-w-xs" style={{ background:`linear-gradient(160deg, ${theme.sky[1]}, ${theme.sky[0]})`, border:`1px solid ${theme.c1}55`, boxShadow:'0 24px 64px rgba(0,0,0,0.55)' }}>
+            <div className="hanzi-text mb-2" style={{ fontSize:'72px', color:theme.c1, fontWeight:700, textShadow:`0 0 34px ${theme.c1}` }}>{ZODIAC[lastDone].char}</div>
             <div className="text-lg font-bold mb-1" style={{ color:'white' }}>Chòm sao hoàn thành!</div>
-            <div className="text-sm mb-3" style={{ color:'rgba(255,255,255,0.8)' }}>
-              {ZODIAC[((st.completed||[]).length ? (st.completed)[(st.completed).length-1] : (zi>0?zi-1:11))].vi}
-            </div>
-            <div className="text-xs px-3 py-2 rounded-xl" style={{ background:'rgba(255,255,255,0.08)', color:'rgba(255,255,255,0.85)', lineHeight:1.6 }}>
-              {ZODIAC[((st.completed||[]).length ? (st.completed)[(st.completed).length-1] : (zi>0?zi-1:11))].note}
-            </div>
-            <button onClick={() => setCelebrate(false)} className="mt-4 px-5 py-2 rounded-xl text-sm font-bold" style={{ background:'#f7b733', color:'#0e1c38' }}>Tiếp tục ✨</button>
+            <div className="text-sm mb-3" style={{ color:'rgba(255,255,255,0.82)' }}>{ZODIAC[lastDone].vi}</div>
+            <div className="text-xs px-3 py-2 rounded-xl mb-4" style={{ background:'rgba(255,255,255,0.08)', color:'rgba(255,255,255,0.85)', lineHeight:1.6 }}>{ZODIAC[lastDone].note}</div>
+            <button onClick={() => setCelebrate(false)} className="px-5 py-2 rounded-xl text-sm font-bold" style={{ background:theme.c1, color:theme.sky[0] }}>Tiếp tục ✨</button>
+          </div>
+        </div>
+      )}
+
+      {/* mừng trọn 1 TẦNG TRỜI */}
+      {bigCelebrate && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center px-6" style={{ background:'rgba(7,12,30,0.72)' }} onClick={() => setBigCelebrate(false)}>
+          <div className="rounded-3xl p-8 text-center max-w-sm" style={{ background:`linear-gradient(160deg, ${STAR_THEMES[tier % STAR_THEMES.length].sky[1]}, #050a18)`, border:`1px solid ${theme.c1}66`, boxShadow:'0 24px 70px rgba(0,0,0,0.6)' }}>
+            <div className="text-5xl mb-3">🌌</div>
+            <div className="text-xl font-bold mb-1" style={{ color:theme.c1 }}>Trọn một tầng trời!</div>
+            <div className="text-sm mb-3" style={{ color:'rgba(255,255,255,0.85)' }}>Bạn đã thắp sáng đủ 12 con giáp. Một bầu trời mới đang mở ra…</div>
+            <div className="text-base font-bold mb-4 px-3 py-2 rounded-xl inline-block" style={{ background:'rgba(255,255,255,0.08)', color:theme.c1 }}>→ {theme.name}</div>
+            <div><button onClick={() => setBigCelebrate(false)} className="px-6 py-2.5 rounded-xl text-sm font-bold" style={{ background:`linear-gradient(135deg, ${theme.c1}, ${theme.c2})`, color:theme.sky[0] }}>Khám phá tầng mới 🌠</button></div>
           </div>
         </div>
       )}
@@ -9603,7 +9644,11 @@ function App() {
         .sky-bird { position: absolute; color: #5d80a8; opacity: .35; }
         @media (prefers-reduced-motion: reduce) { .sky-cloud.drift { animation: none; } .sky-stars i { animation: none; opacity: .6; } }
         .star-next { animation: starNextPulse 1.5s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
-        @keyframes starNextPulse { 0%,100% { opacity:.2; } 50% { opacity:.6; } }
+        @keyframes starNextPulse { 0%,100% { opacity:.25; } 50% { opacity:.7; } }
+        .cst-twinkle { animation: skyTwinkle 3s ease-in-out infinite; }
+        .cst-shoot { position:absolute; top:10%; left:64%; width:70px; height:1.6px; border-radius:2px; transform: rotate(22deg); opacity:0; pointer-events:none; animation: cstShoot 11s ease-in infinite; }
+        @keyframes cstShoot { 0% { transform: translate(0,0) rotate(22deg); opacity:0; } 4% { opacity:.9; } 16% { transform: translate(-180px,95px) rotate(22deg); opacity:0; } 100% { opacity:0; } }
+        @media (prefers-reduced-motion: reduce) { .star-next { animation:none; } .cst-twinkle { animation:none; } .cst-shoot { display:none; } }
       `}</style>
 
       <SkyBackground dark={darkMode} />
