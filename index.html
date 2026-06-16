@@ -480,6 +480,10 @@ const readPet = () => { try { const s = localStorage.getItem('hsk:pet'); return 
 const writePet = (o) => { try { localStorage.setItem('hsk:pet', JSON.stringify(o)); } catch (e) {} };
 const defaultPet = () => ({ name: '', lv: 1, exp: 0, food: 0, bonusDay: '', lastSeen: '' });
 const feedPetFood = (n) => { const p = readPet() || defaultPet(); p.food = (p.food || 0) + n; writePet(p); };
+// Chế độ vô hạn (dùng cho Linh thú & các chế độ tích lũy sau này)
+const isDevMode = () => { try { return localStorage.getItem('hsk:dev') === '1'; } catch (e) { return false; } };
+const setDevMode = (on) => { try { localStorage.setItem('hsk:dev', on ? '1' : '0'); } catch (e) {} if (typeof window !== 'undefined') window.HSK_DEV = !!on; };
+if (typeof window !== 'undefined') window.HSK_DEV = isDevMode();
 
 // ============ HELPERS ============
 const getToneColor = (pinyin) => {
@@ -2057,7 +2061,7 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount, habit, go
               <div className="flex-1 min-w-0">
                 <div className="text-xs tracking-[0.2em] font-bold mb-0.5" style={{ color:'#fff', opacity:0.92 }}>灵兽 · LINH THÚ</div>
                 <div className="text-base font-bold mb-1" style={{ color:'#fff' }}>{pp.name || sg.name} · Cấp {pp.lv}</div>
-                <div className="text-xs" style={{ color:'rgba(255,255,255,0.85)' }}>🍱 {pp.food || 0} thức ăn{(pp.food||0)>0 ? ' · cho ăn để lên cấp' : ' · học thêm để có thức ăn'}</div>
+                <div className="text-xs" style={{ color:'rgba(255,255,255,0.85)' }}>🍱 {isDevMode() ? '∞' : (pp.food || 0)} thức ăn{(isDevMode() || (pp.food||0)>0) ? ' · cho ăn để lên cấp' : ' · học thêm để có thức ăn'}</div>
               </div>
               <div style={{ color:'#fff' }}>→</div>
             </div>
@@ -9115,6 +9119,7 @@ const PetView = () => {
   const [evolveModal, setEvolveModal] = useState(null);
   const [editing, setEditing] = useState(false);
   const [nameInput, setNameInput] = useState('');
+  const [dev, setDev] = useState(() => isDevMode());
 
   useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
@@ -9146,9 +9151,10 @@ const PetView = () => {
   const tapPet = () => { setReact('excited'); setTimeout(() => setReact(null), 1200); setMsg(PET_CHEERS[Math.floor(Math.random() * PET_CHEERS.length)]); };
 
   const feed = () => {
-    if ((p.food || 0) <= 0) { setMsg('Hết 🍱 rồi — học thêm để có thức ăn nhé!'); setReact('sleepy'); setTimeout(() => setReact(null), 1200); return; }
+    const amt = dev ? 240 : (p.food || 0);
+    if (amt <= 0) { setMsg('Hết 🍱 rồi — học thêm để có thức ăn nhé!'); setReact('sleepy'); setTimeout(() => setReact(null), 1200); return; }
     let { lv, exp, food } = p; const beforeStage = petStage(lv).name; const beforeLv = lv;
-    const amt = food; exp += food; food = 0;
+    exp += amt; if (!dev) food = 0;
     while (exp >= petNeed(lv)) { exp -= petNeed(lv); lv++; }
     const np = { ...p, lv, exp, food }; writePet(np); setP(np);
     setFloatTxt('+' + amt + ' EXP'); setTimeout(() => setFloatTxt(null), 1500);
@@ -9158,6 +9164,9 @@ const PetView = () => {
     else if (lv > beforeLv) setMsg('升级 (shēngjí)! Lên cấp ' + lv + ' rồi! 🎉');
     else setMsg('好吃 (hǎochī)! Ngon quá~');
   };
+
+  const toggleDev = () => { const nd = !dev; setDevMode(nd); setDev(nd); setMsg(nd ? 'Đã bật chế độ Vô hạn ♾️ — cho ăn thoải mái!' : 'Đã tắt chế độ Vô hạn.'); };
+  const maxLevel = () => { const np = { ...p, lv: 16, exp: 0 }; writePet(np); setP(np); setEvolveModal(petStage(16)); };
 
   const saveName = () => { const np = { ...p, name: nameInput.trim().slice(0, 16) }; writePet(np); setP(np); setEditing(false); };
   const displayName = p.name || stage.name;
@@ -9205,7 +9214,7 @@ const PetView = () => {
 
         {/* huy hiệu cấp */}
         <div className="absolute top-3 left-4 px-2.5 py-1 rounded-xl text-xs font-bold" style={{ background: 'rgba(255,255,255,0.9)', color: C.deep }}>Cấp {p.lv} · {stage.name}</div>
-        <div className="absolute top-3 right-4 px-2.5 py-1 rounded-xl text-xs font-bold" style={{ background: `linear-gradient(135deg, ${C.a}, ${C.b})`, color: '#fff' }}>🍱 {p.food || 0}</div>
+        <div className="absolute top-3 right-4 px-2.5 py-1 rounded-xl text-xs font-bold" style={{ background: `linear-gradient(135deg, ${C.a}, ${C.b})`, color: '#fff' }}>🍱 {dev ? '∞' : (p.food || 0)}</div>
       </div>
 
       {/* TÊN + EXP + CHO ĂN */}
@@ -9228,12 +9237,23 @@ const PetView = () => {
         <div className="h-2.5 rounded-full overflow-hidden mb-3" style={{ background: 'var(--surface-soft)' }}>
           <div style={{ width: `${Math.min(100, (p.exp / need) * 100)}%`, height: '100%', background: `linear-gradient(90deg, ${C.a}, ${C.b})`, transition: 'width .5s' }} />
         </div>
-        <button onClick={feed} disabled={(p.food || 0) <= 0}
+        <button onClick={feed} disabled={!dev && (p.food || 0) <= 0}
           className="w-full py-3 rounded-2xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
-          style={{ background: (p.food || 0) > 0 ? `linear-gradient(135deg, ${C.a}, ${C.b})` : 'var(--surface-soft)', color: (p.food || 0) > 0 ? '#fff' : 'var(--muted)' }}>
-          {(p.food || 0) > 0 ? `🍱 Cho ăn (${p.food})` : 'Hết thức ăn — học thêm nhé'}
+          style={{ background: (dev || (p.food || 0) > 0) ? `linear-gradient(135deg, ${C.a}, ${C.b})` : 'var(--surface-soft)', color: (dev || (p.food || 0) > 0) ? '#fff' : 'var(--muted)' }}>
+          {dev ? '🍱 Cho ăn (∞)' : ((p.food || 0) > 0 ? `🍱 Cho ăn (${p.food})` : 'Hết thức ăn — học thêm nhé')}
         </button>
         <div className="text-xs text-center mt-2.5" style={{ color: 'var(--muted)' }}>Chạm vào cá để vuốt ve · ôn thẻ +1 · từ mới +2 · thuộc câu +4 · mở app mỗi ngày +8</div>
+
+        <div className="flex items-center justify-between gap-2 mt-3 pt-3" style={{ borderTop: '1px solid var(--border)' }}>
+          <button onClick={toggleDev} className="px-3 py-1.5 rounded-xl text-xs font-bold transition-all"
+            style={{ background: dev ? `${C.b}22` : 'var(--surface-soft)', color: dev ? C.deep : 'var(--muted)', border: `1px solid ${dev ? C.b + '66' : 'var(--border)'}` }}>
+            ♾️ Vô hạn điểm: {dev ? 'BẬT' : 'TẮT'}
+          </button>
+          {dev && (
+            <button onClick={maxLevel} className="px-3 py-1.5 rounded-xl text-xs font-bold"
+              style={{ background: `linear-gradient(135deg, ${C.a}, ${C.b})`, color: '#fff' }}>⏫ Lên cấp tối đa</button>
+          )}
+        </div>
       </div>
 
       {/* PHỤ KIỆN MỞ KHÓA */}
