@@ -9114,19 +9114,19 @@ const SkyBackground = ({ dark }) => {
     };
   }), []);
   const clouds = [
-    { w: 300, top: '7%',  left: '-6%', op: 0.95, drift: true,  dur: '175s', delay: '-20s' },
-    { w: 200, top: '19%', left: '58%', op: 0.70, drift: true,  dur: '230s', delay: '-90s' },
-    { w: 150, top: '40%', left: '10%', op: 0.50, drift: false },
-    { w: 250, top: '60%', left: '66%', op: 0.80, drift: true,  dur: '205s', delay: '-150s' },
-    { w: 120, top: '74%', left: '28%', op: 0.42, drift: false },
-    { w: 180, top: '31%', left: '84%', op: 0.55, drift: false },
+    { w: 300, top: '7%',  left: '-6%', op: 0.95, drift: true,  dur: '64s',  delay: '-8s' },
+    { w: 200, top: '19%', left: '58%', op: 0.70, drift: true,  dur: '92s',  delay: '-40s' },
+    { w: 150, top: '40%', left: '10%', op: 0.50, drift: true,  dur: '110s', delay: '-70s' },
+    { w: 250, top: '60%', left: '66%', op: 0.80, drift: true,  dur: '80s',  delay: '-55s' },
+    { w: 120, top: '74%', left: '28%', op: 0.42, drift: true,  dur: '120s', delay: '-20s' },
+    { w: 180, top: '31%', left: '84%', op: 0.55, drift: true,  dur: '100s', delay: '-15s' },
   ];
-  const petals = useMemo(() => Array.from({ length: 9 }, () => ({
+  const petals = useMemo(() => Array.from({ length: 16 }, () => ({
     left: (Math.random() * 100).toFixed(1),
-    dur: (Math.random() * 10 + 15).toFixed(1),
-    delay: (Math.random() * 18).toFixed(1),
-    s: (Math.random() * 6 + 8).toFixed(1),
-    hue: Math.random() < 0.5 ? 'rgba(255,182,206,0.85)' : 'rgba(255,214,170,0.82)',
+    dur: (Math.random() * 7 + 9).toFixed(1),
+    delay: (Math.random() * 14).toFixed(1),
+    s: (Math.random() * 8 + 12).toFixed(1),
+    hue: Math.random() < 0.5 ? 'rgba(255,170,200,0.92)' : (Math.random() < 0.5 ? 'rgba(255,206,150,0.9)' : 'rgba(186,230,170,0.88)'),
   })), []);
   return (
     <div id="sky-bg" aria-hidden="true" className={dark ? 'sky-night' : 'sky-day'}>
@@ -9736,16 +9736,21 @@ function App() {
         @keyframes skyShoot { 0% { transform: translate(0,0) rotate(22deg); opacity: 0; } 3% { opacity: .9; } 15% { transform: translate(-230px,115px) rotate(22deg); opacity: 0; } 100% { opacity: 0; } }
         @media (prefers-reduced-motion: reduce) { .sky-neb1, .sky-neb2 { animation: none; } .sky-shoot { display: none; } }
         .sky-day .sky-sun { position: absolute; top: 6%; right: 9%; width: 92px; height: 92px; border-radius: 50%;
-          background: radial-gradient(circle, #fff7d4 0%, #ffe89a 52%, rgba(255,224,138,0) 72%); animation: skySun 7s ease-in-out infinite; }
-        @keyframes skySun { 0%,100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.09); opacity: 1; } }
-        .sky-day .sky-bird-fly { position: absolute; color: rgba(60,84,120,0.5); animation: skyFly linear infinite; }
-        .sky-day .sky-bird-fly.b0 { top: 13%; width: 42px; animation-duration: 40s; animation-delay: -3s; }
-        .sky-day .sky-bird-fly.b1 { top: 18%; width: 28px; animation-duration: 50s; animation-delay: -24s; }
-        .sky-day .sky-bird-fly.b2 { top: 9%;  width: 32px; animation-duration: 58s; animation-delay: -41s; }
-        @keyframes skyFly { 0% { transform: translateX(-14vw) translateY(0); } 50% { transform: translateX(48vw) translateY(-16px); } 100% { transform: translateX(116vw) translateY(2px); } }
-        .sky-day .sky-petal { position: absolute; top: -5%; border-radius: 0 80% 0 80%; animation: skyPetal linear infinite; }
-        @keyframes skyPetal { 0% { transform: translateY(-12px) translateX(0) rotate(0deg); opacity: 0; } 8% { opacity: .85; } 90% { opacity: .7; } 100% { transform: translateY(106vh) translateX(70px) rotate(420deg); opacity: 0; } }
-        @media (prefers-reduced-motion: reduce) { .sky-day .sky-sun, .sky-day .sky-bird-fly { animation: none; } .sky-day .sky-petal { display: none; } }
+          background: radial-gradient(circle, #fff7d4 0%, #ffe89a 52%, rgba(255,224,138,0) 72%); animation: skySun 5s ease-in-out infinite; }
+        .sky-day .sky-sun::before { content: ''; position: absolute; inset: -36px; border-radius: 50%;
+          background: repeating-conic-gradient(from 0deg, rgba(255,231,150,0.45) 0deg 5deg, rgba(255,231,150,0) 5deg 20deg);
+          -webkit-mask: radial-gradient(circle, #000 30%, transparent 62%); mask: radial-gradient(circle, #000 30%, transparent 62%);
+          animation: skySpin 26s linear infinite; }
+        @keyframes skySun { 0%,100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.1); opacity: 1; } }
+        @keyframes skySpin { to { transform: rotate(360deg); } }
+        .sky-day .sky-bird-fly { position: absolute; height: auto; color: rgba(54,78,114,0.62); animation: skyFly linear infinite; }
+        .sky-day .sky-bird-fly.b0 { top: 13%; width: 42px; animation-duration: 17s; animation-delay: -2s; }
+        .sky-day .sky-bird-fly.b1 { top: 19%; width: 28px; animation-duration: 23s; animation-delay: -11s; }
+        .sky-day .sky-bird-fly.b2 { top: 8%;  width: 32px; animation-duration: 28s; animation-delay: -19s; }
+        @keyframes skyFly { 0% { transform: translateX(-16vw) translateY(0); } 50% { transform: translateX(46vw) translateY(-18px); } 100% { transform: translateX(118vw) translateY(2px); } }
+        .sky-day .sky-petal { position: absolute; top: -6%; border-radius: 0 80% 0 80%; animation: skyPetal linear infinite; }
+        @keyframes skyPetal { 0% { transform: translateY(-12px) translateX(0) rotate(0deg); opacity: 0; } 6% { opacity: .9; } 90% { opacity: .75; } 100% { transform: translateY(108vh) translateX(80px) rotate(540deg); opacity: 0; } }
+        @media (prefers-reduced-motion: reduce) { .sky-day .sky-sun, .sky-day .sky-sun::before, .sky-day .sky-bird-fly { animation: none; } .sky-day .sky-petal { display: none; } }
         .star-next { animation: starNextPulse 1.5s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
         @keyframes starNextPulse { 0%,100% { opacity:.25; } 50% { opacity:.7; } }
         .cst-twinkle { animation: skyTwinkle 3s ease-in-out infinite; }
