@@ -9136,12 +9136,12 @@ const SkyBackground = ({ dark }) => {
   const mkPetal = () => ({
     id: Math.random().toString(36).slice(2),
     left: +(Math.random() * 100).toFixed(1),
-    dur: +(Math.random() * 7 + 9).toFixed(1),
-    delay: +(Math.random() * 12).toFixed(1),
+    dur: +(Math.random() * 10 + 18).toFixed(1),
+    delay: +(Math.random() * 20).toFixed(1),
     s: +(Math.random() * 5 + 9).toFixed(1),
     sway: (Math.random() < 0.5 ? -1 : 1) * (Math.random() * 40 + 40),
   });
-  const [petals, setPetals] = useState(() => Array.from({ length: 14 }, mkPetal));
+  const [petals, setPetals] = useState(() => Array.from({ length: 7 }, mkPetal));
   const [bursts, setBursts] = useState([]);
   const popPetal = (e, id) => {
     e.stopPropagation();
@@ -9198,7 +9198,7 @@ const SkyBackground = ({ dark }) => {
       {!dark && (
         <div id="sky-fx" aria-hidden="true">
           {petals.map(p => (
-            <div key={p.id} className="sky-petal" onClick={(e) => popPetal(e, p.id)}
+            <div key={p.id} className="sky-petal"
               style={{ left: p.left + '%', animationDuration: p.dur + 's', animationDelay: '-' + p.delay + 's', '--sway': p.sway + 'px' }}>
               <Sakura size={p.s} />
             </div>
@@ -9784,8 +9784,8 @@ function App() {
           animation: skySpin 26s linear infinite; }
         @keyframes skySun { 0%,100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.1); opacity: 1; } }
         @keyframes skySpin { to { transform: rotate(360deg); } }
-        #sky-fx { position: fixed; inset: 0; z-index: 30; pointer-events: none; overflow: hidden; }
-        .sky-petal { position: absolute; top: -6%; pointer-events: auto; cursor: pointer; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.12)); animation: skyPetal 11s linear infinite; will-change: transform; }
+        #sky-fx { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+        .sky-petal { position: absolute; top: -6%; pointer-events: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.12)); animation: skyPetal 22s linear infinite; will-change: transform; }
         @keyframes skyPetal { 0% { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0; } 6% { opacity: .96; } 90% { opacity: .92; } 100% { transform: translateY(110vh) translateX(var(--sway,60px)) rotate(560deg); opacity: 0; } }
         .sky-burst { position: fixed; width: 0; height: 0; }
         .sky-burst-p { position: absolute; left: -5px; top: -5px; width: 10px; height: 11px; border-radius: 50% 0 50% 50%; background: #ff9ec4; animation: skyBurst .6s ease-out forwards; }
