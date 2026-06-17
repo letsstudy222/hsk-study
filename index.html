@@ -3,6 +3,17 @@
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>HSK 学习 - Học tiếng Trung</title>
+<!-- ===== PWA (cài lên màn hình chính iOS/Android, chạy offline) ===== -->
+<link rel="manifest" href="manifest.json"/>
+<meta name="theme-color" content="#3d8bd1"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="HSK 学习"/>
+<meta name="application-name" content="HSK 学习"/>
+<link rel="apple-touch-icon" href="icon-180.png"/>
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png"/>
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Quicksand:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
@@ -9942,6 +9953,21 @@ try{
 }catch(err){
   __showFatal((err && (err.stack||err.message)) || String(err));
 }
+</script>
+<!-- ===== Đăng ký Service Worker (chỉ chạy trên HTTPS/localhost, KHÔNG chạy file://) ===== -->
+<script>
+(function(){
+  if(!("serviceWorker" in navigator)) return;
+  var ok = location.protocol === "https:" ||
+           location.hostname === "localhost" ||
+           location.hostname === "127.0.0.1";
+  if(!ok) return; // mở bằng file:// thì bỏ qua, app vẫn chạy bình thường
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").catch(function(e){
+      console.warn("SW register failed:", e);
+    });
+  });
+})();
 </script>
 </body>
 </html>
