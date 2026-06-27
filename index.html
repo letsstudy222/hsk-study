@@ -9178,7 +9178,8 @@ const SkyBackground = ({ dark }) => {
         ))}
         {!dark && (
           <>
-            <div className="sky-rays" />
+            <div className="sky-beam sky-beam1" />
+            <div className="sky-beam sky-beam2" />
             <div className="sky-sun" />
           </>
         )}
@@ -9785,16 +9786,14 @@ function App() {
           animation: skySpin 26s linear infinite; }
         @keyframes skySun { 0%,100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.1); opacity: 1; } }
         @keyframes skySpin { to { transform: rotate(360deg); } }
-        .sky-day .sky-rays { position: absolute; inset: 0; pointer-events: none;
-          background: repeating-conic-gradient(from 0deg at 89% 9%,
-            rgba(255,232,150,0) 0deg 5deg,
-            rgba(255,228,140,0.22) 5deg 7deg,
-            rgba(255,232,150,0) 7deg 15deg);
-          -webkit-mask: radial-gradient(circle at 89% 9%, #000 4%, rgba(0,0,0,.55) 28%, transparent 58%);
-          mask: radial-gradient(circle at 89% 9%, #000 4%, rgba(0,0,0,.55) 28%, transparent 58%);
-          filter: blur(2px); opacity: .6; animation: skyRays 11s ease-in-out infinite; }
-        @keyframes skyRays { 0%,100% { opacity: .4; } 50% { opacity: .75; } }
-        @media (prefers-reduced-motion: reduce) { .sky-day .sky-rays { animation: none; opacity: .5; } }
+        .sky-day .sky-beam { position: absolute; top: -12%; pointer-events: none; transform-origin: top center;
+          filter: blur(12px); -webkit-mask: linear-gradient(to bottom, #000 0%, transparent 88%); mask: linear-gradient(to bottom, #000 0%, transparent 88%); }
+        .sky-day .sky-beam1 { right: 15%; width: 130px; height: 150%; transform: rotate(-17deg);
+          background: linear-gradient(90deg, transparent, rgba(255,196,138,0.16), transparent); animation: skyBeam 15s ease-in-out infinite; }
+        .sky-day .sky-beam2 { right: 27%; width: 80px; height: 140%; transform: rotate(-12deg);
+          background: linear-gradient(90deg, transparent, rgba(255,210,160,0.1), transparent); animation: skyBeam 19s ease-in-out infinite; animation-delay: -4s; }
+        @keyframes skyBeam { 0%,100% { opacity: .55; } 50% { opacity: 1; } }
+        @media (prefers-reduced-motion: reduce) { .sky-day .sky-beam { animation: none; opacity: .8; } }
         #sky-fx { position: fixed; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
         .sky-petal { position: absolute; top: -6%; pointer-events: none; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.12)); animation: skyPetal 22s linear infinite; will-change: transform; }
         @keyframes skyPetal { 0% { transform: translateY(-20px) translateX(0) rotate(0deg); opacity: 0; } 6% { opacity: .96; } 90% { opacity: .92; } 100% { transform: translateY(110vh) translateX(var(--sway,60px)) rotate(560deg); opacity: 0; } }

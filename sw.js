@@ -6,7 +6,7 @@
    - Bỏ qua request tới Supabase REST (đồng bộ tiến độ) -> luôn đi mạng, không cache.
    Đổi CACHE_VERSION mỗi lần ra bản mới để buộc cập nhật.
 */
-const CACHE_VERSION = "hsk-v5";
+const CACHE_VERSION = "hsk-v6";
 const PRECACHE = [
   ".",
   "index.html",
