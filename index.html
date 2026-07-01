@@ -3826,6 +3826,29 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
     return { total: levelWords.length, studied, due };
   })();
 
+  // ── Gộp TẤT CẢ từ chưa thuộc / khó thuộc của CẢ CẤP (không theo bộ) ──
+  // Tiêu chí "yếu": đánh giá gần nhất là Quên(1)/Khó(2), HOẶC đang learning/relearning,
+  // HOẶC là leech (quên nhiều lần). Dùng để gom các từ lẻ còn sót ở nhiều bộ để học một thể.
+  const weakLevel = useMemo(() => {
+    const words = [];
+    let forgot = 0, hard = 0, learningN = 0, leechN = 0;
+    for (const w of levelWords) {
+      const d = srsData[w.id];
+      if (!d) continue; // từ mới chưa học -> không tính là "chưa thuộc"
+      const r = d.lastRating || 3;
+      const isLearning = d.state === 'learning' || d.state === 'relearning';
+      const isLeech = (d.lapses || 0) >= LEECH_THRESHOLD;
+      if (r === 1 || r === 2 || isLearning || isLeech) {
+        words.push(w);
+        if (r === 1) forgot++;
+        else if (r === 2) hard++;
+        else if (isLearning) learningN++;
+        if (isLeech) leechN++;
+      }
+    }
+    return { words, forgot, hard, learning: learningN, leech: leechN, total: words.length };
+  }, [levelWords, srsData]);
+
   // ── Trộn từ mới xen vào từ ôn (kiểu Anki) ──
   const buildToday = useCallback(() => {
     const due = dueToStudy.map(x => x.w);
@@ -4162,6 +4185,28 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
           {levelOverview.due > 0 && <><span>·</span><span style={{ color:'var(--accent)', fontWeight:600 }}>cần ôn {levelOverview.due}</span></>}
         </div>
 
+        {/* ⭐ Gộp từ chưa thuộc / khó thuộc của CẢ CẤP — học một thể các từ lẻ còn sót ở nhiều bộ */}
+        {weakLevel.total > 0 && (
+          <button onClick={() => startWords(weakLevel.words, 'level-weak')}
+            className="w-full text-left rounded-2xl p-4 mb-5 transition-all hover:scale-[1.01] active:scale-[0.99] soft-shadow"
+            style={{ background:'linear-gradient(135deg, #fff7ed, #fffbeb)', border:'1.5px solid #fed7aa' }}>
+            <div className="flex items-center justify-between mb-1.5">
+              <div className="flex items-center gap-2">
+                <span style={{ fontSize:'20px' }}>🔥</span>
+                <span className="font-bold text-base" style={{ color:'#b45309' }}>Từ chưa thuộc — HSK {currentLevel}</span>
+              </div>
+              <span className="text-sm font-bold px-2.5 py-1 rounded-lg" style={{ background:'#fff', color:'#b45309', border:'1px solid #fed7aa' }}>{weakLevel.total} từ</span>
+            </div>
+            <div className="text-xs mb-2.5" style={{ color:'#9a6a2c' }}>Gộp toàn bộ từ Quên/Khó/đang học của cả cấp — học một thể các từ lẻ còn sót ở nhiều bộ.</div>
+            <div className="flex flex-wrap gap-1.5 text-[11px]">
+              {weakLevel.forgot > 0 && <span className="px-2 py-1 rounded-lg font-semibold" style={{ background:'#fff', color:RATE_COLOR[1], border:`1px solid ${RATE_COLOR[1]}40` }}>● Quên {weakLevel.forgot}</span>}
+              {weakLevel.hard > 0 && <span className="px-2 py-1 rounded-lg font-semibold" style={{ background:'#fff', color:RATE_COLOR[2], border:`1px solid ${RATE_COLOR[2]}40` }}>● Khó {weakLevel.hard}</span>}
+              {weakLevel.learning > 0 && <span className="px-2 py-1 rounded-lg font-semibold" style={{ background:'#fff', color:'#f59e0b', border:'1px solid #fde68a' }}>● Đang học {weakLevel.learning}</span>}
+              {weakLevel.leech > 0 && <span className="px-2 py-1 rounded-lg font-semibold" style={{ background:'#fff', color:'#b45309', border:'1px solid #fed7aa' }}>🔥 Leech {weakLevel.leech}</span>}
+            </div>
+          </button>
+        )}
+
         {/* lưới các bộ */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {Array.from({ length: deckCount }, (_, k) => {
@@ -4244,7 +4289,7 @@ const FlashcardView = ({ srsData, updateSRS, settings, setSettings, daily, bumpD
   }
 
   const sessionProgress = sessionIdx / Math.max(sessionQueue.length, 1);
-  const modeBadge = isCram ? 'ÔN TỰ DO' : sessionMode === 'deck-due' ? 'CẦN ÔN' : sessionMode === 'deck-weak' ? 'TỪ YẾU' : sessionMode === 'deck-new' ? 'TỪ MỚI' : (selectedDeck != null ? `BỘ ${selectedDeck + 1}` : null);
+  const modeBadge = isCram ? 'ÔN TỰ DO' : sessionMode === 'level-weak' ? `TỪ CHƯA THUỘC · HSK ${currentLevel}` : sessionMode === 'deck-due' ? 'CẦN ÔN' : sessionMode === 'deck-weak' ? 'TỪ YẾU' : sessionMode === 'deck-new' ? 'TỪ MỚI' : (selectedDeck != null ? `BỘ ${selectedDeck + 1}` : null);
 
   // ════════════ PHIÊN HỌC ════════════
   return (
