@@ -489,22 +489,28 @@ const petNeed = (lv) => 12 + lv * 6;            // EXP để lên từ cấp lv 
 const petStage = (lv) => { let s = PET_STAGES[0]; for (const x of PET_STAGES) if (lv >= x.lv) s = x; return s; };
 const readPet = () => { try { const s = localStorage.getItem('hsk:pet'); return s ? JSON.parse(s) : null; } catch (e) { return null; } };
 const writePet = (o) => { try { localStorage.setItem('hsk:pet', JSON.stringify(o)); } catch (e) {} };
-const defaultPet = () => ({ name: '', lv: 1, exp: 0, food: 0, bonusDay: '', lastSeen: '' });
+const defaultPet = () => ({ name: '', lv: 1, exp: 0, food: 0, bonusDay: '', lastSeen: '', skin: null });
 const feedPetFood = (n) => { const p = readPet() || defaultPet(); p.food = (p.food || 0) + n; writePet(p); };
 // Chế độ vô hạn (dùng cho Linh thú & các chế độ tích lũy sau này)
 const isDevMode = () => { try { return localStorage.getItem('hsk:dev') === '1'; } catch (e) { return false; } };
 const setDevMode = (on) => { try { localStorage.setItem('hsk:dev', on ? '1' : '0'); } catch (e) {} if (typeof window !== 'undefined') window.HSK_DEV = !!on; };
 if (typeof window !== 'undefined') window.HSK_DEV = isDevMode();
-// ===== NHÂN VẬT (SVG vẽ tay — thể hiện rõ tiến hóa: Trứng → Cá bột → Cá chép → Chép vàng → Tiểu Long → Thần Long) =====
+// ===== NHÂN VẬT (SVG vẽ tay, khớp cử động — tiến hóa: Trứng → Cá bột → Cá chép → Chép vàng → Tiểu Long → Thần Long) =====
 const ART_EMOJI = { egg: '🥚', fry: '🐟', koi: '🐠', koigold: '🐡', dragon: '🐉', dragonmax: '🐲' };
 const EMOJI_TO_ART = { '🥚':'egg', '🐟':'fry', '🐠':'koi', '🐡':'koigold', '🐉':'dragon', '🐲':'dragonmax' };
 const PET_ART_SVG = {
-  egg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="104" rx="30" ry="7" fill="#000" opacity="0.10"/><ellipse cx="60" cy="102" rx="38" ry="8" fill="none" stroke="#8ED3F0" stroke-width="2.5" opacity="0.6"/><path d="M60 22 C42 22 31 46 31 68 C31 89 44 101 60 101 C76 101 89 89 89 68 C89 46 78 22 60 22 Z" fill="#FFF6E7" stroke="#EFD3A8" stroke-width="3"/><ellipse cx="45" cy="52" rx="7.5" ry="9" fill="#FFB166"/><ellipse cx="74" cy="72" rx="8" ry="9.5" fill="#FF9E52"/><ellipse cx="58" cy="88" rx="5" ry="5.5" fill="#FFC489"/><polyline points="47,34 53,40 58,33 64,41 70,34" fill="none" stroke="#E3B77F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M47 66 q4 4 8 0" fill="none" stroke="#7A5B3A" stroke-width="3" stroke-linecap="round"/><path d="M65 66 q4 4 8 0" fill="none" stroke="#7A5B3A" stroke-width="3" stroke-linecap="round"/><path d="M57 75 q3 3 6 0" fill="none" stroke="#7A5B3A" stroke-width="2.5" stroke-linecap="round"/><circle cx="44" cy="73" r="4" fill="#FFB3B3" opacity="0.75"/><circle cx="76" cy="73" r="4" fill="#FFB3B3" opacity="0.75"/><path d="M50 30 q-8 6 -10 18" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" opacity="0.85"/><path d="M97 34 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4 -5.6 -5.6 -2.4 5.6 -2.4 Z" fill="#FFD66B"/><path d="M20 50 l1.8 4.2 4.2 1.8 -4.2 1.8 -1.8 4.2 -1.8 -4.2 -4.2 -1.8 4.2 -1.8 Z" fill="#FFE29A"/></svg>`,
-  fry: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="58" cy="104" rx="28" ry="6" fill="#000" opacity="0.10"/><path d="M82 66 q16 -10 16 -22 q-4 10 -12 12 q6 4 4 16 q-4 -6 -8 -6 Z" fill="#FF8A3D"/><circle cx="55" cy="64" r="27" fill="#FFA95C"/><path d="M33 72 a27 27 0 0 0 44 0 q-10 8 -22 8 q-12 0 -22 -8 Z" fill="#FFE3C2"/><ellipse cx="55" cy="84" rx="7" ry="4.5" fill="#FFD3A6"/><path d="M32 62 q-9 2 -11 10 q8 2 13 -3 Z" fill="#FF8A3D"/><path d="M55 37 q-2 -9 5 -13 q3 7 -1 13 Z" fill="#FF8A3D"/><circle cx="46" cy="60" r="8.5" fill="#fff"/><circle cx="47" cy="61" r="5.4" fill="#3B2B20"/><circle cx="49" cy="59" r="2" fill="#fff"/><circle cx="67" cy="60" r="8.5" fill="#fff"/><circle cx="68" cy="61" r="5.4" fill="#3B2B20"/><circle cx="70" cy="59" r="2" fill="#fff"/><path d="M53 72 q4 4 8 0" fill="none" stroke="#7A4A2B" stroke-width="3" stroke-linecap="round"/><circle cx="38" cy="70" r="4" fill="#FF9C9C" opacity="0.8"/><circle cx="74" cy="70" r="4" fill="#FF9C9C" opacity="0.8"/><circle cx="94" cy="38" r="5" fill="none" stroke="#8ED3F0" stroke-width="2.5"/><circle cx="103" cy="26" r="3" fill="none" stroke="#8ED3F0" stroke-width="2"/><circle cx="20" cy="36" r="3.5" fill="none" stroke="#8ED3F0" stroke-width="2"/></svg>`,
-  koi: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="106" rx="34" ry="6" fill="#000" opacity="0.10"/><path d="M88 62 q20 -14 24 -28 q-8 12 -18 14 q10 6 8 24 q-6 -10 -16 -8 Z" fill="#FF9752"/><path d="M92 62 q12 -8 15 -18" fill="none" stroke="#FFB37E" stroke-width="2.5" stroke-linecap="round"/><path d="M18 64 Q30 40 58 40 Q86 40 94 62 Q86 84 58 84 Q30 84 18 64 Z" fill="#FFF7EE" stroke="#F2D9BE" stroke-width="2.5"/><path d="M44 41 q14 -3 24 2 q6 10 0 20 q-14 4 -24 -2 q-6 -10 0 -20 Z" fill="#FF9752"/><path d="M78 50 q10 4 13 12 q-4 9 -13 12 q-5 -12 0 -24 Z" fill="#FFB166"/><ellipse cx="30" cy="50" rx="8" ry="6.5" fill="#F25C3D"/><path d="M50 41 q4 -12 14 -14 q2 8 -4 14 Z" fill="#FFB37E"/><path d="M40 76 q-2 12 6 16 q6 -6 2 -15 Z" fill="#FFB37E"/><circle cx="30" cy="62" r="8" fill="#fff" stroke="#F2D9BE" stroke-width="1.5"/><circle cx="29" cy="63" r="5.2" fill="#3B2B20"/><circle cx="31" cy="61" r="1.9" fill="#fff"/><path d="M18 70 q3 3 7 1" fill="none" stroke="#B9856A" stroke-width="2.6" stroke-linecap="round"/><circle cx="24" cy="73" r="3.6" fill="#FF9C9C" opacity="0.8"/><path d="M16 66 q-4 1 -5 4" fill="none" stroke="#E8B08B" stroke-width="2" stroke-linecap="round"/><path d="M56 56 q4 4 8 0 M64 64 q4 4 8 0 M50 66 q4 4 8 0" fill="none" stroke="#FFD9B8" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="42" r="4" fill="none" stroke="#8ED3F0" stroke-width="2.2"/><circle cx="20" cy="30" r="2.6" fill="none" stroke="#8ED3F0" stroke-width="2"/></svg>`,
-  koigold: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><path d="M20 104 q10 -8 20 0 q10 -8 20 0 q10 -8 20 0 q10 -8 20 0" fill="none" stroke="#8ED3F0" stroke-width="3" stroke-linecap="round" opacity="0.8"/><path d="M30 96 q2 -8 -3 -12 M52 98 q0 -9 -6 -12 M88 96 q4 -7 10 -8" fill="none" stroke="#BDE6F7" stroke-width="3" stroke-linecap="round"/><path d="M74 78 q4 20 -6 32 q2 -14 -6 -20 q-2 12 -16 16 q8 -10 6 -20 q10 4 22 -8 Z" fill="#F6A93B"/><path d="M78 76 Q60 74 48 58 Q38 42 46 22 Q56 12 70 16 Q86 22 90 44 Q92 62 78 76 Z" fill="#FFD563" stroke="#E8AF35" stroke-width="2.5"/><path d="M56 40 q10 -8 22 -4 q6 10 0 22 q-14 2 -22 -6 q-3 -6 0 -12 Z" fill="#F6B93B"/><ellipse cx="60" cy="22" rx="7" ry="6" fill="#F2903D"/><path d="M48 58 Q58 72 76 75 Q66 78 58 72 Q50 66 48 58 Z" fill="#FFEDBD"/><path d="M88 40 q12 -2 16 8 q-8 4 -16 0 Z" fill="#FFC94F"/><path d="M50 52 q-12 0 -16 10 q9 4 17 -3 Z" fill="#FFC94F"/><circle cx="53" cy="28" r="9" fill="#fff" stroke="#E8AF35" stroke-width="1.5"/><circle cx="52" cy="27" r="5.8" fill="#3B2B20"/><circle cx="53" cy="25" r="1.9" fill="#fff"/><path d="M44 38 q3 3 7 1" fill="none" stroke="#B98A3A" stroke-width="2.6" stroke-linecap="round"/><circle cx="47" cy="42" r="3.4" fill="#FF9C9C" opacity="0.8"/><path d="M42 32 q-7 0 -9 6" fill="none" stroke="#E8AF35" stroke-width="2.2" stroke-linecap="round"/><path d="M68 44 q4 4 8 0 M62 54 q4 4 8 0 M74 56 q4 4 8 0" fill="none" stroke="#FFE79A" stroke-width="2" stroke-linecap="round"/><path d="M100 20 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4 -5.6 -5.6 -2.4 5.6 -2.4 Z" fill="#FFD66B"/><path d="M18 20 l1.8 4.2 4.2 1.8 -4.2 1.8 -1.8 4.2 -1.8 -4.2 -4.2 -1.8 4.2 -1.8 Z" fill="#FFE29A"/><circle cx="28" cy="66" r="2.2" fill="#FFD66B"/></svg>`,
-  dragon: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="108" rx="34" ry="6" fill="#000" opacity="0.10"/><g fill="#EAF6FB" stroke="#CBE7F4" stroke-width="2"><circle cx="78" cy="100" r="9"/><circle cx="92" cy="100" r="7"/><circle cx="66" cy="102" r="7"/></g><path d="M50 70 Q30 76 30 90 Q30 102 46 102 Q62 102 66 92 Q70 82 84 84" fill="none" stroke="#5FC49A" stroke-width="17" stroke-linecap="round"/><path d="M50 73 Q34 78 34 90 Q34 98 46 98 Q60 98 63 90" fill="none" stroke="#EFFAF0" stroke-width="7" stroke-linecap="round" stroke-dasharray="7 5"/><path d="M84 84 q10 -2 12 -10 q2 8 -2 13 q6 0 9 -4 q-2 9 -11 10 q-6 1 -10 -4 Z" fill="#FF9752"/><path d="M36 78 q-6 -4 -4 -10 q6 2 7 8 Z M28 90 q-7 -1 -8 -8 q7 0 10 5 Z M38 100 q-6 3 -11 0 q4 -6 10 -4 Z" fill="#FFB166"/><circle cx="54" cy="48" r="26" fill="#6BCB9E"/><ellipse cx="54" cy="60" rx="15" ry="10.5" fill="#EFFAF0"/><circle cx="49" cy="57" r="1.9" fill="#3B6B52"/><circle cx="59" cy="57" r="1.9" fill="#3B6B52"/><path d="M50 64 q4 4 8 0" fill="none" stroke="#3B6B52" stroke-width="2.6" stroke-linecap="round"/><circle cx="42" cy="44" r="8.5" fill="#fff"/><circle cx="43" cy="45" r="5.4" fill="#2E4B3C"/><circle cx="45" cy="43" r="2" fill="#fff"/><circle cx="66" cy="44" r="8.5" fill="#fff"/><circle cx="67" cy="45" r="5.4" fill="#2E4B3C"/><circle cx="69" cy="43" r="2" fill="#fff"/><circle cx="33" cy="54" r="4" fill="#FF9C9C" opacity="0.8"/><circle cx="75" cy="54" r="4" fill="#FF9C9C" opacity="0.8"/><path d="M40 26 q-2 -10 6 -13 q4 7 -1 13 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2"/><path d="M68 26 q2 -10 -6 -13 q-4 7 1 13 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2"/><circle cx="30" cy="34" r="5" fill="#5FC49A"/><circle cx="78" cy="34" r="5" fill="#5FC49A"/><path d="M40 60 q-8 2 -10 8" fill="none" stroke="#5FC49A" stroke-width="2.4" stroke-linecap="round"/><path d="M68 60 q8 2 10 8" fill="none" stroke="#5FC49A" stroke-width="2.4" stroke-linecap="round"/><path d="M100 30 l2.2 5 5 2.2 -5 2.2 -2.2 5 -2.2 -5 -5 -2.2 5 -2.2 Z" fill="#9FE0C4"/></svg>`,
-  dragonmax: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g fill="#EAF6FB" stroke="#CBE7F4" stroke-width="2"><circle cx="22" cy="104" r="9"/><circle cx="35" cy="106" r="7"/><circle cx="11" cy="107" r="6"/><circle cx="94" cy="98" r="8"/><circle cx="106" cy="101" r="6"/></g><path d="M46 66 Q20 72 20 88 Q20 104 44 104 Q70 104 74 90 Q78 76 96 78 Q108 80 106 66 Q104 54 90 56" fill="none" stroke="#F2A23C" stroke-width="18" stroke-linecap="round"/><path d="M46 69 Q25 74 25 88 Q25 99 44 99 Q66 99 70 88" fill="none" stroke="#FFEDC2" stroke-width="7" stroke-linecap="round" stroke-dasharray="7 5"/><path d="M28 74 q-8 -5 -6 -13 q8 3 9 11 Z M18 88 q-9 -1 -11 -10 q9 0 13 7 Z M28 100 q-8 4 -15 0 q5 -8 14 -5 Z M62 103 q-2 9 -11 11 q1 -9 8 -13 Z" fill="#F25C3D"/><path d="M90 56 q4 -12 -3 -18 q10 2 12 10 q4 -8 0 -14 q10 6 8 18 q-2 10 -13 10 Z" fill="#F25C3D"/><g fill="#F6B93B"><path d="M30 34 q-12 -2 -16 8 q10 4 17 -2 Z"/><path d="M32 22 q-12 -6 -20 0 q7 8 18 6 Z"/><path d="M42 12 q-8 -9 -18 -7 q4 10 14 12 Z"/><path d="M78 22 q12 -6 20 0 q-7 8 -18 6 Z"/><path d="M68 12 q8 -9 18 -7 q-4 10 -14 12 Z"/><path d="M80 34 q12 -2 16 8 q-10 4 -17 -2 Z"/></g><circle cx="55" cy="40" r="26" fill="#F2A23C"/><path d="M40 18 q-4 -10 3 -15 q3 5 1 9 q5 -4 9 -2 q-3 7 -10 9 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2" stroke-linejoin="round"/><path d="M70 18 q4 -10 -3 -15 q-3 5 -1 9 q-5 -4 -9 -2 q3 7 10 9 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2" stroke-linejoin="round"/><ellipse cx="55" cy="52" rx="15.5" ry="11" fill="#FFEDC2"/><circle cx="50" cy="49" r="1.9" fill="#8A5A22"/><circle cx="60" cy="49" r="1.9" fill="#8A5A22"/><path d="M50 56 q5 5 10 0" fill="none" stroke="#8A5A22" stroke-width="2.6" stroke-linecap="round"/><path d="M34 32 q6 -4 12 -1" fill="none" stroke="#8A5A22" stroke-width="2.4" stroke-linecap="round"/><path d="M76 32 q-6 -4 -12 -1" fill="none" stroke="#8A5A22" stroke-width="2.4" stroke-linecap="round"/><circle cx="43" cy="38" r="8" fill="#fff"/><circle cx="44" cy="39" r="5.2" fill="#4A2E12"/><circle cx="46" cy="37" r="1.9" fill="#fff"/><circle cx="67" cy="38" r="8" fill="#fff"/><circle cx="68" cy="39" r="5.2" fill="#4A2E12"/><circle cx="70" cy="37" r="1.9" fill="#fff"/><circle cx="34" cy="47" r="4" fill="#FF9C9C" opacity="0.8"/><circle cx="76" cy="47" r="4" fill="#FF9C9C" opacity="0.8"/><path d="M40 53 q-14 2 -16 12 q-1 6 4 8" fill="none" stroke="#F6B93B" stroke-width="2.6" stroke-linecap="round"/><path d="M70 53 q14 2 16 12 q1 6 -4 8" fill="none" stroke="#F6B93B" stroke-width="2.6" stroke-linecap="round"/><circle cx="55" cy="77" r="10" fill="#FFE9F2" stroke="#F5BBD3" stroke-width="2.5"/><circle cx="51.5" cy="73.5" r="3" fill="#fff"/><path d="M49 82 a10 10 0 0 0 12 0" fill="none" stroke="#F0A7C6" stroke-width="2" stroke-linecap="round" opacity="0.7"/><circle cx="45" cy="70" r="5" fill="#F2A23C" stroke="#E8912F" stroke-width="2"/><circle cx="65" cy="70" r="5" fill="#F2A23C" stroke="#E8912F" stroke-width="2"/><path d="M104 26 l2.6 6 6 2.6 -6 2.6 -2.6 6 -2.6 -6 -6 -2.6 6 -2.6 Z" fill="#FFD66B"/><path d="M12 40 l2 4.6 4.6 2 -4.6 2 -2 4.6 -2 -4.6 -4.6 -2 4.6 -2 Z" fill="#FFE29A"/><circle cx="90" cy="14" r="2.4" fill="#FFD66B"/></svg>`,
+  egg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="104" rx="30" ry="7" fill="#000" opacity="0.10"/><ellipse cx="60" cy="102" rx="38" ry="8" fill="none" stroke="#8ED3F0" stroke-width="2.5" opacity="0.6"/><g class="pj-wobble" style="transform-origin:60px 101px"><path d="M60 22 C42 22 31 46 31 68 C31 89 44 101 60 101 C76 101 89 89 89 68 C89 46 78 22 60 22 Z" fill="#FFF6E7" stroke="#EFD3A8" stroke-width="3"/><ellipse cx="45" cy="52" rx="7.5" ry="9" fill="#FFB166"/><ellipse cx="74" cy="72" rx="8" ry="9.5" fill="#FF9E52"/><ellipse cx="58" cy="88" rx="5" ry="5.5" fill="#FFC489"/><polyline points="47,34 53,40 58,33 64,41 70,34" fill="none" stroke="#E3B77F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M47 66 q4 4 8 0" fill="none" stroke="#7A5B3A" stroke-width="3" stroke-linecap="round"/><path d="M65 66 q4 4 8 0" fill="none" stroke="#7A5B3A" stroke-width="3" stroke-linecap="round"/><path d="M57 75 q3 3 6 0" fill="none" stroke="#7A5B3A" stroke-width="2.5" stroke-linecap="round"/><circle cx="44" cy="73" r="4" fill="#FFB3B3" opacity="0.75"/><circle cx="76" cy="73" r="4" fill="#FFB3B3" opacity="0.75"/><path d="M50 30 q-8 6 -10 18" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" opacity="0.85"/></g><g class="pj-twinkle"><path d="M97 34 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4 -5.6 -5.6 -2.4 5.6 -2.4 Z" fill="#FFD66B"/></g><g class="pj-twinkle-b"><path d="M20 50 l1.8 4.2 4.2 1.8 -4.2 1.8 -1.8 4.2 -1.8 -4.2 -4.2 -1.8 4.2 -1.8 Z" fill="#FFE29A"/></g></svg>`,
+  fry: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="58" cy="104" rx="28" ry="6" fill="#000" opacity="0.10"/><g class="pj-tail" style="transform-origin:82px 66px"><path d="M82 66 q16 -10 16 -22 q-4 10 -12 12 q6 4 4 16 q-4 -6 -8 -6 Z" fill="#FF8A3D"/></g><circle cx="55" cy="64" r="27" fill="#FFA95C"/><path d="M33 72 a27 27 0 0 0 44 0 q-10 8 -22 8 q-12 0 -22 -8 Z" fill="#FFE3C2"/><ellipse cx="55" cy="84" rx="7" ry="4.5" fill="#FFD3A6"/><g class="pj-fin" style="transform-origin:33px 62px"><path d="M32 62 q-9 2 -11 10 q8 2 13 -3 Z" fill="#FF8A3D"/></g><g class="pj-fin-b" style="transform-origin:56px 37px"><path d="M55 37 q-2 -9 5 -13 q3 7 -1 13 Z" fill="#FF8A3D"/></g><circle cx="46" cy="60" r="8.5" fill="#fff"/><circle cx="47" cy="61" r="5.4" fill="#3B2B20"/><circle cx="49" cy="59" r="2" fill="#fff"/><circle cx="67" cy="60" r="8.5" fill="#fff"/><circle cx="68" cy="61" r="5.4" fill="#3B2B20"/><circle cx="70" cy="59" r="2" fill="#fff"/><path d="M53 72 q4 4 8 0" fill="none" stroke="#7A4A2B" stroke-width="3" stroke-linecap="round"/><circle cx="38" cy="70" r="4" fill="#FF9C9C" opacity="0.8"/><circle cx="74" cy="70" r="4" fill="#FF9C9C" opacity="0.8"/><g class="pj-twinkle"><circle cx="94" cy="38" r="5" fill="none" stroke="#8ED3F0" stroke-width="2.5"/><circle cx="103" cy="26" r="3" fill="none" stroke="#8ED3F0" stroke-width="2"/></g><g class="pj-twinkle-b"><circle cx="20" cy="36" r="3.5" fill="none" stroke="#8ED3F0" stroke-width="2"/></g></svg>`,
+  koi: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="106" rx="34" ry="6" fill="#000" opacity="0.10"/><g class="pj-tail" style="transform-origin:90px 62px"><path d="M88 62 q20 -14 24 -28 q-8 12 -18 14 q10 6 8 24 q-6 -10 -16 -8 Z" fill="#FF9752"/><path d="M92 62 q12 -8 15 -18" fill="none" stroke="#FFB37E" stroke-width="2.5" stroke-linecap="round"/></g><path d="M18 64 Q30 40 58 40 Q86 40 94 62 Q86 84 58 84 Q30 84 18 64 Z" fill="#FFF7EE" stroke="#F2D9BE" stroke-width="2.5"/><path d="M44 41 q14 -3 24 2 q6 10 0 20 q-14 4 -24 -2 q-6 -10 0 -20 Z" fill="#FF9752"/><path d="M78 50 q10 4 13 12 q-4 9 -13 12 q-5 -12 0 -24 Z" fill="#FFB166"/><ellipse cx="30" cy="50" rx="8" ry="6.5" fill="#F25C3D"/><g class="pj-fin-b" style="transform-origin:55px 41px"><path d="M50 41 q4 -12 14 -14 q2 8 -4 14 Z" fill="#FFB37E"/></g><g class="pj-fin" style="transform-origin:42px 77px"><path d="M40 76 q-2 12 6 16 q6 -6 2 -15 Z" fill="#FFB37E"/></g><circle cx="30" cy="62" r="8" fill="#fff" stroke="#F2D9BE" stroke-width="1.5"/><circle cx="29" cy="63" r="5.2" fill="#3B2B20"/><circle cx="31" cy="61" r="1.9" fill="#fff"/><path d="M18 70 q3 3 7 1" fill="none" stroke="#B9856A" stroke-width="2.6" stroke-linecap="round"/><circle cx="24" cy="73" r="3.6" fill="#FF9C9C" opacity="0.8"/><g class="pj-whisk-l" style="transform-origin:16px 66px"><path d="M16 66 q-4 1 -5 4" fill="none" stroke="#E8B08B" stroke-width="2" stroke-linecap="round"/></g><path d="M56 56 q4 4 8 0 M64 64 q4 4 8 0 M50 66 q4 4 8 0" fill="none" stroke="#FFD9B8" stroke-width="2" stroke-linecap="round"/><g class="pj-twinkle"><circle cx="12" cy="42" r="4" fill="none" stroke="#8ED3F0" stroke-width="2.2"/><circle cx="20" cy="30" r="2.6" fill="none" stroke="#8ED3F0" stroke-width="2"/></g></svg>`,
+  koigold: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g class="pj-twinkle-b"><path d="M20 104 q10 -8 20 0 q10 -8 20 0 q10 -8 20 0 q10 -8 20 0" fill="none" stroke="#8ED3F0" stroke-width="3" stroke-linecap="round" opacity="0.8"/><path d="M30 96 q2 -8 -3 -12 M52 98 q0 -9 -6 -12 M88 96 q4 -7 10 -8" fill="none" stroke="#BDE6F7" stroke-width="3" stroke-linecap="round"/></g><g class="pj-tail-fast" style="transform-origin:72px 80px"><path d="M74 78 q4 20 -6 32 q2 -14 -6 -20 q-2 12 -16 16 q8 -10 6 -20 q10 4 22 -8 Z" fill="#F6A93B"/></g><path d="M78 76 Q60 74 48 58 Q38 42 46 22 Q56 12 70 16 Q86 22 90 44 Q92 62 78 76 Z" fill="#FFD563" stroke="#E8AF35" stroke-width="2.5"/><path d="M56 40 q10 -8 22 -4 q6 10 0 22 q-14 2 -22 -6 q-3 -6 0 -12 Z" fill="#F6B93B"/><ellipse cx="60" cy="22" rx="7" ry="6" fill="#F2903D"/><path d="M48 58 Q58 72 76 75 Q66 78 58 72 Q50 66 48 58 Z" fill="#FFEDBD"/><g class="pj-fin" style="transform-origin:89px 44px"><path d="M88 40 q12 -2 16 8 q-8 4 -16 0 Z" fill="#FFC94F"/></g><g class="pj-fin-b" style="transform-origin:49px 54px"><path d="M50 52 q-12 0 -16 10 q9 4 17 -3 Z" fill="#FFC94F"/></g><circle cx="53" cy="28" r="9" fill="#fff" stroke="#E8AF35" stroke-width="1.5"/><circle cx="52" cy="27" r="5.8" fill="#3B2B20"/><circle cx="53" cy="25" r="1.9" fill="#fff"/><path d="M44 38 q3 3 7 1" fill="none" stroke="#B98A3A" stroke-width="2.6" stroke-linecap="round"/><circle cx="47" cy="42" r="3.4" fill="#FF9C9C" opacity="0.8"/><g class="pj-whisk-l" style="transform-origin:42px 32px"><path d="M42 32 q-7 0 -9 6" fill="none" stroke="#E8AF35" stroke-width="2.2" stroke-linecap="round"/></g><path d="M68 44 q4 4 8 0 M62 54 q4 4 8 0 M74 56 q4 4 8 0" fill="none" stroke="#FFE79A" stroke-width="2" stroke-linecap="round"/><g class="pj-twinkle"><path d="M100 20 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4 -5.6 -5.6 -2.4 5.6 -2.4 Z" fill="#FFD66B"/></g><g class="pj-twinkle-b"><path d="M18 20 l1.8 4.2 4.2 1.8 -4.2 1.8 -1.8 4.2 -1.8 -4.2 -4.2 -1.8 4.2 -1.8 Z" fill="#FFE29A"/><circle cx="28" cy="66" r="2.2" fill="#FFD66B"/></g></svg>`,
+  dragon: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="108" rx="34" ry="6" fill="#000" opacity="0.10"/><g class="pj-cloud" fill="#EAF6FB" stroke="#CBE7F4" stroke-width="2"><circle cx="78" cy="100" r="9"/><circle cx="92" cy="100" r="7"/><circle cx="66" cy="102" r="7"/></g><path d="M50 70 Q30 76 30 90 Q30 102 46 102 Q62 102 66 92 Q70 82 84 84" fill="none" stroke="#5FC49A" stroke-width="17" stroke-linecap="round"/><path d="M50 73 Q34 78 34 90 Q34 98 46 98 Q60 98 63 90" fill="none" stroke="#EFFAF0" stroke-width="7" stroke-linecap="round" stroke-dasharray="7 5"/><g class="pj-tail" style="transform-origin:84px 84px"><path d="M84 84 q10 -2 12 -10 q2 8 -2 13 q6 0 9 -4 q-2 9 -11 10 q-6 1 -10 -4 Z" fill="#FF9752"/></g><path d="M36 78 q-6 -4 -4 -10 q6 2 7 8 Z M28 90 q-7 -1 -8 -8 q7 0 10 5 Z M38 100 q-6 3 -11 0 q4 -6 10 -4 Z" fill="#FFB166"/><g class="pj-head" style="transform-origin:54px 60px"><circle cx="54" cy="48" r="26" fill="#6BCB9E"/><path d="M40 26 q-2 -10 6 -13 q4 7 -1 13 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2"/><path d="M68 26 q2 -10 -6 -13 q-4 7 1 13 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2"/><circle cx="30" cy="34" r="5" fill="#5FC49A"/><circle cx="78" cy="34" r="5" fill="#5FC49A"/><ellipse cx="54" cy="60" rx="15" ry="10.5" fill="#EFFAF0"/><circle cx="49" cy="57" r="1.9" fill="#3B6B52"/><circle cx="59" cy="57" r="1.9" fill="#3B6B52"/><path d="M50 64 q4 4 8 0" fill="none" stroke="#3B6B52" stroke-width="2.6" stroke-linecap="round"/><circle cx="42" cy="44" r="8.5" fill="#fff"/><circle cx="43" cy="45" r="5.4" fill="#2E4B3C"/><circle cx="45" cy="43" r="2" fill="#fff"/><circle cx="66" cy="44" r="8.5" fill="#fff"/><circle cx="67" cy="45" r="5.4" fill="#2E4B3C"/><circle cx="69" cy="43" r="2" fill="#fff"/><circle cx="33" cy="54" r="4" fill="#FF9C9C" opacity="0.8"/><circle cx="75" cy="54" r="4" fill="#FF9C9C" opacity="0.8"/><g class="pj-whisk-l" style="transform-origin:40px 60px"><path d="M40 60 q-8 2 -10 8" fill="none" stroke="#5FC49A" stroke-width="2.4" stroke-linecap="round"/></g><g class="pj-whisk-r" style="transform-origin:68px 60px"><path d="M68 60 q8 2 10 8" fill="none" stroke="#5FC49A" stroke-width="2.4" stroke-linecap="round"/></g></g><g class="pj-twinkle"><path d="M100 30 l2.2 5 5 2.2 -5 2.2 -2.2 5 -2.2 -5 -5 -2.2 5 -2.2 Z" fill="#9FE0C4"/></g></svg>`,
+  dragonmax: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g class="pj-cloud" fill="#EAF6FB" stroke="#CBE7F4" stroke-width="2"><circle cx="22" cy="104" r="9"/><circle cx="35" cy="106" r="7"/><circle cx="11" cy="107" r="6"/><circle cx="94" cy="98" r="8"/><circle cx="106" cy="101" r="6"/></g><path d="M46 66 Q20 72 20 88 Q20 104 44 104 Q70 104 74 90 Q78 76 96 78 Q108 80 106 66 Q104 54 90 56" fill="none" stroke="#F2A23C" stroke-width="18" stroke-linecap="round"/><path d="M46 69 Q25 74 25 88 Q25 99 44 99 Q66 99 70 88" fill="none" stroke="#FFEDC2" stroke-width="7" stroke-linecap="round" stroke-dasharray="7 5"/><path d="M28 74 q-8 -5 -6 -13 q8 3 9 11 Z M18 88 q-9 -1 -11 -10 q9 0 13 7 Z M28 100 q-8 4 -15 0 q5 -8 14 -5 Z M62 103 q-2 9 -11 11 q1 -9 8 -13 Z" fill="#F25C3D"/><g class="pj-tail" style="transform-origin:90px 56px"><path d="M90 56 q4 -12 -3 -18 q10 2 12 10 q4 -8 0 -14 q10 6 8 18 q-2 10 -13 10 Z" fill="#F25C3D"/></g><g class="pj-mane" style="transform-origin:55px 28px" fill="#F6B93B"><path d="M30 34 q-12 -2 -16 8 q10 4 17 -2 Z"/><path d="M32 22 q-12 -6 -20 0 q7 8 18 6 Z"/><path d="M42 12 q-8 -9 -18 -7 q4 10 14 12 Z"/><path d="M78 22 q12 -6 20 0 q-7 8 -18 6 Z"/><path d="M68 12 q8 -9 18 -7 q-4 10 -14 12 Z"/><path d="M80 34 q12 -2 16 8 q-10 4 -17 -2 Z"/></g><g class="pj-head" style="transform-origin:55px 52px"><circle cx="55" cy="40" r="26" fill="#F2A23C"/><path d="M40 18 q-4 -10 3 -15 q3 5 1 9 q5 -4 9 -2 q-3 7 -10 9 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2" stroke-linejoin="round"/><path d="M70 18 q4 -10 -3 -15 q-3 5 -1 9 q-5 -4 -9 -2 q3 7 10 9 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2" stroke-linejoin="round"/><ellipse cx="55" cy="52" rx="15.5" ry="11" fill="#FFEDC2"/><circle cx="50" cy="49" r="1.9" fill="#8A5A22"/><circle cx="60" cy="49" r="1.9" fill="#8A5A22"/><path d="M50 56 q5 5 10 0" fill="none" stroke="#8A5A22" stroke-width="2.6" stroke-linecap="round"/><path d="M34 32 q6 -4 12 -1" fill="none" stroke="#8A5A22" stroke-width="2.4" stroke-linecap="round"/><path d="M76 32 q-6 -4 -12 -1" fill="none" stroke="#8A5A22" stroke-width="2.4" stroke-linecap="round"/><circle cx="43" cy="38" r="8" fill="#fff"/><circle cx="44" cy="39" r="5.2" fill="#4A2E12"/><circle cx="46" cy="37" r="1.9" fill="#fff"/><circle cx="67" cy="38" r="8" fill="#fff"/><circle cx="68" cy="39" r="5.2" fill="#4A2E12"/><circle cx="70" cy="37" r="1.9" fill="#fff"/><circle cx="34" cy="47" r="4" fill="#FF9C9C" opacity="0.8"/><circle cx="76" cy="47" r="4" fill="#FF9C9C" opacity="0.8"/><g class="pj-whisk-l" style="transform-origin:40px 53px"><path d="M40 53 q-14 2 -16 12 q-1 6 4 8" fill="none" stroke="#F6B93B" stroke-width="2.6" stroke-linecap="round"/></g><g class="pj-whisk-r" style="transform-origin:70px 53px"><path d="M70 53 q14 2 16 12 q1 6 -4 8" fill="none" stroke="#F6B93B" stroke-width="2.6" stroke-linecap="round"/></g></g><circle class="pj-glow" cx="55" cy="77" r="14" fill="#FFE9F2" opacity="0.55"/><circle cx="55" cy="77" r="10" fill="#FFE9F2" stroke="#F5BBD3" stroke-width="2.5"/><circle cx="51.5" cy="73.5" r="3" fill="#fff"/><path d="M49 82 a10 10 0 0 0 12 0" fill="none" stroke="#F0A7C6" stroke-width="2" stroke-linecap="round" opacity="0.7"/><circle cx="45" cy="70" r="5" fill="#F2A23C" stroke="#E8912F" stroke-width="2"/><circle cx="65" cy="70" r="5" fill="#F2A23C" stroke="#E8912F" stroke-width="2"/><g class="pj-twinkle"><path d="M104 26 l2.6 6 6 2.6 -6 2.6 -2.6 6 -2.6 -6 -6 -2.6 6 -2.6 Z" fill="#FFD66B"/></g><g class="pj-twinkle-b"><path d="M12 40 l2 4.6 4.6 2 -4.6 2 -2 4.6 -2 -4.6 -4.6 -2 4.6 -2 Z" fill="#FFE29A"/><circle cx="90" cy="14" r="2.4" fill="#FFD66B"/></g></svg>`,
+};
+// Dạng đang hiển thị: theo skin người dùng chọn (nếu đã mở khóa), mặc định là dạng cao nhất
+const petDisplayStage = (p) => {
+  const base = petStage(p.lv);
+  if (p && p.skin) { const s = PET_STAGES.find(x => x.lv === p.skin); if (s && p.lv >= s.lv) return s; }
+  return base;
 };
 const Creature = ({ emoji, art, size = 120 }) => {
   const key = (art && PET_ART_SVG[art]) ? art : EMOJI_TO_ART[emoji];
@@ -2081,8 +2087,8 @@ const HomeView = ({ setView, setSelectedHSK, learnedCount, totalCount, habit, go
       {/* ── LINH THÚ ── */}
       {(() => {
         const pp = readPet() || defaultPet();
-        const sg = petStage(pp.lv);
-        const drg = pp.lv >= 11;
+        const sg = petDisplayStage(pp);
+        const drg = sg.lv >= 11;
         const c = drg ? { a:'#ffcf5c', b:'#ff8f2e', w:['#ffe6a8','#e0951f'] } : { a:'#46c2ad', b:'#2f8f86', w:['#bdeee2','#2f8f86'] };
         return (
           <div onClick={() => setView('pet')}
@@ -9310,8 +9316,19 @@ const PetView = () => {
   }, []);
 
   const stage = petStage(p.lv);
+  const shown = petDisplayStage(p);          // dạng đang hiển thị (có thể là skin cũ)
   const need = petNeed(p.lv);
-  const isDragon = p.lv >= 11;
+  const isDragon = shown.lv >= 11;
+  // Môi trường theo từng hình thái — crossfade mượt khi tiến hóa / đổi skin
+  const PET_ENVS = {
+    egg:      { sky:['#e9f6ef','#c7e8da','#96cfbc'], water:false, bed:1,    gate:0.10, clouds:0, rays:1,   sun:0, y:44 },
+    fry:      { sky:['#e6f7f3','#a5ded1','#3fa294'], water:true,  bed:0.55, gate:0.14, clouds:0, rays:0.6, sun:0, y:14 },
+    koi:      { sky:['#e2f8f1','#8fd8cb','#2f8f86'], water:true,  bed:0.3,  gate:0.22, clouds:0, rays:0.4, sun:0, y:4 },
+    koigold:  { sky:['#fff2d9','#ffd98f','#39958b'], water:true,  bed:0,    gate:0.55, clouds:0, rays:0.5, sun:0, y:-8, fall:true },
+    dragon:   { sky:['#e3f2fc','#b0dbf2','#7fb8e0'], water:false, bed:0,    gate:0,    clouds:1, rays:0,   sun:0, y:-14 },
+    dragonmax:{ sky:['#fff4d6','#ffd277','#e0951f'], water:false, bed:0,    gate:0,    clouds:1, rays:0,   sun:1, y:-18 },
+  };
+  const env = PET_ENVS[shown.art] || PET_ENVS.koi;
   const C = isDragon
     ? { a: '#ffcf5c', b: '#ff8f2e', water: ['#fff4d6', '#ffd277', '#e0951f'], gate: '#8a5212', deep: '#a86a1a' }
     : { a: '#46c2ad', b: '#2f8f86', water: ['#e2f8f1', '#8fd8cb', '#2f8f86'], gate: '#1d5a53', deep: '#236b62' };
@@ -9328,13 +9345,13 @@ const PetView = () => {
     setFloatTxt('+' + amt + ' EXP'); setTimeout(() => setFloatTxt(null), 1500);
     setReact('happy'); setTimeout(() => setReact(null), 1400);
     const afterStage = petStage(lv).name;
-    if (afterStage !== beforeStage) setEvolveModal(petStage(lv));
+    if (afterStage !== beforeStage) { np.skin = null; writePet(np); setP(np); setEvolveModal(petStage(lv)); }
     else if (lv > beforeLv) setMsg('升级 (shēngjí)! Lên cấp ' + lv + ' rồi! 🎉');
     else setMsg('好吃 (hǎochī)! Ngon quá~');
   };
 
   const toggleDev = () => { const nd = !dev; setDevMode(nd); setDev(nd); setMsg(nd ? 'Đã bật chế độ Vô hạn ♾️ — cho ăn thoải mái!' : 'Đã tắt chế độ Vô hạn.'); };
-  const maxLevel = () => { const np = { ...p, lv: 16, exp: 0 }; writePet(np); setP(np); setEvolveModal(petStage(16)); };
+  const maxLevel = () => { const np = { ...p, lv: 16, exp: 0, skin: null }; writePet(np); setP(np); setEvolveModal(petStage(16)); };
 
   const saveName = () => { const np = { ...p, name: nameInput.trim().slice(0, 16) }; writePet(np); setP(np); setEditing(false); };
   const displayName = p.name || stage.name;
@@ -9347,33 +9364,62 @@ const PetView = () => {
         <div className="text-xs mt-0.5" style={{ color: 'var(--muted)' }}>Học để nuôi · vượt Vũ Môn 龙门 hóa rồng</div>
       </div>
 
-      {/* HỒ CÁ */}
-      <div className="relative rounded-3xl overflow-hidden mb-4" style={{ height: 300, background: `linear-gradient(180deg, ${C.water[0]} 0%, ${C.water[1]} 52%, ${C.water[2]} 100%)`, boxShadow: '0 16px 44px rgba(20,60,55,0.32)' }}>
-        {/* Vũ Môn */}
-        <svg viewBox="0 0 100 70" preserveAspectRatio="xMidYMid meet" className="absolute inset-0 w-full h-full pointer-events-none" style={{ opacity: 0.22 }}>
-          <rect x="22" y="14" width="6" height="40" rx="1.5" fill={C.gate} />
-          <rect x="72" y="14" width="6" height="40" rx="1.5" fill={C.gate} />
-          <rect x="16" y="12" width="68" height="7" rx="2" fill={C.gate} />
-          <rect x="19" y="21" width="62" height="3.4" rx="1.5" fill={C.gate} />
-          <text x="50" y="40" textAnchor="middle" fontSize="11" fontFamily="Noto Sans SC, serif" fontWeight="700" fill={C.gate} opacity="0.6">龙门</text>
-        </svg>
-        {/* bong bóng */}
-        {[12, 30, 52, 70, 86].map((l, i) => (
-          <span key={i} className="pet-bubble" style={{ left: l + '%', animationDelay: (i * 1.3) + 's', animationDuration: (6 + i) + 's', width: (5 + (i % 3) * 3) + 'px', height: (5 + (i % 3) * 3) + 'px' }} />
+      {/* KHUNG CẢNH — nền đổi theo hình thái, crossfade mượt */}
+      <div className="relative rounded-3xl overflow-hidden mb-4" style={{ height: 300, boxShadow: '0 16px 44px rgba(20,60,55,0.32)' }}>
+        {/* các lớp nền gradient (crossfade) */}
+        {Object.entries(PET_ENVS).map(([k, e]) => (
+          <div key={k} className="absolute inset-0 env-fade" style={{ background: `linear-gradient(180deg, ${e.sky[0]} 0%, ${e.sky[1]} 52%, ${e.sky[2]} 100%)`, opacity: shown.art === k ? 1 : 0 }} />
         ))}
-        {/* lá sen */}
-        <div className="absolute" style={{ left: '8%', bottom: '12%', fontSize: 26, opacity: 0.9 }}>🪷</div>
-        <div className="absolute" style={{ right: '10%', bottom: '20%', fontSize: 20, opacity: 0.8 }}>🍃</div>
+        {/* nắng xuyên nước */}
+        <div className="absolute inset-0 env-fade pointer-events-none" style={{ opacity: env.rays * 0.5, background: 'linear-gradient(115deg, transparent 22%, rgba(255,255,255,0.5) 30%, transparent 38%, transparent 55%, rgba(255,255,255,0.35) 63%, transparent 70%)' }} />
+        {/* vầng dương (Thần Long) */}
+        <div className="absolute env-fade pointer-events-none" style={{ top: -46, left: '50%', marginLeft: -80, width: 160, height: 160, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,240,200,0.95) 0%, rgba(255,220,140,0.4) 45%, transparent 70%)', opacity: env.sun }} />
+        {/* đáy hồ: cát + rong + sỏi (nơi trứng nằm) */}
+        <div className="absolute inset-x-0 bottom-0 env-fade pointer-events-none" style={{ height: 96, opacity: env.bed }}>
+          <svg viewBox="0 0 100 32" preserveAspectRatio="none" className="w-full h-full">
+            <path d="M0 18 Q18 10 36 16 Q55 22 72 15 Q88 9 100 16 L100 32 L0 32 Z" fill="#E8D8AE" opacity="0.9" />
+            <ellipse cx="24" cy="24" rx="4.5" ry="2.4" fill="#CBB98C" /><ellipse cx="31" cy="26" rx="3" ry="1.8" fill="#D8C79B" /><ellipse cx="76" cy="25" rx="4" ry="2.2" fill="#CBB98C" />
+            <path d="M10 22 q-2 -8 1 -14 M13 22 q2 -7 0 -12 M89 21 q-2 -7 1 -12 M92 21 q2 -6 0 -10" stroke="#4E9B78" stroke-width="1.6" fill="none" stroke-linecap="round" className="env-weed" />
+          </svg>
+        </div>
+        {/* Vũ Môn + thác nước */}
+        <div className="absolute inset-0 env-fade pointer-events-none" style={{ opacity: env.gate }}>
+          <svg viewBox="0 0 100 70" preserveAspectRatio="xMidYMid meet" className="w-full h-full">
+            {env.fall && <g opacity="0.55"><rect x="30" y="19" width="4" height="38" rx="2" fill="#fff" className="env-fall" /><rect x="48" y="19" width="4" height="38" rx="2" fill="#fff" className="env-fall" style={{ animationDelay: '.6s' }} /><rect x="66" y="19" width="4" height="38" rx="2" fill="#fff" className="env-fall" style={{ animationDelay: '1.1s' }} /></g>}
+            <rect x="22" y="14" width="6" height="40" rx="1.5" fill={C.gate} />
+            <rect x="72" y="14" width="6" height="40" rx="1.5" fill={C.gate} />
+            <rect x="16" y="12" width="68" height="7" rx="2" fill={C.gate} />
+            <rect x="19" y="21" width="62" height="3.4" rx="1.5" fill={C.gate} />
+            <text x="50" y="40" textAnchor="middle" fontSize="11" fontFamily="Noto Sans SC, serif" fontWeight="700" fill={C.gate} opacity="0.7">龙门</text>
+          </svg>
+        </div>
+        {/* bong bóng (chỉ dưới nước) */}
+        <div className="absolute inset-0 env-fade pointer-events-none" style={{ opacity: env.water || env.bed ? 1 : 0 }}>
+          {[12, 30, 52, 70, 86].map((l, i) => (
+            <span key={i} className="pet-bubble" style={{ left: l + '%', animationDelay: (i * 1.3) + 's', animationDuration: (6 + i) + 's', width: (5 + (i % 3) * 3) + 'px', height: (5 + (i % 3) * 3) + 'px' }} />
+          ))}
+        </div>
+        {/* mây trôi (trên trời) */}
+        <div className="absolute inset-0 env-fade pointer-events-none" style={{ opacity: env.clouds }}>
+          <div className="absolute env-cloud" style={{ top: '16%', fontSize: 34, opacity: 0.9, animationDuration: '26s' }}>☁️</div>
+          <div className="absolute env-cloud" style={{ top: '52%', fontSize: 24, opacity: 0.75, animationDuration: '34s', animationDelay: '-14s' }}>☁️</div>
+          <div className="absolute env-cloud" style={{ top: '74%', fontSize: 42, opacity: 0.85, animationDuration: '30s', animationDelay: '-7s' }}>☁️</div>
+        </div>
+        {/* lá sen (ao) */}
+        <div className="absolute env-fade pointer-events-none" style={{ left: '8%', bottom: '12%', fontSize: 26, opacity: env.water || env.bed ? 0.9 : 0 }}>🪷</div>
+        <div className="absolute env-fade pointer-events-none" style={{ right: '10%', bottom: '20%', fontSize: 20, opacity: env.water || env.bed ? 0.8 : 0 }}>🍃</div>
 
         {/* nhân vật */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           {msg && <div className="mb-2 px-3 py-1.5 rounded-2xl text-xs font-semibold max-w-[80%] text-center" style={{ background: 'rgba(255,255,255,0.92)', color: '#1f4b45', boxShadow: '0 4px 14px rgba(0,0,0,0.12)' }}>{msg}</div>}
-          <div className="relative" onClick={tapPet} style={{ cursor: 'pointer' }}>
-            {/* gợn nước */}
-            <div className="pet-ripple" style={{ borderColor: C.b }} />
-            <div className="pet-ripple" style={{ borderColor: C.b, animationDelay: '1.2s' }} />
+          <div className="relative" onClick={tapPet} style={{ cursor: 'pointer', transform: `translateY(${env.y}px)`, transition: 'transform 1.1s cubic-bezier(.5,1.4,.5,1)' }}>
+            {/* gợn nước (chỉ khi ở dưới nước) */}
+            <div className="pet-ripple env-fade" style={{ borderColor: C.b, opacity: env.water ? undefined : 0 }} />
+            <div className="pet-ripple env-fade" style={{ borderColor: C.b, animationDelay: '1.2s', opacity: env.water ? undefined : 0 }} />
+            {/* thảm mây (khi bay trên trời) */}
+            <div className="absolute env-fade pet-cloudpad" style={{ left: '50%', bottom: -14, transform: 'translateX(-50%)', fontSize: 52, opacity: env.clouds ? 0.95 : 0 }}>☁️</div>
             <div className={react === 'excited' ? 'pet-bounce' : ''} style={{ width: 200 }}>
-              <Creature emoji={stage.emoji} size={200} />
+              <Creature emoji={shown.emoji} size={200} />
             </div>
             {react === 'sleepy' && <div className="absolute" style={{ top: -2, right: 8, fontSize: 24 }}>💤</div>}
             {react === 'excited' && <div className="absolute pet-heart" style={{ top: 0, right: 4, fontSize: 24 }}>❤️</div>}
@@ -9383,7 +9429,7 @@ const PetView = () => {
         </div>
 
         {/* huy hiệu cấp */}
-        <div className="absolute top-3 left-4 px-2.5 py-1 rounded-xl text-xs font-bold" style={{ background: 'rgba(255,255,255,0.9)', color: C.deep }}>Cấp {p.lv} · {stage.name}</div>
+        <div className="absolute top-3 left-4 px-2.5 py-1 rounded-xl text-xs font-bold" style={{ background: 'rgba(255,255,255,0.9)', color: C.deep }}>Cấp {p.lv} · {shown.name}{shown.lv !== stage.lv ? ' 🎭' : ''}</div>
         <div className="absolute top-3 right-4 px-2.5 py-1 rounded-xl text-xs font-bold" style={{ background: `linear-gradient(135deg, ${C.a}, ${C.b})`, color: '#fff' }}>🍱 {dev ? '∞' : (p.food || 0)}</div>
       </div>
 
@@ -9440,14 +9486,15 @@ const PetView = () => {
             );
           })}
         </div>
-        <div className="text-xs font-bold mb-2 mt-1" style={{ color: 'var(--muted)' }}>Hành trình tiến hóa — chạm để xem lại</div>
+        <div className="text-xs font-bold mb-2 mt-1" style={{ color: 'var(--muted)' }}>Hành trình tiến hóa — chạm để xem lại & chọn dạng hiển thị</div>
         <div className="grid grid-cols-3 gap-2">
           {PET_STAGES.map((s, i) => {
             const reached = p.lv >= s.lv;
             return (
               <button key={i} disabled={!reached} onClick={() => reached && setViewStage(s)}
                 className="relative rounded-xl p-2 flex flex-col items-center transition-all"
-                style={{ background: reached ? `${C.b}14` : 'var(--surface-soft)', border: `1px solid ${reached ? C.b + '44' : 'var(--border)'}`, cursor: reached ? 'pointer' : 'default' }}>
+                style={{ background: reached ? `${C.b}14` : 'var(--surface-soft)', border: s.lv === shown.lv ? `2px solid ${C.b}` : `1px solid ${reached ? C.b + '44' : 'var(--border)'}`, cursor: reached ? 'pointer' : 'default' }}>
+                {s.lv === shown.lv && <span className="absolute top-1 left-1.5 text-[10px] font-bold px-1.5 rounded-md" style={{ background: C.b, color: '#fff' }}>👁</span>}
                 <div className="flex items-center justify-center" style={{ width: '100%', height: 52, overflow: 'hidden', opacity: reached ? 1 : 0.32, filter: reached ? 'none' : 'grayscale(1)' }}>
                   <div style={{ transform: 'translateY(4px)' }}><Creature emoji={s.emoji} size={48} /></div>
                 </div>
@@ -9467,7 +9514,20 @@ const PetView = () => {
             <div className="text-lg font-bold mb-1" style={{ color: '#1f4b45' }}>{viewStage.name}</div>
             <div className="text-xs mb-1" style={{ color: C.deep, fontWeight: 600 }}>Mở từ cấp {viewStage.lv}</div>
             <div className="text-xs px-3 py-2 rounded-xl mt-2" style={{ background: 'rgba(255,255,255,0.7)', color: '#2a5b54', lineHeight: 1.6 }}>{viewStage.line}</div>
-            <button onClick={() => setViewStage(null)} className="mt-4 px-5 py-2 rounded-xl text-sm font-bold" style={{ background: `linear-gradient(135deg, ${C.a}, ${C.b})`, color: '#fff' }}>Đóng</button>
+            <div className="flex gap-2 mt-4 justify-center">
+              {viewStage.lv !== shown.lv && (
+                <button onClick={() => {
+                    const np = { ...p, skin: viewStage.lv === stage.lv ? null : viewStage.lv };
+                    writePet(np); setP(np); setViewStage(null);
+                    setMsg('变身 (biànshēn)! Đổi sang dạng ' + viewStage.name + ' ✨');
+                    setReact('happy'); setTimeout(() => setReact(null), 1400);
+                  }}
+                  className="px-4 py-2 rounded-xl text-sm font-bold" style={{ background: `linear-gradient(135deg, ${C.a}, ${C.b})`, color: '#fff' }}>
+                  🎭 Hiển thị dạng này
+                </button>
+              )}
+              <button onClick={() => setViewStage(null)} className="px-4 py-2 rounded-xl text-sm font-bold" style={{ background: 'rgba(255,255,255,0.85)', color: '#2a5b54', border: `1px solid ${C.b}55` }}>Đóng</button>
+            </div>
           </div>
         </div>
       )}
@@ -9913,9 +9973,43 @@ function App() {
         @keyframes crWig { 0%,100%{ transform: rotate(-2deg); } 50%{ transform: rotate(2deg); } }
         @media (prefers-reduced-motion: reduce) { .cr-bob,.cr-egg,.cr-legA,.cr-legB,.cr-tail,.cr-head,.cr-mane,.cr-blink,.cr-fin,.cr-koitail,.cr-wig { animation:none; } }
         .cr-pet { display:inline-block; animation: crFloat 3s ease-in-out infinite; transform-origin: center bottom; }
-        .cr-pet svg { display:block; width:100%; height:100%; }
+        .cr-pet svg { display:block; width:100%; height:100%; overflow:visible; }
+        /* — khớp cử động của linh thú — */
+        .cr-pet svg [class^='pj-'], .cr-pet svg [class*=' pj-'] { transform-box: view-box; }
+        .pj-tail { animation: pjTail 2.4s ease-in-out infinite; }
+        .pj-tail-fast { animation: pjTail 1.3s ease-in-out infinite; }
+        .pj-fin { animation: pjFin 1.8s ease-in-out infinite; }
+        .pj-fin-b { animation: pjFin 1.8s ease-in-out infinite; animation-delay: .55s; }
+        .pj-whisk-l { animation: pjWhL 3s ease-in-out infinite; }
+        .pj-whisk-r { animation: pjWhR 3s ease-in-out infinite; }
+        .pj-head { animation: pjHead 3.4s ease-in-out infinite; }
+        .pj-wobble { animation: pjWobble 3.2s ease-in-out infinite; }
+        .pj-mane { animation: pjMane 2.8s ease-in-out infinite; }
+        .pj-glow { animation: pjGlow 2.4s ease-in-out infinite; }
+        .pj-twinkle { animation: pjTw 2.1s ease-in-out infinite; }
+        .pj-twinkle-b { animation: pjTw 2.1s ease-in-out infinite; animation-delay: 1s; }
+        .pj-cloud { animation: pjCloud 4.5s ease-in-out infinite; }
+        @keyframes pjTail { 0%,100% { transform: rotate(7deg); } 50% { transform: rotate(-9deg); } }
+        @keyframes pjFin { 0%,100% { transform: rotate(-10deg); } 50% { transform: rotate(13deg); } }
+        @keyframes pjWhL { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-11deg); } }
+        @keyframes pjWhR { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(11deg); } }
+        @keyframes pjHead { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-2.5px) rotate(-1.6deg); } }
+        @keyframes pjWobble { 0%,100% { transform: rotate(-3.5deg); } 50% { transform: rotate(3.5deg); } }
+        @keyframes pjMane { 0%,100% { transform: scale(1) rotate(0deg); } 50% { transform: scale(1.06) rotate(1.5deg); } }
+        @keyframes pjGlow { 0%,100% { opacity: .25; } 50% { opacity: .8; } }
+        @keyframes pjTw { 0%,100% { opacity: .25; } 50% { opacity: 1; } }
+        @keyframes pjCloud { 0%,100% { transform: translateX(0); } 50% { transform: translateX(4px); } }
+        /* — môi trường chuyển cảnh — */
+        .env-fade { transition: opacity 1.1s ease; }
+        .env-cloud { left: -12%; animation-name: envDrift; animation-timing-function: linear; animation-iteration-count: infinite; }
+        @keyframes envDrift { from { transform: translateX(0); } to { transform: translateX(560px); } }
+        .env-fall { animation: envFall 1.6s ease-in-out infinite; }
+        @keyframes envFall { 0%,100% { opacity: .3; transform: translateY(0); } 50% { opacity: .8; transform: translateY(4px); } }
+        .env-weed { transform-origin: 50% 100%; animation: envWeed 3.5s ease-in-out infinite; }
+        @keyframes envWeed { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
+        .pet-cloudpad { animation: crFloat 3s ease-in-out infinite reverse; }
         @keyframes crFloat { 0%,100% { transform: translateY(0) rotate(-1.5deg) scale(1); } 50% { transform: translateY(-9px) rotate(1.5deg) scale(1.03); } }
-        @media (prefers-reduced-motion: reduce) { .cr-pet { animation:none; } }
+        @media (prefers-reduced-motion: reduce) { .cr-pet, .cr-pet svg g, .cr-pet svg circle, .env-cloud, .env-fall, .env-weed, .pet-cloudpad { animation:none !important; } }
       `}</style>
 
       <SkyBackground dark={darkMode} />
