@@ -470,13 +470,6 @@ const PET_STAGES = [
   { lv:11, emoji:'🐉', art:'dragon',   name:'Tiểu Long',    line:'Vượt Vũ Môn (龙门 lóngmén) thành công — hóa rồng!' },
   { lv:16, emoji:'🐲', art:'dragonmax',name:'Thần Long',    line:'Rồng thiêng oai phong, đạt cảnh giới cao nhất.' },
 ];
-const PET_GIFTS = [
-  { lv:3,  icon:'🪷', name:'Hoa sen' },
-  { lv:5,  icon:'🎐', name:'Chuông gió' },
-  { lv:8,  icon:'🧧', name:'Bao lì xì' },
-  { lv:12, icon:'👑', name:'Vương miện' },
-  { lv:18, icon:'🏮', name:'Đèn lồng' },
-];
 const PET_CHEERS = [
   '谢谢 (xièxie)! Cảm ơn bạn nha~',
   '加油 (jiāyóu)! Cố lên nhé!',
@@ -499,12 +492,12 @@ if (typeof window !== 'undefined') window.HSK_DEV = isDevMode();
 const ART_EMOJI = { egg: '🥚', fry: '🐟', koi: '🐠', koigold: '🐡', dragon: '🐉', dragonmax: '🐲' };
 const EMOJI_TO_ART = { '🥚':'egg', '🐟':'fry', '🐠':'koi', '🐡':'koigold', '🐉':'dragon', '🐲':'dragonmax' };
 const PET_ART_SVG = {
-  egg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="104" rx="30" ry="7" fill="#000" opacity="0.10"/><ellipse cx="60" cy="102" rx="38" ry="8" fill="none" stroke="#8ED3F0" stroke-width="2.5" opacity="0.6"/><g class="pj-wobble" style="transform-origin:60px 101px"><path d="M60 22 C42 22 31 46 31 68 C31 89 44 101 60 101 C76 101 89 89 89 68 C89 46 78 22 60 22 Z" fill="#FFF6E7" stroke="#EFD3A8" stroke-width="3"/><ellipse cx="45" cy="52" rx="7.5" ry="9" fill="#FFB166"/><ellipse cx="74" cy="72" rx="8" ry="9.5" fill="#FF9E52"/><ellipse cx="58" cy="88" rx="5" ry="5.5" fill="#FFC489"/><polyline points="47,34 53,40 58,33 64,41 70,34" fill="none" stroke="#E3B77F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M47 66 q4 4 8 0" fill="none" stroke="#7A5B3A" stroke-width="3" stroke-linecap="round"/><path d="M65 66 q4 4 8 0" fill="none" stroke="#7A5B3A" stroke-width="3" stroke-linecap="round"/><path d="M57 75 q3 3 6 0" fill="none" stroke="#7A5B3A" stroke-width="2.5" stroke-linecap="round"/><circle cx="44" cy="73" r="4" fill="#FFB3B3" opacity="0.75"/><circle cx="76" cy="73" r="4" fill="#FFB3B3" opacity="0.75"/><path d="M50 30 q-8 6 -10 18" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" opacity="0.85"/></g><g class="pj-twinkle"><path d="M97 34 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4 -5.6 -5.6 -2.4 5.6 -2.4 Z" fill="#FFD66B"/></g><g class="pj-twinkle-b"><path d="M20 50 l1.8 4.2 4.2 1.8 -4.2 1.8 -1.8 4.2 -1.8 -4.2 -4.2 -1.8 4.2 -1.8 Z" fill="#FFE29A"/></g></svg>`,
-  fry: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="58" cy="104" rx="28" ry="6" fill="#000" opacity="0.10"/><g class="pj-tail" style="transform-origin:82px 66px"><path d="M82 66 q16 -10 16 -22 q-4 10 -12 12 q6 4 4 16 q-4 -6 -8 -6 Z" fill="#FF8A3D"/></g><circle cx="55" cy="64" r="27" fill="#FFA95C"/><path d="M33 72 a27 27 0 0 0 44 0 q-10 8 -22 8 q-12 0 -22 -8 Z" fill="#FFE3C2"/><ellipse cx="55" cy="84" rx="7" ry="4.5" fill="#FFD3A6"/><g class="pj-fin" style="transform-origin:33px 62px"><path d="M32 62 q-9 2 -11 10 q8 2 13 -3 Z" fill="#FF8A3D"/></g><g class="pj-fin-b" style="transform-origin:56px 37px"><path d="M55 37 q-2 -9 5 -13 q3 7 -1 13 Z" fill="#FF8A3D"/></g><circle cx="46" cy="60" r="8.5" fill="#fff"/><circle cx="47" cy="61" r="5.4" fill="#3B2B20"/><circle cx="49" cy="59" r="2" fill="#fff"/><circle cx="67" cy="60" r="8.5" fill="#fff"/><circle cx="68" cy="61" r="5.4" fill="#3B2B20"/><circle cx="70" cy="59" r="2" fill="#fff"/><path d="M53 72 q4 4 8 0" fill="none" stroke="#7A4A2B" stroke-width="3" stroke-linecap="round"/><circle cx="38" cy="70" r="4" fill="#FF9C9C" opacity="0.8"/><circle cx="74" cy="70" r="4" fill="#FF9C9C" opacity="0.8"/><g class="pj-twinkle"><circle cx="94" cy="38" r="5" fill="none" stroke="#8ED3F0" stroke-width="2.5"/><circle cx="103" cy="26" r="3" fill="none" stroke="#8ED3F0" stroke-width="2"/></g><g class="pj-twinkle-b"><circle cx="20" cy="36" r="3.5" fill="none" stroke="#8ED3F0" stroke-width="2"/></g></svg>`,
-  koi: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="106" rx="34" ry="6" fill="#000" opacity="0.10"/><g class="pj-tail" style="transform-origin:90px 62px"><path d="M88 62 q20 -14 24 -28 q-8 12 -18 14 q10 6 8 24 q-6 -10 -16 -8 Z" fill="#FF9752"/><path d="M92 62 q12 -8 15 -18" fill="none" stroke="#FFB37E" stroke-width="2.5" stroke-linecap="round"/></g><path d="M18 64 Q30 40 58 40 Q86 40 94 62 Q86 84 58 84 Q30 84 18 64 Z" fill="#FFF7EE" stroke="#F2D9BE" stroke-width="2.5"/><path d="M44 41 q14 -3 24 2 q6 10 0 20 q-14 4 -24 -2 q-6 -10 0 -20 Z" fill="#FF9752"/><path d="M78 50 q10 4 13 12 q-4 9 -13 12 q-5 -12 0 -24 Z" fill="#FFB166"/><ellipse cx="30" cy="50" rx="8" ry="6.5" fill="#F25C3D"/><g class="pj-fin-b" style="transform-origin:55px 41px"><path d="M50 41 q4 -12 14 -14 q2 8 -4 14 Z" fill="#FFB37E"/></g><g class="pj-fin" style="transform-origin:42px 77px"><path d="M40 76 q-2 12 6 16 q6 -6 2 -15 Z" fill="#FFB37E"/></g><circle cx="30" cy="62" r="8" fill="#fff" stroke="#F2D9BE" stroke-width="1.5"/><circle cx="29" cy="63" r="5.2" fill="#3B2B20"/><circle cx="31" cy="61" r="1.9" fill="#fff"/><path d="M18 70 q3 3 7 1" fill="none" stroke="#B9856A" stroke-width="2.6" stroke-linecap="round"/><circle cx="24" cy="73" r="3.6" fill="#FF9C9C" opacity="0.8"/><g class="pj-whisk-l" style="transform-origin:16px 66px"><path d="M16 66 q-4 1 -5 4" fill="none" stroke="#E8B08B" stroke-width="2" stroke-linecap="round"/></g><path d="M56 56 q4 4 8 0 M64 64 q4 4 8 0 M50 66 q4 4 8 0" fill="none" stroke="#FFD9B8" stroke-width="2" stroke-linecap="round"/><g class="pj-twinkle"><circle cx="12" cy="42" r="4" fill="none" stroke="#8ED3F0" stroke-width="2.2"/><circle cx="20" cy="30" r="2.6" fill="none" stroke="#8ED3F0" stroke-width="2"/></g></svg>`,
-  koigold: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g class="pj-twinkle-b"><path d="M20 104 q10 -8 20 0 q10 -8 20 0 q10 -8 20 0 q10 -8 20 0" fill="none" stroke="#8ED3F0" stroke-width="3" stroke-linecap="round" opacity="0.8"/><path d="M30 96 q2 -8 -3 -12 M52 98 q0 -9 -6 -12 M88 96 q4 -7 10 -8" fill="none" stroke="#BDE6F7" stroke-width="3" stroke-linecap="round"/></g><g class="pj-tail-fast" style="transform-origin:72px 80px"><path d="M74 78 q4 20 -6 32 q2 -14 -6 -20 q-2 12 -16 16 q8 -10 6 -20 q10 4 22 -8 Z" fill="#F6A93B"/></g><path d="M78 76 Q60 74 48 58 Q38 42 46 22 Q56 12 70 16 Q86 22 90 44 Q92 62 78 76 Z" fill="#FFD563" stroke="#E8AF35" stroke-width="2.5"/><path d="M56 40 q10 -8 22 -4 q6 10 0 22 q-14 2 -22 -6 q-3 -6 0 -12 Z" fill="#F6B93B"/><ellipse cx="60" cy="22" rx="7" ry="6" fill="#F2903D"/><path d="M48 58 Q58 72 76 75 Q66 78 58 72 Q50 66 48 58 Z" fill="#FFEDBD"/><g class="pj-fin" style="transform-origin:89px 44px"><path d="M88 40 q12 -2 16 8 q-8 4 -16 0 Z" fill="#FFC94F"/></g><g class="pj-fin-b" style="transform-origin:49px 54px"><path d="M50 52 q-12 0 -16 10 q9 4 17 -3 Z" fill="#FFC94F"/></g><circle cx="53" cy="28" r="9" fill="#fff" stroke="#E8AF35" stroke-width="1.5"/><circle cx="52" cy="27" r="5.8" fill="#3B2B20"/><circle cx="53" cy="25" r="1.9" fill="#fff"/><path d="M44 38 q3 3 7 1" fill="none" stroke="#B98A3A" stroke-width="2.6" stroke-linecap="round"/><circle cx="47" cy="42" r="3.4" fill="#FF9C9C" opacity="0.8"/><g class="pj-whisk-l" style="transform-origin:42px 32px"><path d="M42 32 q-7 0 -9 6" fill="none" stroke="#E8AF35" stroke-width="2.2" stroke-linecap="round"/></g><path d="M68 44 q4 4 8 0 M62 54 q4 4 8 0 M74 56 q4 4 8 0" fill="none" stroke="#FFE79A" stroke-width="2" stroke-linecap="round"/><g class="pj-twinkle"><path d="M100 20 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4 -5.6 -5.6 -2.4 5.6 -2.4 Z" fill="#FFD66B"/></g><g class="pj-twinkle-b"><path d="M18 20 l1.8 4.2 4.2 1.8 -4.2 1.8 -1.8 4.2 -1.8 -4.2 -4.2 -1.8 4.2 -1.8 Z" fill="#FFE29A"/><circle cx="28" cy="66" r="2.2" fill="#FFD66B"/></g></svg>`,
-  dragon: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><ellipse cx="60" cy="108" rx="34" ry="6" fill="#000" opacity="0.10"/><g class="pj-cloud" fill="#EAF6FB" stroke="#CBE7F4" stroke-width="2"><circle cx="78" cy="100" r="9"/><circle cx="92" cy="100" r="7"/><circle cx="66" cy="102" r="7"/></g><path d="M50 70 Q30 76 30 90 Q30 102 46 102 Q62 102 66 92 Q70 82 84 84" fill="none" stroke="#5FC49A" stroke-width="17" stroke-linecap="round"/><path d="M50 73 Q34 78 34 90 Q34 98 46 98 Q60 98 63 90" fill="none" stroke="#EFFAF0" stroke-width="7" stroke-linecap="round" stroke-dasharray="7 5"/><g class="pj-tail" style="transform-origin:84px 84px"><path d="M84 84 q10 -2 12 -10 q2 8 -2 13 q6 0 9 -4 q-2 9 -11 10 q-6 1 -10 -4 Z" fill="#FF9752"/></g><path d="M36 78 q-6 -4 -4 -10 q6 2 7 8 Z M28 90 q-7 -1 -8 -8 q7 0 10 5 Z M38 100 q-6 3 -11 0 q4 -6 10 -4 Z" fill="#FFB166"/><g class="pj-head" style="transform-origin:54px 60px"><circle cx="54" cy="48" r="26" fill="#6BCB9E"/><path d="M40 26 q-2 -10 6 -13 q4 7 -1 13 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2"/><path d="M68 26 q2 -10 -6 -13 q-4 7 1 13 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2"/><circle cx="30" cy="34" r="5" fill="#5FC49A"/><circle cx="78" cy="34" r="5" fill="#5FC49A"/><ellipse cx="54" cy="60" rx="15" ry="10.5" fill="#EFFAF0"/><circle cx="49" cy="57" r="1.9" fill="#3B6B52"/><circle cx="59" cy="57" r="1.9" fill="#3B6B52"/><path d="M50 64 q4 4 8 0" fill="none" stroke="#3B6B52" stroke-width="2.6" stroke-linecap="round"/><circle cx="42" cy="44" r="8.5" fill="#fff"/><circle cx="43" cy="45" r="5.4" fill="#2E4B3C"/><circle cx="45" cy="43" r="2" fill="#fff"/><circle cx="66" cy="44" r="8.5" fill="#fff"/><circle cx="67" cy="45" r="5.4" fill="#2E4B3C"/><circle cx="69" cy="43" r="2" fill="#fff"/><circle cx="33" cy="54" r="4" fill="#FF9C9C" opacity="0.8"/><circle cx="75" cy="54" r="4" fill="#FF9C9C" opacity="0.8"/><g class="pj-whisk-l" style="transform-origin:40px 60px"><path d="M40 60 q-8 2 -10 8" fill="none" stroke="#5FC49A" stroke-width="2.4" stroke-linecap="round"/></g><g class="pj-whisk-r" style="transform-origin:68px 60px"><path d="M68 60 q8 2 10 8" fill="none" stroke="#5FC49A" stroke-width="2.4" stroke-linecap="round"/></g></g><g class="pj-twinkle"><path d="M100 30 l2.2 5 5 2.2 -5 2.2 -2.2 5 -2.2 -5 -5 -2.2 5 -2.2 Z" fill="#9FE0C4"/></g></svg>`,
-  dragonmax: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><g class="pj-cloud" fill="#EAF6FB" stroke="#CBE7F4" stroke-width="2"><circle cx="22" cy="104" r="9"/><circle cx="35" cy="106" r="7"/><circle cx="11" cy="107" r="6"/><circle cx="94" cy="98" r="8"/><circle cx="106" cy="101" r="6"/></g><path d="M46 66 Q20 72 20 88 Q20 104 44 104 Q70 104 74 90 Q78 76 96 78 Q108 80 106 66 Q104 54 90 56" fill="none" stroke="#F2A23C" stroke-width="18" stroke-linecap="round"/><path d="M46 69 Q25 74 25 88 Q25 99 44 99 Q66 99 70 88" fill="none" stroke="#FFEDC2" stroke-width="7" stroke-linecap="round" stroke-dasharray="7 5"/><path d="M28 74 q-8 -5 -6 -13 q8 3 9 11 Z M18 88 q-9 -1 -11 -10 q9 0 13 7 Z M28 100 q-8 4 -15 0 q5 -8 14 -5 Z M62 103 q-2 9 -11 11 q1 -9 8 -13 Z" fill="#F25C3D"/><g class="pj-tail" style="transform-origin:90px 56px"><path d="M90 56 q4 -12 -3 -18 q10 2 12 10 q4 -8 0 -14 q10 6 8 18 q-2 10 -13 10 Z" fill="#F25C3D"/></g><g class="pj-mane" style="transform-origin:55px 28px" fill="#F6B93B"><path d="M30 34 q-12 -2 -16 8 q10 4 17 -2 Z"/><path d="M32 22 q-12 -6 -20 0 q7 8 18 6 Z"/><path d="M42 12 q-8 -9 -18 -7 q4 10 14 12 Z"/><path d="M78 22 q12 -6 20 0 q-7 8 -18 6 Z"/><path d="M68 12 q8 -9 18 -7 q-4 10 -14 12 Z"/><path d="M80 34 q12 -2 16 8 q-10 4 -17 -2 Z"/></g><g class="pj-head" style="transform-origin:55px 52px"><circle cx="55" cy="40" r="26" fill="#F2A23C"/><path d="M40 18 q-4 -10 3 -15 q3 5 1 9 q5 -4 9 -2 q-3 7 -10 9 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2" stroke-linejoin="round"/><path d="M70 18 q4 -10 -3 -15 q-3 5 -1 9 q-5 -4 -9 -2 q3 7 10 9 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2" stroke-linejoin="round"/><ellipse cx="55" cy="52" rx="15.5" ry="11" fill="#FFEDC2"/><circle cx="50" cy="49" r="1.9" fill="#8A5A22"/><circle cx="60" cy="49" r="1.9" fill="#8A5A22"/><path d="M50 56 q5 5 10 0" fill="none" stroke="#8A5A22" stroke-width="2.6" stroke-linecap="round"/><path d="M34 32 q6 -4 12 -1" fill="none" stroke="#8A5A22" stroke-width="2.4" stroke-linecap="round"/><path d="M76 32 q-6 -4 -12 -1" fill="none" stroke="#8A5A22" stroke-width="2.4" stroke-linecap="round"/><circle cx="43" cy="38" r="8" fill="#fff"/><circle cx="44" cy="39" r="5.2" fill="#4A2E12"/><circle cx="46" cy="37" r="1.9" fill="#fff"/><circle cx="67" cy="38" r="8" fill="#fff"/><circle cx="68" cy="39" r="5.2" fill="#4A2E12"/><circle cx="70" cy="37" r="1.9" fill="#fff"/><circle cx="34" cy="47" r="4" fill="#FF9C9C" opacity="0.8"/><circle cx="76" cy="47" r="4" fill="#FF9C9C" opacity="0.8"/><g class="pj-whisk-l" style="transform-origin:40px 53px"><path d="M40 53 q-14 2 -16 12 q-1 6 4 8" fill="none" stroke="#F6B93B" stroke-width="2.6" stroke-linecap="round"/></g><g class="pj-whisk-r" style="transform-origin:70px 53px"><path d="M70 53 q14 2 16 12 q1 6 -4 8" fill="none" stroke="#F6B93B" stroke-width="2.6" stroke-linecap="round"/></g></g><circle class="pj-glow" cx="55" cy="77" r="14" fill="#FFE9F2" opacity="0.55"/><circle cx="55" cy="77" r="10" fill="#FFE9F2" stroke="#F5BBD3" stroke-width="2.5"/><circle cx="51.5" cy="73.5" r="3" fill="#fff"/><path d="M49 82 a10 10 0 0 0 12 0" fill="none" stroke="#F0A7C6" stroke-width="2" stroke-linecap="round" opacity="0.7"/><circle cx="45" cy="70" r="5" fill="#F2A23C" stroke="#E8912F" stroke-width="2"/><circle cx="65" cy="70" r="5" fill="#F2A23C" stroke="#E8912F" stroke-width="2"/><g class="pj-twinkle"><path d="M104 26 l2.6 6 6 2.6 -6 2.6 -2.6 6 -2.6 -6 -6 -2.6 6 -2.6 Z" fill="#FFD66B"/></g><g class="pj-twinkle-b"><path d="M12 40 l2 4.6 4.6 2 -4.6 2 -2 4.6 -2 -4.6 -4.6 -2 4.6 -2 Z" fill="#FFE29A"/><circle cx="90" cy="14" r="2.4" fill="#FFD66B"/></g></svg>`,
+  egg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="egSh" cx="42%" cy="30%" r="80%"><stop offset="0%" stop-color="#FFFDF6"/><stop offset="62%" stop-color="#FFF3DD"/><stop offset="100%" stop-color="#F3DDB4"/></radialGradient><radialGradient id="egSp" cx="35%" cy="30%" r="80%"><stop offset="0%" stop-color="#FFC488"/><stop offset="100%" stop-color="#FF9E52"/></radialGradient></defs><ellipse cx="60" cy="104" rx="30" ry="7" fill="#000" opacity="0.10"/><ellipse cx="60" cy="102" rx="38" ry="8" fill="none" stroke="#8ED3F0" stroke-width="2.5" opacity="0.6"/><g class="pj-wobble" style="transform-origin:60px 101px"><path d="M60 22 C42 22 31 46 31 68 C31 89 44 101 60 101 C76 101 89 89 89 68 C89 46 78 22 60 22 Z" fill="url(#egSh)" stroke="#EFD3A8" stroke-width="3"/><ellipse cx="45" cy="52" rx="7.5" ry="9" fill="url(#egSp)"/><ellipse cx="74" cy="72" rx="8" ry="9.5" fill="url(#egSp)"/><ellipse cx="58" cy="88" rx="5" ry="5.5" fill="#FFC489"/><circle cx="68" cy="36" r="2.2" fill="#FFCF9B"/><circle cx="38" cy="66" r="2" fill="#FFD9AE"/><circle cx="65" cy="92" r="1.8" fill="#FFD9AE"/><polyline points="47,34 53,40 58,33 64,41 70,34" fill="none" stroke="#E3B77F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><polyline points="50,37 53,40 56,36" fill="none" stroke="#FFF8EA" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M47 66 q4 4 8 0" fill="none" stroke="#7A5B3A" stroke-width="3" stroke-linecap="round"/><path d="M65 66 q4 4 8 0" fill="none" stroke="#7A5B3A" stroke-width="3" stroke-linecap="round"/><path d="M57 75 q3 3 6 0" fill="none" stroke="#7A5B3A" stroke-width="2.5" stroke-linecap="round"/><circle cx="44" cy="73" r="4" fill="#FFB3B3" opacity="0.75"/><circle cx="76" cy="73" r="4" fill="#FFB3B3" opacity="0.75"/><path d="M50 30 q-8 6 -10 18" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round" opacity="0.9"/><path d="M83 58 q3 8 1 16" fill="none" stroke="#E8C99B" stroke-width="2.5" stroke-linecap="round" opacity="0.7"/></g><g class="pj-twinkle"><path d="M97 34 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4 -5.6 -5.6 -2.4 5.6 -2.4 Z" fill="#FFD66B"/></g><g class="pj-twinkle-b"><path d="M20 50 l1.8 4.2 4.2 1.8 -4.2 1.8 -1.8 4.2 -1.8 -4.2 -4.2 -1.8 4.2 -1.8 Z" fill="#FFE29A"/><circle cx="98" cy="70" r="2" fill="#FFE29A"/></g></svg>`,
+  fry: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="frBd" cx="40%" cy="32%" r="85%"><stop offset="0%" stop-color="#FFC184"/><stop offset="60%" stop-color="#FFA95C"/><stop offset="100%" stop-color="#F58F3E"/></radialGradient></defs><ellipse cx="58" cy="104" rx="28" ry="6" fill="#000" opacity="0.10"/><g class="pj-tail" style="transform-origin:82px 66px"><path d="M82 66 q16 -10 16 -22 q-4 10 -12 12 q6 4 4 16 q-4 -6 -8 -6 Z" fill="#FF8A3D"/><path d="M85 63 q8 -6 10 -13 M85 66 q7 2 6 9" fill="none" stroke="#FFB37E" stroke-width="1.8" stroke-linecap="round"/></g><circle cx="55" cy="64" r="27" fill="url(#frBd)"/><path d="M33 72 a27 27 0 0 0 44 0 q-10 8 -22 8 q-12 0 -22 -8 Z" fill="#FFE3C2"/><ellipse cx="55" cy="84" rx="7" ry="4.5" fill="#FFD3A6"/><path d="M36 47 q8 -9 19 -9" fill="none" stroke="#FFD9AE" stroke-width="3.5" stroke-linecap="round" opacity="0.85"/><circle cx="72" cy="44" r="2" fill="#FFD9AE"/><circle cx="39" cy="52" r="1.7" fill="#FFD9AE"/><g class="pj-fin" style="transform-origin:33px 62px"><path d="M32 62 q-9 2 -11 10 q8 2 13 -3 Z" fill="#FF8A3D"/><path d="M29 64 q-5 2 -6 6" fill="none" stroke="#FFB37E" stroke-width="1.6" stroke-linecap="round"/></g><g class="pj-fin-b" style="transform-origin:56px 37px"><path d="M55 37 q-2 -9 5 -13 q3 7 -1 13 Z" fill="#FF8A3D"/><path d="M56 34 q0 -5 3 -8" fill="none" stroke="#FFB37E" stroke-width="1.5" stroke-linecap="round"/></g><circle cx="46" cy="60" r="8.5" fill="#fff"/><circle cx="47" cy="61" r="5.4" fill="#3B2B20"/><circle cx="49" cy="59" r="2" fill="#fff"/><circle cx="45.5" cy="63" r="1" fill="#fff" opacity="0.8"/><circle cx="67" cy="60" r="8.5" fill="#fff"/><circle cx="68" cy="61" r="5.4" fill="#3B2B20"/><circle cx="70" cy="59" r="2" fill="#fff"/><circle cx="66.5" cy="63" r="1" fill="#fff" opacity="0.8"/><path d="M53 72 q4 4 8 0" fill="none" stroke="#7A4A2B" stroke-width="3" stroke-linecap="round"/><circle cx="38" cy="70" r="4" fill="#FF9C9C" opacity="0.8"/><circle cx="74" cy="70" r="4" fill="#FF9C9C" opacity="0.8"/><g class="pj-twinkle"><circle cx="94" cy="38" r="5" fill="none" stroke="#8ED3F0" stroke-width="2.5"/><circle cx="103" cy="26" r="3" fill="none" stroke="#8ED3F0" stroke-width="2"/></g><g class="pj-twinkle-b"><circle cx="20" cy="36" r="3.5" fill="none" stroke="#8ED3F0" stroke-width="2"/></g></svg>`,
+  koi: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="koBd" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFFDF8"/><stop offset="70%" stop-color="#FFF3E4"/><stop offset="100%" stop-color="#F7E0C6"/></linearGradient><linearGradient id="koPa" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFA968"/><stop offset="100%" stop-color="#F58138"/></linearGradient></defs><ellipse cx="60" cy="106" rx="34" ry="6" fill="#000" opacity="0.10"/><g class="pj-tail" style="transform-origin:90px 62px"><path d="M88 62 q22 -16 26 -32 q-9 14 -20 16 q11 7 9 28 q-7 -12 -18 -9 Z" fill="#FFB37E" opacity="0.7"/><path d="M88 62 q20 -14 24 -28 q-8 12 -18 14 q10 6 8 24 q-6 -10 -16 -8 Z" fill="url(#koPa)"/><path d="M92 60 q12 -8 15 -18 M93 64 q8 4 8 16 M90 62 q9 -4 13 -11" fill="none" stroke="#FFD3AC" stroke-width="1.8" stroke-linecap="round"/></g><path d="M18 64 Q30 40 58 40 Q86 40 94 62 Q86 84 58 84 Q30 84 18 64 Z" fill="url(#koBd)" stroke="#F2D9BE" stroke-width="2.5"/><path d="M44 41 q14 -3 24 2 q6 10 0 20 q-14 4 -24 -2 q-6 -10 0 -20 Z" fill="url(#koPa)"/><path d="M78 50 q10 4 13 12 q-4 9 -13 12 q-5 -12 0 -24 Z" fill="#FFB166"/><ellipse cx="30" cy="50" rx="8" ry="6.5" fill="#F25C3D"/><ellipse cx="28" cy="48" rx="3" ry="2.2" fill="#FF8A70" opacity="0.8"/><g class="pj-fin-b" style="transform-origin:55px 41px"><path d="M50 41 q4 -12 14 -14 q2 8 -4 14 Z" fill="#FFB37E"/><path d="M54 39 q2 -7 7 -10 M57 40 q3 -5 6 -7" fill="none" stroke="#FFD9B8" stroke-width="1.5" stroke-linecap="round"/></g><g class="pj-fin" style="transform-origin:42px 77px"><path d="M40 76 q-2 12 6 16 q6 -6 2 -15 Z" fill="#FFB37E"/><path d="M42 79 q0 7 3 10" fill="none" stroke="#FFD9B8" stroke-width="1.5" stroke-linecap="round"/></g><path d="M70 78 q2 7 8 8 q3 -6 -1 -11 Z" fill="#FFB37E"/><circle cx="30" cy="62" r="8" fill="#fff" stroke="#F2D9BE" stroke-width="1.5"/><circle cx="29" cy="63" r="5.2" fill="#3B2B20"/><circle cx="31" cy="61" r="1.9" fill="#fff"/><circle cx="28" cy="65" r="1" fill="#fff" opacity="0.8"/><path d="M18 70 q3 3 7 1" fill="none" stroke="#B9856A" stroke-width="2.6" stroke-linecap="round"/><circle cx="24" cy="73" r="3.6" fill="#FF9C9C" opacity="0.8"/><g class="pj-whisk-l" style="transform-origin:16px 66px"><path d="M16 66 q-4 1 -5 4" fill="none" stroke="#E8B08B" stroke-width="2" stroke-linecap="round"/></g><path d="M52 50 q4 4 8 0 M60 47 q4 4 8 0 M56 56 q4 4 8 0 M64 64 q4 4 8 0 M50 66 q4 4 8 0 M58 72 q4 4 8 0 M70 58 q4 4 8 0" fill="none" stroke="#FFD9B8" stroke-width="2" stroke-linecap="round"/><path d="M40 44 q14 -4 26 0" fill="none" stroke="#FFF7EA" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/><g class="pj-twinkle"><circle cx="12" cy="42" r="4" fill="none" stroke="#8ED3F0" stroke-width="2.2"/><circle cx="20" cy="30" r="2.6" fill="none" stroke="#8ED3F0" stroke-width="2"/></g></svg>`,
+  koigold: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="kgBd" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#FFE58A"/><stop offset="55%" stop-color="#FFD563"/><stop offset="100%" stop-color="#F2B23C"/></linearGradient><linearGradient id="kgFn" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFD97A"/><stop offset="100%" stop-color="#F6A93B"/></linearGradient></defs><g class="pj-twinkle-b"><path d="M20 104 q10 -8 20 0 q10 -8 20 0 q10 -8 20 0 q10 -8 20 0" fill="none" stroke="#8ED3F0" stroke-width="3" stroke-linecap="round" opacity="0.8"/><path d="M30 96 q2 -8 -3 -12 M52 98 q0 -9 -6 -12 M88 96 q4 -7 10 -8" fill="none" stroke="#BDE6F7" stroke-width="3" stroke-linecap="round"/><circle cx="22" cy="86" r="2" fill="#BDE6F7"/><circle cx="70" cy="92" r="2.4" fill="#BDE6F7"/><circle cx="100" cy="84" r="1.8" fill="#BDE6F7"/></g><g class="pj-tail-fast" style="transform-origin:72px 80px"><path d="M76 76 q6 22 -6 36 q3 -16 -7 -22 q-2 14 -18 18 q9 -11 7 -22 q11 4 24 -10 Z" fill="#FFC94F" opacity="0.65"/><path d="M74 78 q4 20 -6 32 q2 -14 -6 -20 q-2 12 -16 16 q8 -10 6 -20 q10 4 22 -8 Z" fill="url(#kgFn)"/><path d="M71 82 q2 12 -3 20 M66 82 q-2 9 -8 13" fill="none" stroke="#FFE79A" stroke-width="1.8" stroke-linecap="round"/></g><path d="M78 76 Q60 74 48 58 Q38 42 46 22 Q56 12 70 16 Q86 22 90 44 Q92 62 78 76 Z" fill="url(#kgBd)" stroke="#E8AF35" stroke-width="2.5"/><path d="M56 40 q10 -8 22 -4 q6 10 0 22 q-14 2 -22 -6 q-3 -6 0 -12 Z" fill="#F6B93B"/><ellipse cx="60" cy="22" rx="7" ry="6" fill="#F2903D"/><path d="M48 58 Q58 72 76 75 Q66 78 58 72 Q50 66 48 58 Z" fill="#FFEDBD"/><path d="M50 22 q8 -6 17 -4" fill="none" stroke="#FFF3C9" stroke-width="2.5" stroke-linecap="round" opacity="0.9"/><g class="pj-fin" style="transform-origin:89px 44px"><path d="M88 40 q12 -2 16 8 q-8 4 -16 0 Z" fill="url(#kgFn)"/><path d="M92 42 q6 0 9 4" fill="none" stroke="#FFE79A" stroke-width="1.5" stroke-linecap="round"/></g><g class="pj-fin-b" style="transform-origin:49px 54px"><path d="M50 52 q-12 0 -16 10 q9 4 17 -3 Z" fill="url(#kgFn)"/><path d="M45 55 q-6 2 -8 6" fill="none" stroke="#FFE79A" stroke-width="1.5" stroke-linecap="round"/></g><circle cx="53" cy="28" r="9" fill="#fff" stroke="#E8AF35" stroke-width="1.5"/><circle cx="52" cy="27" r="5.8" fill="#3B2B20"/><circle cx="53" cy="25" r="1.9" fill="#fff"/><circle cx="50.5" cy="29.5" r="1" fill="#fff" opacity="0.8"/><path d="M44 38 q3 3 7 1" fill="none" stroke="#B98A3A" stroke-width="2.6" stroke-linecap="round"/><circle cx="47" cy="42" r="3.4" fill="#FF9C9C" opacity="0.8"/><g class="pj-whisk-l" style="transform-origin:42px 32px"><path d="M42 32 q-7 0 -9 6" fill="none" stroke="#E8AF35" stroke-width="2.2" stroke-linecap="round"/></g><path d="M64 34 q4 4 8 0 M72 42 q4 4 8 0 M68 44 q4 4 8 0 M62 54 q4 4 8 0 M74 56 q4 4 8 0 M78 46 q4 4 8 0" fill="none" stroke="#FFE79A" stroke-width="2" stroke-linecap="round"/><g class="pj-twinkle"><path d="M100 20 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4 -5.6 -5.6 -2.4 5.6 -2.4 Z" fill="#FFD66B"/><circle cx="92" cy="64" r="2" fill="#FFD66B"/></g><g class="pj-twinkle-b"><path d="M18 20 l1.8 4.2 4.2 1.8 -4.2 1.8 -1.8 4.2 -1.8 -4.2 -4.2 -1.8 4.2 -1.8 Z" fill="#FFE29A"/><circle cx="28" cy="66" r="2.2" fill="#FFD66B"/></g></svg>`,
+  dragon: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="drBo" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7AD6AC"/><stop offset="100%" stop-color="#4BB287"/></linearGradient><radialGradient id="drHd" cx="42%" cy="30%" r="85%"><stop offset="0%" stop-color="#8ADDB6"/><stop offset="65%" stop-color="#6BCB9E"/><stop offset="100%" stop-color="#54B98B"/></radialGradient></defs><ellipse cx="60" cy="108" rx="34" ry="6" fill="#000" opacity="0.10"/><g class="pj-cloud" fill="#EAF6FB" stroke="#CBE7F4" stroke-width="2"><circle cx="78" cy="100" r="9"/><circle cx="92" cy="100" r="7"/><circle cx="66" cy="102" r="7"/></g><path d="M50 70 Q30 76 30 90 Q30 102 46 102 Q62 102 66 92 Q70 82 84 84" fill="none" stroke="url(#drBo)" stroke-width="17" stroke-linecap="round"/><path d="M50 73 Q34 78 34 90 Q34 98 46 98 Q60 98 63 90" fill="none" stroke="#EFFAF0" stroke-width="7" stroke-linecap="round" stroke-dasharray="7 5"/><path d="M44 76 q3 3 6 1 M33 84 q3 3 6 1 M40 96 q3 3 6 0 M56 96 q3 2 6 -1" fill="none" stroke="#4AA87E" stroke-width="1.6" stroke-linecap="round" opacity="0.6"/><g class="pj-tail" style="transform-origin:84px 84px"><path d="M84 84 q10 -2 12 -10 q2 8 -2 13 q6 0 9 -4 q-2 9 -11 10 q-6 1 -10 -4 Z" fill="#FF9752"/><path d="M88 86 q6 -2 8 -7" fill="none" stroke="#FFC28E" stroke-width="1.6" stroke-linecap="round"/></g><path d="M36 78 q-6 -4 -4 -10 q6 2 7 8 Z M28 90 q-7 -1 -8 -8 q7 0 10 5 Z M38 100 q-6 3 -11 0 q4 -6 10 -4 Z" fill="#FFB166"/><ellipse cx="46" cy="74" rx="4.5" ry="3.5" fill="#F7FDF9" stroke="#BEE8D4" stroke-width="1.6"/><ellipse cx="62" cy="88" rx="4.5" ry="3.5" fill="#F7FDF9" stroke="#BEE8D4" stroke-width="1.6"/><g class="pj-head" style="transform-origin:54px 60px"><circle cx="54" cy="48" r="26" fill="url(#drHd)"/><path d="M40 26 q-2 -10 6 -13 q4 7 -1 13 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2"/><path d="M68 26 q2 -10 -6 -13 q-4 7 1 13 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2"/><path d="M43 22 q0 -5 3 -7 M65 22 q0 -5 -3 -7" fill="none" stroke="#F2DFB8" stroke-width="1.4" stroke-linecap="round"/><path d="M28 36 q-8 -1 -11 5 q6 4 12 0 Z" fill="#FF9752"/><path d="M80 36 q8 -1 11 5 q-6 4 -12 0 Z" fill="#FF9752"/><path d="M38 30 q6 -7 14 -8" fill="none" stroke="#A5E6C8" stroke-width="3" stroke-linecap="round" opacity="0.85"/><circle cx="70" cy="28" r="1.8" fill="#A5E6C8"/><circle cx="34" cy="42" r="1.6" fill="#A5E6C8"/><ellipse cx="54" cy="60" rx="15" ry="10.5" fill="#EFFAF0"/><circle cx="49" cy="57" r="1.9" fill="#3B6B52"/><circle cx="59" cy="57" r="1.9" fill="#3B6B52"/><path d="M50 64 q4 4 8 0" fill="none" stroke="#3B6B52" stroke-width="2.6" stroke-linecap="round"/><circle cx="42" cy="44" r="8.5" fill="#fff"/><circle cx="43" cy="45" r="5.4" fill="#2E4B3C"/><circle cx="45" cy="43" r="2" fill="#fff"/><circle cx="41.5" cy="47" r="1" fill="#fff" opacity="0.8"/><circle cx="66" cy="44" r="8.5" fill="#fff"/><circle cx="67" cy="45" r="5.4" fill="#2E4B3C"/><circle cx="69" cy="43" r="2" fill="#fff"/><circle cx="65.5" cy="47" r="1" fill="#fff" opacity="0.8"/><circle cx="33" cy="54" r="4" fill="#FF9C9C" opacity="0.8"/><circle cx="75" cy="54" r="4" fill="#FF9C9C" opacity="0.8"/><g class="pj-whisk-l" style="transform-origin:40px 60px"><path d="M40 60 q-8 2 -10 8" fill="none" stroke="#5FC49A" stroke-width="2.4" stroke-linecap="round"/></g><g class="pj-whisk-r" style="transform-origin:68px 60px"><path d="M68 60 q8 2 10 8" fill="none" stroke="#5FC49A" stroke-width="2.4" stroke-linecap="round"/></g></g><g class="pj-twinkle"><path d="M100 30 l2.2 5 5 2.2 -5 2.2 -2.2 5 -2.2 -5 -5 -2.2 5 -2.2 Z" fill="#9FE0C4"/><circle cx="14" cy="70" r="2" fill="#9FE0C4"/></g></svg>`,
+  dragonmax: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="dmBo" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#FFC257"/><stop offset="100%" stop-color="#E8892C"/></linearGradient><radialGradient id="dmHd" cx="42%" cy="30%" r="85%"><stop offset="0%" stop-color="#FFC96B"/><stop offset="65%" stop-color="#F2A23C"/><stop offset="100%" stop-color="#E08A28"/></radialGradient><radialGradient id="dmPr" cx="38%" cy="32%" r="80%"><stop offset="0%" stop-color="#FFFFFF"/><stop offset="45%" stop-color="#FFE9F2"/><stop offset="100%" stop-color="#F7CBDD"/></radialGradient></defs><g class="pj-cloud" fill="#EAF6FB" stroke="#CBE7F4" stroke-width="2"><circle cx="22" cy="104" r="9"/><circle cx="35" cy="106" r="7"/><circle cx="11" cy="107" r="6"/><circle cx="94" cy="98" r="8"/><circle cx="106" cy="101" r="6"/></g><path d="M46 66 Q20 72 20 88 Q20 104 44 104 Q70 104 74 90 Q78 76 96 78 Q108 80 106 66 Q104 54 90 56" fill="none" stroke="url(#dmBo)" stroke-width="18" stroke-linecap="round"/><path d="M46 69 Q25 74 25 88 Q25 99 44 99 Q66 99 70 88" fill="none" stroke="#FFEDC2" stroke-width="7" stroke-linecap="round" stroke-dasharray="7 5"/><path d="M38 72 q3 3 7 1 M26 82 q3 3 7 1 M36 97 q3 3 7 0 M56 98 q3 2 7 -1 M88 74 q3 3 7 1" fill="none" stroke="#D07E22" stroke-width="1.6" stroke-linecap="round" opacity="0.55"/><path d="M28 74 q-8 -5 -6 -13 q8 3 9 11 Z M18 88 q-9 -1 -11 -10 q9 0 13 7 Z M28 100 q-8 4 -15 0 q5 -8 14 -5 Z M62 103 q-2 9 -11 11 q1 -9 8 -13 Z" fill="#F25C3D"/><path d="M25 76 q-4 -3 -3 -7 M16 87 q-5 -1 -6 -5 M60 104 q-1 5 -6 7" fill="none" stroke="#FF8A70" stroke-width="1.5" stroke-linecap="round"/><g class="pj-tail" style="transform-origin:90px 56px"><path d="M92 54 q6 -14 -3 -22 q12 3 15 12 q5 -9 0 -17 q12 8 10 22 q-3 12 -16 12 q-6 0 -6 -7 Z" fill="#FF7A52" opacity="0.65"/><path d="M90 56 q4 -12 -3 -18 q10 2 12 10 q4 -8 0 -14 q10 6 8 18 q-2 10 -13 10 Z" fill="#F25C3D"/><path d="M94 52 q3 -8 -1 -13 M100 52 q2 -6 0 -10" fill="none" stroke="#FF9C80" stroke-width="1.7" stroke-linecap="round"/></g><g class="pj-mane" style="transform-origin:55px 28px"><g fill="#E8992C" opacity="0.75"><path d="M27 40 q-13 0 -18 10 q11 5 20 -3 Z"/><path d="M83 40 q13 0 18 10 q-11 5 -20 -3 Z"/><path d="M30 14 q-10 -8 -21 -4 q5 10 16 11 Z"/><path d="M80 14 q10 -8 21 -4 q-5 10 -16 11 Z"/></g><g fill="#F6B93B"><path d="M30 34 q-12 -2 -16 8 q10 4 17 -2 Z"/><path d="M32 22 q-12 -6 -20 0 q7 8 18 6 Z"/><path d="M42 12 q-8 -9 -18 -7 q4 10 14 12 Z"/><path d="M78 22 q12 -6 20 0 q-7 8 -18 6 Z"/><path d="M68 12 q8 -9 18 -7 q-4 10 -14 12 Z"/><path d="M80 34 q12 -2 16 8 q-10 4 -17 -2 Z"/></g><path d="M24 38 q-6 0 -9 4 M26 24 q-6 -2 -10 0 M86 24 q6 -2 10 0 M86 38 q6 0 9 4" fill="none" stroke="#FFDf90" stroke-width="1.6" stroke-linecap="round"/></g><g class="pj-head" style="transform-origin:55px 52px"><circle cx="55" cy="40" r="26" fill="url(#dmHd)"/><path d="M40 18 q-4 -10 3 -15 q3 5 1 9 q5 -4 9 -2 q-3 7 -10 9 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2" stroke-linejoin="round"/><path d="M70 18 q4 -10 -3 -15 q-3 5 -1 9 q-5 -4 -9 -2 q3 7 10 9 Z" fill="#FFE9C7" stroke="#EFD3A8" stroke-width="2" stroke-linejoin="round"/><path d="M42 14 q-1 -4 1 -7 M68 14 q1 -4 -1 -7" fill="none" stroke="#F2DFB8" stroke-width="1.3" stroke-linecap="round"/><path d="M38 22 q7 -7 15 -8" fill="none" stroke="#FFD98F" stroke-width="3" stroke-linecap="round" opacity="0.9"/><circle cx="72" cy="22" r="1.8" fill="#FFD98F"/><circle cx="34" cy="34" r="1.6" fill="#FFD98F"/><ellipse cx="55" cy="52" rx="15.5" ry="11" fill="#FFEDC2"/><circle cx="50" cy="49" r="1.9" fill="#8A5A22"/><circle cx="60" cy="49" r="1.9" fill="#8A5A22"/><path d="M50 56 q5 5 10 0" fill="none" stroke="#8A5A22" stroke-width="2.6" stroke-linecap="round"/><path d="M34 32 q6 -4 12 -1" fill="none" stroke="#8A5A22" stroke-width="2.4" stroke-linecap="round"/><path d="M76 32 q-6 -4 -12 -1" fill="none" stroke="#8A5A22" stroke-width="2.4" stroke-linecap="round"/><circle cx="43" cy="38" r="8" fill="#fff"/><circle cx="44" cy="39" r="5.2" fill="#4A2E12"/><circle cx="46" cy="37" r="1.9" fill="#fff"/><circle cx="42.5" cy="41" r="1" fill="#fff" opacity="0.8"/><circle cx="67" cy="38" r="8" fill="#fff"/><circle cx="68" cy="39" r="5.2" fill="#4A2E12"/><circle cx="70" cy="37" r="1.9" fill="#fff"/><circle cx="66.5" cy="41" r="1" fill="#fff" opacity="0.8"/><circle cx="34" cy="47" r="4" fill="#FF9C9C" opacity="0.8"/><circle cx="76" cy="47" r="4" fill="#FF9C9C" opacity="0.8"/><g class="pj-whisk-l" style="transform-origin:40px 53px"><path d="M40 53 q-14 2 -16 12 q-1 6 4 8" fill="none" stroke="#F6B93B" stroke-width="2.6" stroke-linecap="round"/><circle cx="28" cy="74" r="1.8" fill="#F6B93B"/></g><g class="pj-whisk-r" style="transform-origin:70px 53px"><path d="M70 53 q14 2 16 12 q1 6 -4 8" fill="none" stroke="#F6B93B" stroke-width="2.6" stroke-linecap="round"/><circle cx="82" cy="74" r="1.8" fill="#F6B93B"/></g></g><circle class="pj-glow" cx="55" cy="77" r="15" fill="#FFE9F2" opacity="0.55"/><circle cx="55" cy="77" r="10" fill="url(#dmPr)" stroke="#F5BBD3" stroke-width="2.5"/><path d="M48 74 a9 9 0 0 1 6 -5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><path d="M49 82 a10 10 0 0 0 12 0" fill="none" stroke="#F0A7C6" stroke-width="2" stroke-linecap="round" opacity="0.7"/><circle cx="45" cy="70" r="5" fill="#F2A23C" stroke="#E8912F" stroke-width="2"/><circle cx="65" cy="70" r="5" fill="#F2A23C" stroke="#E8912F" stroke-width="2"/><path d="M43 68 q2 -1 4 0 M63 68 q2 -1 4 0" fill="none" stroke="#FFD98F" stroke-width="1.4" stroke-linecap="round"/><g class="pj-twinkle"><path d="M104 26 l2.6 6 6 2.6 -6 2.6 -2.6 6 -2.6 -6 -6 -2.6 6 -2.6 Z" fill="#FFD66B"/><circle cx="16" cy="60" r="2" fill="#FFD66B"/></g><g class="pj-twinkle-b"><path d="M12 40 l2 4.6 4.6 2 -4.6 2 -2 4.6 -2 -4.6 -4.6 -2 4.6 -2 Z" fill="#FFE29A"/><circle cx="90" cy="14" r="2.4" fill="#FFD66B"/></g></svg>`,
 };
 // Dạng đang hiển thị: theo skin người dùng chọn (nếu đã mở khóa), mặc định là dạng cao nhất
 const petDisplayStage = (p) => {
@@ -9283,6 +9276,163 @@ const SkyBackground = ({ dark }) => {
   );
 };
 
+// ===== MÔI TRƯỜNG SỐNG THEO HÌNH THÁI (khung cảnh chi tiết, crossfade) =====
+const PET_ENVS = {
+  egg:      { sky:['#e9f6ef','#c2e5d6','#8fcbb8'], water:true,  clouds:0, y:44 },
+  fry:      { sky:['#e6f7f3','#a5ded1','#3fa294'], water:true,  clouds:0, y:14 },
+  koi:      { sky:['#dff5ee','#7fcfc0','#2a8078'], water:true,  clouds:0, y:4 },
+  koigold:  { sky:['#ffe9c2','#ffd08a','#3a968c'], water:true,  clouds:0, y:-6 },
+  dragon:   { sky:['#e8f4fd','#b4dcf3','#84bbe2'], water:false, clouds:1, y:-14 },
+  dragonmax:{ sky:['#fff6dc','#ffd984','#eda23f'], water:false, clouds:1, y:-18 },
+};
+const EnvWeed = ({ d, x, y, delay = 0, color = '#4E9B78', w = 2.2 }) => (
+  <g className="env-weed" style={{ transformOrigin: `${x}px ${y}px`, transformBox: 'view-box', animationDelay: delay + 's' }}>
+    <path d={d} stroke={color} strokeWidth={w} fill="none" strokeLinecap="round" />
+  </g>
+);
+const EnvFish = ({ y, s = 1, delay = 0, dur = 16, color = '#1F6B60', op = 0.22 }) => (
+  <g className="env-fish" style={{ animationDelay: delay + 's', animationDuration: dur + 's' }} opacity={op}>
+    <path d={`M0 ${y} q${6*s} ${-4*s} ${12*s} 0 q${-5*s} ${4*s} ${-12*s} 0 Z`} fill={color} />
+    <path d={`M0 ${y} l${-5*s} ${-3.5*s} v${7*s} Z`} fill={color} />
+  </g>
+);
+const EnvCloud = ({ cx, cy, s = 1, op = 0.95, sway = 16, delay = 0, fill = '#FFFFFF', stroke = 'none' }) => (
+  <g className="env-cloudsway" style={{ animationDuration: sway + 's', animationDelay: delay + 's' }} opacity={op}>
+    <g fill={fill} stroke={stroke} strokeWidth="1.5">
+      <ellipse cx={cx} cy={cy} rx={16*s} ry={8*s} />
+      <circle cx={cx - 10*s} cy={cy - 3*s} r={7*s} />
+      <circle cx={cx + 2*s} cy={cy - 6*s} r={8.5*s} />
+      <circle cx={cx + 11*s} cy={cy - 2*s} r={6*s} />
+    </g>
+  </g>
+);
+const PetEnvScene = ({ art }) => {
+  const S = { position: 'absolute', inset: 0, width: '100%', height: '100%' };
+  const common = { viewBox: '0 0 200 150', preserveAspectRatio: 'xMidYMid slice', className: 'pet-scene', style: S };
+  if (art === 'egg') return (
+    <svg {...common}>
+      <polygon points="34,0 60,0 100,150 44,150" fill="#fff" opacity="0.13" className="env-caustic" />
+      <polygon points="118,0 136,0 188,150 148,150" fill="#fff" opacity="0.1" className="env-caustic" style={{ animationDelay: '1.8s' }} />
+      <ellipse cx="40" cy="16" rx="16" ry="4" fill="none" stroke="#fff" strokeWidth="1.6" opacity="0.35" className="env-caustic" />
+      <ellipse cx="120" cy="10" rx="20" ry="5" fill="none" stroke="#fff" strokeWidth="1.6" opacity="0.3" className="env-caustic" style={{ animationDelay: '2.4s' }} />
+      <EnvFish y={40} s={1} dur={19} color="#1F6B60" />
+      <EnvFish y={58} s={0.7} dur={14} delay={-6} color="#2A7A6C" />
+      <path d="M0 126 Q30 114 62 122 Q100 131 138 120 Q170 112 200 122 L200 150 L0 150 Z" fill="#E3D2A4" />
+      <path d="M0 134 Q40 124 84 132 Q130 140 200 130 L200 150 L0 150 Z" fill="#F2E5BD" />
+      <ellipse cx="36" cy="140" rx="7" ry="3.4" fill="#CBB98C" /><ellipse cx="46" cy="143" rx="4.5" ry="2.4" fill="#D8C79B" />
+      <ellipse cx="152" cy="141" rx="6" ry="3" fill="#CBB98C" /><ellipse cx="163" cy="144" rx="4" ry="2" fill="#D8C79B" />
+      <path d="M172 138 q3 -8 9 -9 q-1 6 -5 9 Z M181 138 q0 -6 5 -8 q1 5 -2 8 Z" fill="#F09AA6" />
+      <path d="M22 141 a4 4 0 0 1 8 0 q-1 3 -4 3 q-3 0 -4 -3 Z" fill="#E8B08B" stroke="#CE9468" strokeWidth="1.2" />
+      <EnvWeed d="M18 128 q-5 -12 1 -24 q5 10 2 24" x={19} y={128} color="#3E8F6C" w={2.6} />
+      <EnvWeed d="M28 130 q4 -10 0 -20" x={28} y={130} delay={0.8} color="#55AB84" />
+      <EnvWeed d="M182 126 q-4 -13 1 -26 q5 11 2 26" x={183} y={126} delay={0.4} color="#3E8F6C" w={2.6} />
+      <EnvWeed d="M192 129 q4 -9 1 -18" x={192} y={129} delay={1.3} color="#55AB84" />
+      <EnvWeed d="M64 132 q-3 -8 0 -15" x={64} y={132} delay={1.7} color="#55AB84" w={2} />
+    </svg>
+  );
+  if (art === 'fry' || art === 'koi') { const deep = art === 'koi'; return (
+    <svg {...common}>
+      {deep && <g opacity="0.16"><rect x="86" y="8" width="4" height="26" rx="1.5" fill="#0F3E38" /><rect x="118" y="8" width="4" height="26" rx="1.5" fill="#0F3E38" /><rect x="82" y="6" width="44" height="5" rx="2" fill="#0F3E38" /><text x="104" y="22" textAnchor="middle" fontSize="8" fontWeight="700" fill="#0F3E38">龙门</text></g>}
+      <ellipse cx="52" cy="12" rx="15" ry="4" fill="none" stroke="#fff" strokeWidth="1.6" opacity="0.5" className="env-caustic" />
+      <ellipse cx="52" cy="12" rx="8" ry="2.2" fill="none" stroke="#fff" strokeWidth="1.4" opacity="0.5" className="env-caustic" style={{ animationDelay: '1s' }} />
+      <ellipse cx="52" cy="13" rx="12" ry="4.4" fill="#3E8F5B" />
+      <path d="M52 13 L64 10 L64 15 Z" fill={deep ? '#2a8078' : '#a5ded1'} />
+      <ellipse cx="49" cy="12" rx="7" ry="2.4" fill="#57AB72" opacity="0.9" />
+      <path d="M52 13 q-4 22 4 40" fill="none" stroke="#3E8F5B" strokeWidth="1.8" opacity="0.65" strokeLinecap="round" />
+      <ellipse cx="156" cy="10" rx="10" ry="3.6" fill="#3E8F5B" />
+      <path d="M156 10 L166 8 L166 13 Z" fill={deep ? '#2a8078' : '#a5ded1'} />
+      <path d="M156 10 q3 18 -2 32" fill="none" stroke="#3E8F5B" strokeWidth="1.6" opacity="0.6" strokeLinecap="round" />
+      <polygon points="24,0 46,0 88,150 36,150" fill="#fff" opacity="0.12" className="env-caustic" style={{ animationDelay: '2.2s' }} />
+      <polygon points="130,0 146,0 196,150 158,150" fill="#fff" opacity="0.1" className="env-caustic" />
+      <EnvFish y={34} s={0.9} dur={17} color="#14554C" />
+      <EnvFish y={48} s={0.6} dur={12} delay={-5} color="#1F6B60" />
+      <EnvFish y={26} s={0.5} dur={21} delay={-11} color="#1F6B60" />
+      <path d="M0 136 Q40 128 90 134 Q140 140 200 132 L200 150 L0 150 Z" fill={deep ? '#1E6158' : '#2F8F7A'} opacity="0.85" />
+      <EnvWeed d="M14 138 q-5 -14 1 -28 q6 12 2 28" x={15} y={138} color={deep ? '#174F45' : '#26735F'} w={2.6} />
+      <EnvWeed d="M24 140 q4 -11 0 -22" x={24} y={140} delay={0.9} color={deep ? '#1E6156' : '#2F8A72'} />
+      <EnvWeed d="M186 138 q4 -13 -1 -26" x={185} y={138} delay={0.5} color={deep ? '#174F45' : '#26735F'} w={2.6} />
+      <EnvWeed d="M176 141 q-4 -9 -1 -18" x={176} y={141} delay={1.4} color={deep ? '#1E6156' : '#2F8A72'} />
+    </svg>
+  ); }
+  if (art === 'koigold') return (
+    <svg {...common}>
+      <ellipse cx="34" cy="18" rx="26" ry="7" fill="#FFF3D2" opacity="0.85" className="env-mist" />
+      <ellipse cx="168" cy="26" rx="30" ry="8" fill="#FFEBC2" opacity="0.75" className="env-mist" style={{ animationDelay: '2s' }} />
+      <path d="M0 60 L26 34 L44 58 L58 40 L74 66 L74 150 L0 150 Z" fill="#6E5B43" />
+      <path d="M0 60 L26 34 L36 47 L18 66 L0 74 Z" fill="#84704F" />
+      <path d="M200 56 L176 32 L158 56 L144 42 L128 64 L128 150 L200 150 Z" fill="#6E5B43" />
+      <path d="M200 56 L176 32 L166 44 L184 62 L200 70 Z" fill="#84704F" />
+      <g>
+        <rect x="80" y="10" width="7" height="46" rx="2.5" fill="#8A5212" />
+        <rect x="115" y="10" width="7" height="46" rx="2.5" fill="#8A5212" />
+        <rect x="72" y="6" width="58" height="8" rx="3" fill="#9C5F16" />
+        <rect x="76" y="16" width="50" height="4" rx="2" fill="#8A5212" />
+        <text x="101" y="34" textAnchor="middle" fontSize="11" fontWeight="700" fill="#8A5212" opacity="0.9">龙门</text>
+      </g>
+      <path d="M87 20 L115 20 L119 118 L83 118 Z" fill="#EAF7FD" opacity="0.7" />
+      <rect x="90" y="22" width="4" height="94" rx="2" fill="#fff" className="env-fall" />
+      <rect x="100" y="22" width="4" height="94" rx="2" fill="#fff" className="env-fall" style={{ animationDelay: '.5s' }} />
+      <rect x="109" y="22" width="4" height="94" rx="2" fill="#fff" className="env-fall" style={{ animationDelay: '1s' }} />
+      <path d="M0 122 Q30 114 60 120 Q100 128 140 119 Q172 112 200 120 L200 150 L0 150 Z" fill="#2E837A" />
+      <path d="M0 132 q14 -6 28 0 q14 -6 28 0 q14 -6 28 0 q14 -6 28 0 q14 -6 28 0 q14 -6 28 0 q14 -6 28 0" fill="none" stroke="#BDE6F7" strokeWidth="2.4" strokeLinecap="round" opacity="0.7" />
+      <g className="env-foam" style={{ transformBox: 'view-box' }}>
+        <circle cx="86" cy="118" r="7" fill="#fff" opacity="0.95" /><circle cx="98" cy="121" r="9" fill="#fff" /><circle cx="112" cy="118" r="7.5" fill="#fff" opacity="0.95" /><circle cx="122" cy="121" r="5.5" fill="#fff" opacity="0.9" />
+      </g>
+      <g className="env-foam" style={{ transformBox: 'view-box', animationDelay: '1.1s' }}>
+        <circle cx="78" cy="122" r="5" fill="#fff" opacity="0.85" /><circle cx="130" cy="123" r="4.5" fill="#fff" opacity="0.8" />
+      </g>
+      <circle cx="72" cy="104" r="2" fill="#fff" opacity="0.8" className="env-caustic" /><circle cx="132" cy="98" r="2.4" fill="#fff" opacity="0.8" className="env-caustic" style={{ animationDelay: '1.4s' }} /><circle cx="124" cy="110" r="1.7" fill="#fff" opacity="0.7" className="env-caustic" style={{ animationDelay: '.6s' }} />
+      <ellipse cx="100" cy="116" rx="34" ry="7" fill="#fff" opacity="0.35" className="env-mist" style={{ animationDelay: '1s' }} />
+    </svg>
+  );
+  if (art === 'dragon') return (
+    <svg {...common}>
+      <circle cx="170" cy="18" r="22" fill="#FFF8DC" opacity="0.75" />
+      <circle cx="170" cy="18" r="34" fill="#FFF8DC" opacity="0.3" />
+      <EnvCloud cx={40} cy={30} s={0.7} op={0.85} sway={18} />
+      <EnvCloud cx={128} cy={44} s={0.55} op={0.7} sway={22} delay={-8} />
+      <EnvCloud cx={80} cy={16} s={0.45} op={0.6} sway={15} delay={-4} />
+      <path d="M36 66 q2 -3 5 -3 q3 0 5 3 M46 66 q2 -3 5 -3 q3 0 5 3" fill="none" stroke="#5B7E99" strokeWidth="1.6" strokeLinecap="round" className="env-cloudsway" style={{ animationDuration: '9s' }} />
+      <path d="M140 58 q2 -3 4 -3 q3 0 4 3" fill="none" stroke="#5B7E99" strokeWidth="1.4" strokeLinecap="round" className="env-cloudsway" style={{ animationDuration: '11s', animationDelay: '-5s' }} />
+      <path d="M18 118 L44 84 L72 118 Z" fill="#8FB4D6" opacity="0.85" />
+      <path d="M44 84 L54 97 L44 100 L36 94 Z" fill="#EAF4FC" opacity="0.9" />
+      <path d="M126 122 L156 80 L188 122 Z" fill="#7FA8CE" opacity="0.9" />
+      <path d="M156 80 L168 96 L156 100 L146 94 Z" fill="#EAF4FC" opacity="0.95" />
+      <EnvCloud cx={30} cy={128} s={1.5} op={1} sway={20} fill="#F4FAFE" />
+      <EnvCloud cx={104} cy={136} s={1.9} op={1} sway={24} delay={-9} fill="#FFFFFF" />
+      <EnvCloud cx={178} cy={130} s={1.5} op={1} sway={19} delay={-14} fill="#F4FAFE" />
+      <EnvCloud cx={64} cy={144} s={1.6} op={1} sway={26} delay={-4} fill="#FFFFFF" />
+      <EnvCloud cx={150} cy={146} s={1.7} op={1} sway={21} delay={-11} fill="#F8FCFF" />
+    </svg>
+  );
+  return (
+    <svg {...common}>
+      <g className="env-sunspin" style={{ transformOrigin: '100px 26px', transformBox: 'view-box' }} opacity="0.55">
+        {[0,30,60,90,120,150,180,210,240,270,300,330].map(a => (
+          <polygon key={a} points="100,-8 103,26 97,26" fill="#FFDf8C" transform={`rotate(${a} 100 26)`} />
+        ))}
+      </g>
+      <circle cx="100" cy="26" r="20" fill="#FFECAE" />
+      <circle cx="100" cy="26" r="14" fill="#FFF6D8" />
+      <path d="M28 52 q10 -8 22 -4 q6 -8 16 -6" fill="none" stroke="#FFE9B0" strokeWidth="4" strokeLinecap="round" opacity="0.8" className="env-cloudsway" style={{ animationDuration: '18s' }} />
+      <path d="M148 44 q8 -7 18 -4 q5 -6 13 -5" fill="none" stroke="#FFE9B0" strokeWidth="3.4" strokeLinecap="round" opacity="0.7" className="env-cloudsway" style={{ animationDuration: '22s', animationDelay: '-7s' }} />
+      <path d="M22 26 l1.6 3.8 3.8 1.6 -3.8 1.6 -1.6 3.8 -1.6 -3.8 -3.8 -1.6 3.8 -1.6 Z" fill="#FFEFB8" className="env-caustic" />
+      <path d="M172 60 l1.4 3.2 3.2 1.4 -3.2 1.4 -1.4 3.2 -1.4 -3.2 -3.2 -1.4 3.2 -1.4 Z" fill="#FFEFB8" className="env-caustic" style={{ animationDelay: '1.3s' }} />
+      <circle cx="48" cy="70" r="1.8" fill="#FFEFB8" className="env-caustic" style={{ animationDelay: '.7s' }} />
+      <g opacity="0.8">
+        <path d="M148 96 h20 l-3 -6 h-14 Z M151 90 h14 l-2.6 -6 h-8.8 Z M154 84 h8 l-2 -5 h-4 Z M157 79 h2 v-4 h-2 Z" fill="#B8791F" />
+        <path d="M146 96 h24 M149 90 h18 M152 84 h12" stroke="#8F5D14" strokeWidth="1.4" strokeLinecap="round" />
+      </g>
+      <path d="M22 108 L44 82 L68 108 Z" fill="#D9A245" opacity="0.8" />
+      <EnvCloud cx={32} cy={124} s={1.5} op={1} sway={20} fill="#FFE9B4" />
+      <EnvCloud cx={106} cy={134} s={2} op={1} sway={25} delay={-10} fill="#FFF2CE" />
+      <EnvCloud cx={180} cy={126} s={1.5} op={1} sway={18} delay={-6} fill="#FFE9B4" />
+      <EnvCloud cx={68} cy={144} s={1.7} op={1} sway={27} delay={-3} fill="#FFEDC0" />
+      <EnvCloud cx={152} cy={146} s={1.8} op={1} sway={22} delay={-13} fill="#FFF2CE" />
+    </svg>
+  );
+};
+
 // ============ LINH THÚ ĐỒNG HÀNH ============
 const PetView = () => {
   const [p, setP] = useState(() => readPet() || defaultPet());
@@ -9294,6 +9444,8 @@ const PetView = () => {
   const [nameInput, setNameInput] = useState('');
   const [dev, setDev] = useState(() => isDevMode());
   const [viewStage, setViewStage] = useState(null);
+  const [morph, setMorph] = useState(null);      // hoạt ảnh tiến hóa: charge → flash → reveal
+  const [devAmt, setDevAmt] = useState(25);      // EXP mỗi lần cho ăn ở chế độ vô hạn
 
   useEffect(() => {
     const today = new Date().toISOString().slice(0, 10);
@@ -9317,26 +9469,26 @@ const PetView = () => {
 
   const stage = petStage(p.lv);
   const shown = petDisplayStage(p);          // dạng đang hiển thị (có thể là skin cũ)
+  const vis = (morph && morph.phase === 'charge' && morph.from) ? morph.from : shown; // dạng đang vẽ trong khung cảnh
   const need = petNeed(p.lv);
-  const isDragon = shown.lv >= 11;
-  // Môi trường theo từng hình thái — crossfade mượt khi tiến hóa / đổi skin
-  const PET_ENVS = {
-    egg:      { sky:['#e9f6ef','#c7e8da','#96cfbc'], water:false, bed:1,    gate:0.10, clouds:0, rays:1,   sun:0, y:44 },
-    fry:      { sky:['#e6f7f3','#a5ded1','#3fa294'], water:true,  bed:0.55, gate:0.14, clouds:0, rays:0.6, sun:0, y:14 },
-    koi:      { sky:['#e2f8f1','#8fd8cb','#2f8f86'], water:true,  bed:0.3,  gate:0.22, clouds:0, rays:0.4, sun:0, y:4 },
-    koigold:  { sky:['#fff2d9','#ffd98f','#39958b'], water:true,  bed:0,    gate:0.55, clouds:0, rays:0.5, sun:0, y:-8, fall:true },
-    dragon:   { sky:['#e3f2fc','#b0dbf2','#7fb8e0'], water:false, bed:0,    gate:0,    clouds:1, rays:0,   sun:0, y:-14 },
-    dragonmax:{ sky:['#fff4d6','#ffd277','#e0951f'], water:false, bed:0,    gate:0,    clouds:1, rays:0,   sun:1, y:-18 },
-  };
-  const env = PET_ENVS[shown.art] || PET_ENVS.koi;
+  const isDragon = vis.lv >= 11;
+  const env = PET_ENVS[vis.art] || PET_ENVS.koi;
   const C = isDragon
     ? { a: '#ffcf5c', b: '#ff8f2e', water: ['#fff4d6', '#ffd277', '#e0951f'], gate: '#8a5212', deep: '#a86a1a' }
     : { a: '#46c2ad', b: '#2f8f86', water: ['#e2f8f1', '#8fd8cb', '#2f8f86'], gate: '#1d5a53', deep: '#236b62' };
 
-  const tapPet = () => { setReact('excited'); setTimeout(() => setReact(null), 1200); setMsg(PET_CHEERS[Math.floor(Math.random() * PET_CHEERS.length)]); };
+  const startMorph = (fromStage, toStage) => {
+    setMorph({ from: fromStage, phase: 'charge' });
+    setTimeout(() => setMorph(m => (m ? { ...m, phase: 'flash' } : m)), 950);
+    setTimeout(() => setMorph(m => (m ? { ...m, phase: 'reveal' } : m)), 1300);
+    setTimeout(() => setEvolveModal(toStage), 2300);
+    setTimeout(() => setMorph(null), 2650);
+  };
+
+  const tapPet = () => { if (morph) return; setReact('excited'); setTimeout(() => setReact(null), 1200); setMsg(PET_CHEERS[Math.floor(Math.random() * PET_CHEERS.length)]); };
 
   const feed = () => {
-    const amt = dev ? 240 : (p.food || 0);
+    const amt = dev ? devAmt : (p.food || 0);
     if (amt <= 0) { setMsg('Hết 🍱 rồi — học thêm để có thức ăn nhé!'); setReact('sleepy'); setTimeout(() => setReact(null), 1200); return; }
     let { lv, exp, food } = p; const beforeStage = petStage(lv).name; const beforeLv = lv;
     exp += amt; if (!dev) food = 0;
@@ -9345,13 +9497,14 @@ const PetView = () => {
     setFloatTxt('+' + amt + ' EXP'); setTimeout(() => setFloatTxt(null), 1500);
     setReact('happy'); setTimeout(() => setReact(null), 1400);
     const afterStage = petStage(lv).name;
-    if (afterStage !== beforeStage) { np.skin = null; writePet(np); setP(np); setEvolveModal(petStage(lv)); }
+    if (afterStage !== beforeStage) { np.skin = null; writePet(np); setP(np); setMsg(''); startMorph(petStage(beforeLv), petStage(lv)); }
     else if (lv > beforeLv) setMsg('升级 (shēngjí)! Lên cấp ' + lv + ' rồi! 🎉');
     else setMsg('好吃 (hǎochī)! Ngon quá~');
   };
 
   const toggleDev = () => { const nd = !dev; setDevMode(nd); setDev(nd); setMsg(nd ? 'Đã bật chế độ Vô hạn ♾️ — cho ăn thoải mái!' : 'Đã tắt chế độ Vô hạn.'); };
-  const maxLevel = () => { const np = { ...p, lv: 16, exp: 0, skin: null }; writePet(np); setP(np); setEvolveModal(petStage(16)); };
+  const maxLevel = () => { const beforeLv = p.lv; const np = { ...p, lv: 16, exp: 0, skin: null }; writePet(np); setP(np); if (beforeLv < 16) { setMsg(''); startMorph(petStage(beforeLv), petStage(16)); } };
+  const resetPet = () => { setMorph(null); setEvolveModal(null); const np = { ...p, lv: 1, exp: 0, skin: null }; writePet(np); setP(np); setMsg('Về lại quả trứng nhỏ — cùng nuôi lại từ đầu 🥚'); };
 
   const saveName = () => { const np = { ...p, name: nameInput.trim().slice(0, 16) }; writePet(np); setP(np); setEditing(false); };
   const displayName = p.name || stage.name;
@@ -9366,48 +9519,18 @@ const PetView = () => {
 
       {/* KHUNG CẢNH — nền đổi theo hình thái, crossfade mượt */}
       <div className="relative rounded-3xl overflow-hidden mb-4" style={{ height: 300, boxShadow: '0 16px 44px rgba(20,60,55,0.32)' }}>
-        {/* các lớp nền gradient (crossfade) */}
+        {/* các lớp môi trường chi tiết (crossfade theo hình thái) */}
         {Object.entries(PET_ENVS).map(([k, e]) => (
-          <div key={k} className="absolute inset-0 env-fade" style={{ background: `linear-gradient(180deg, ${e.sky[0]} 0%, ${e.sky[1]} 52%, ${e.sky[2]} 100%)`, opacity: shown.art === k ? 1 : 0 }} />
+          <div key={k} className="absolute inset-0 env-fade pointer-events-none" style={{ background: `linear-gradient(180deg, ${e.sky[0]} 0%, ${e.sky[1]} 52%, ${e.sky[2]} 100%)`, opacity: vis.art === k ? 1 : 0 }}>
+            <PetEnvScene art={k} />
+          </div>
         ))}
-        {/* nắng xuyên nước */}
-        <div className="absolute inset-0 env-fade pointer-events-none" style={{ opacity: env.rays * 0.5, background: 'linear-gradient(115deg, transparent 22%, rgba(255,255,255,0.5) 30%, transparent 38%, transparent 55%, rgba(255,255,255,0.35) 63%, transparent 70%)' }} />
-        {/* vầng dương (Thần Long) */}
-        <div className="absolute env-fade pointer-events-none" style={{ top: -46, left: '50%', marginLeft: -80, width: 160, height: 160, borderRadius: '50%', background: 'radial-gradient(circle, rgba(255,240,200,0.95) 0%, rgba(255,220,140,0.4) 45%, transparent 70%)', opacity: env.sun }} />
-        {/* đáy hồ: cát + rong + sỏi (nơi trứng nằm) */}
-        <div className="absolute inset-x-0 bottom-0 env-fade pointer-events-none" style={{ height: 96, opacity: env.bed }}>
-          <svg viewBox="0 0 100 32" preserveAspectRatio="none" className="w-full h-full">
-            <path d="M0 18 Q18 10 36 16 Q55 22 72 15 Q88 9 100 16 L100 32 L0 32 Z" fill="#E8D8AE" opacity="0.9" />
-            <ellipse cx="24" cy="24" rx="4.5" ry="2.4" fill="#CBB98C" /><ellipse cx="31" cy="26" rx="3" ry="1.8" fill="#D8C79B" /><ellipse cx="76" cy="25" rx="4" ry="2.2" fill="#CBB98C" />
-            <path d="M10 22 q-2 -8 1 -14 M13 22 q2 -7 0 -12 M89 21 q-2 -7 1 -12 M92 21 q2 -6 0 -10" stroke="#4E9B78" stroke-width="1.6" fill="none" stroke-linecap="round" className="env-weed" />
-          </svg>
-        </div>
-        {/* Vũ Môn + thác nước */}
-        <div className="absolute inset-0 env-fade pointer-events-none" style={{ opacity: env.gate }}>
-          <svg viewBox="0 0 100 70" preserveAspectRatio="xMidYMid meet" className="w-full h-full">
-            {env.fall && <g opacity="0.55"><rect x="30" y="19" width="4" height="38" rx="2" fill="#fff" className="env-fall" /><rect x="48" y="19" width="4" height="38" rx="2" fill="#fff" className="env-fall" style={{ animationDelay: '.6s' }} /><rect x="66" y="19" width="4" height="38" rx="2" fill="#fff" className="env-fall" style={{ animationDelay: '1.1s' }} /></g>}
-            <rect x="22" y="14" width="6" height="40" rx="1.5" fill={C.gate} />
-            <rect x="72" y="14" width="6" height="40" rx="1.5" fill={C.gate} />
-            <rect x="16" y="12" width="68" height="7" rx="2" fill={C.gate} />
-            <rect x="19" y="21" width="62" height="3.4" rx="1.5" fill={C.gate} />
-            <text x="50" y="40" textAnchor="middle" fontSize="11" fontFamily="Noto Sans SC, serif" fontWeight="700" fill={C.gate} opacity="0.7">龙门</text>
-          </svg>
-        </div>
-        {/* bong bóng (chỉ dưới nước) */}
-        <div className="absolute inset-0 env-fade pointer-events-none" style={{ opacity: env.water || env.bed ? 1 : 0 }}>
+        {/* bong bóng (chỉ khi ở dưới nước) */}
+        <div className="absolute inset-0 env-fade pointer-events-none" style={{ opacity: env.water ? 1 : 0 }}>
           {[12, 30, 52, 70, 86].map((l, i) => (
             <span key={i} className="pet-bubble" style={{ left: l + '%', animationDelay: (i * 1.3) + 's', animationDuration: (6 + i) + 's', width: (5 + (i % 3) * 3) + 'px', height: (5 + (i % 3) * 3) + 'px' }} />
           ))}
         </div>
-        {/* mây trôi (trên trời) */}
-        <div className="absolute inset-0 env-fade pointer-events-none" style={{ opacity: env.clouds }}>
-          <div className="absolute env-cloud" style={{ top: '16%', fontSize: 34, opacity: 0.9, animationDuration: '26s' }}>☁️</div>
-          <div className="absolute env-cloud" style={{ top: '52%', fontSize: 24, opacity: 0.75, animationDuration: '34s', animationDelay: '-14s' }}>☁️</div>
-          <div className="absolute env-cloud" style={{ top: '74%', fontSize: 42, opacity: 0.85, animationDuration: '30s', animationDelay: '-7s' }}>☁️</div>
-        </div>
-        {/* lá sen (ao) */}
-        <div className="absolute env-fade pointer-events-none" style={{ left: '8%', bottom: '12%', fontSize: 26, opacity: env.water || env.bed ? 0.9 : 0 }}>🪷</div>
-        <div className="absolute env-fade pointer-events-none" style={{ right: '10%', bottom: '20%', fontSize: 20, opacity: env.water || env.bed ? 0.8 : 0 }}>🍃</div>
 
         {/* nhân vật */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -9418,8 +9541,8 @@ const PetView = () => {
             <div className="pet-ripple env-fade" style={{ borderColor: C.b, animationDelay: '1.2s', opacity: env.water ? undefined : 0 }} />
             {/* thảm mây (khi bay trên trời) */}
             <div className="absolute env-fade pet-cloudpad" style={{ left: '50%', bottom: -14, transform: 'translateX(-50%)', fontSize: 52, opacity: env.clouds ? 0.95 : 0 }}>☁️</div>
-            <div className={react === 'excited' ? 'pet-bounce' : ''} style={{ width: 200 }}>
-              <Creature emoji={shown.emoji} size={200} />
+            <div className={(react === 'excited' ? 'pet-bounce ' : '') + (morph && morph.phase === 'charge' ? 'pet-shake' : '') + (morph && morph.phase !== 'charge' ? 'pet-popin' : '')} style={{ width: 200 }}>
+              <Creature emoji={vis.emoji} size={200} />
             </div>
             {react === 'sleepy' && <div className="absolute" style={{ top: -2, right: 8, fontSize: 24 }}>💤</div>}
             {react === 'excited' && <div className="absolute pet-heart" style={{ top: 0, right: 4, fontSize: 24 }}>❤️</div>}
@@ -9431,6 +9554,13 @@ const PetView = () => {
         {/* huy hiệu cấp */}
         <div className="absolute top-3 left-4 px-2.5 py-1 rounded-xl text-xs font-bold" style={{ background: 'rgba(255,255,255,0.9)', color: C.deep }}>Cấp {p.lv} · {shown.name}{shown.lv !== stage.lv ? ' 🎭' : ''}</div>
         <div className="absolute top-3 right-4 px-2.5 py-1 rounded-xl text-xs font-bold" style={{ background: `linear-gradient(135deg, ${C.a}, ${C.b})`, color: '#fff' }}>🍱 {dev ? '∞' : (p.food || 0)}</div>
+
+        {/* LÓE SÁNG & VÒNG NỔ KHI TIẾN HÓA */}
+        {morph && <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at 50% 58%, rgba(255,252,235,1) 0%, rgba(255,246,214,0.92) 40%, rgba(255,255,255,0) 72%)', opacity: morph.phase === 'flash' ? 1 : morph.phase === 'charge' ? 0.32 : 0, transition: 'opacity .32s ease' }} />}
+        {morph && morph.phase !== 'charge' && <div className="pet-burstring" />}
+        {morph && morph.phase !== 'charge' && [0, 45, 90, 135, 180, 225, 270, 315].map(a => (
+          <span key={a} className="pet-burstspark" style={{ '--ba': a + 'deg' }}>✦</span>
+        ))}
       </div>
 
       {/* TÊN + EXP + CHO ĂN */}
@@ -9456,7 +9586,7 @@ const PetView = () => {
         <button onClick={feed} disabled={!dev && (p.food || 0) <= 0}
           className="w-full py-3 rounded-2xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98]"
           style={{ background: (dev || (p.food || 0) > 0) ? `linear-gradient(135deg, ${C.a}, ${C.b})` : 'var(--surface-soft)', color: (dev || (p.food || 0) > 0) ? '#fff' : 'var(--muted)' }}>
-          {dev ? '🍱 Cho ăn (∞)' : ((p.food || 0) > 0 ? `🍱 Cho ăn (${p.food})` : 'Hết thức ăn — học thêm nhé')}
+          {dev ? `🍱 Cho ăn +${devAmt} EXP (∞)` : ((p.food || 0) > 0 ? `🍱 Cho ăn (${p.food})` : 'Hết thức ăn — học thêm nhé')}
         </button>
         <div className="text-xs text-center mt-2.5" style={{ color: 'var(--muted)' }}>Chạm vào cá để vuốt ve · ôn thẻ +1 · từ mới +2 · thuộc câu +4 · mở app mỗi ngày +8</div>
 
@@ -9466,27 +9596,27 @@ const PetView = () => {
             ♾️ Vô hạn điểm: {dev ? 'BẬT' : 'TẮT'}
           </button>
           {dev && (
-            <button onClick={maxLevel} className="px-3 py-1.5 rounded-xl text-xs font-bold"
-              style={{ background: `linear-gradient(135deg, ${C.a}, ${C.b})`, color: '#fff' }}>⏫ Lên cấp tối đa</button>
+            <div className="flex items-center gap-1.5">
+              <button onClick={resetPet} className="px-2.5 py-1.5 rounded-xl text-xs font-bold" style={{ background: 'var(--surface-soft)', color: 'var(--muted)', border: '1px solid var(--border)' }}>🔄 Về trứng</button>
+              <button onClick={maxLevel} className="px-2.5 py-1.5 rounded-xl text-xs font-bold"
+                style={{ background: `linear-gradient(135deg, ${C.a}, ${C.b})`, color: '#fff' }}>⏫ Tối đa</button>
+            </div>
           )}
         </div>
+        {dev && (
+          <div className="flex items-center gap-1.5 mt-2.5 flex-wrap">
+            <span className="text-xs font-semibold" style={{ color: 'var(--muted)' }}>EXP mỗi lần cho ăn:</span>
+            {[10, 25, 50, 100, 250].map(v => (
+              <button key={v} onClick={() => setDevAmt(v)} className="px-2.5 py-1 rounded-lg text-xs font-bold transition-all"
+                style={{ background: devAmt === v ? `linear-gradient(135deg, ${C.a}, ${C.b})` : 'var(--surface-soft)', color: devAmt === v ? '#fff' : 'var(--muted)', border: devAmt === v ? '1px solid transparent' : '1px solid var(--border)' }}>+{v}</button>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* PHỤ KIỆN MỞ KHÓA */}
+      {/* HÀNH TRÌNH TIẾN HÓA */}
       <div className="rounded-2xl p-4" style={{ background: 'var(--surface)', border: '1px solid var(--border)' }}>
-        <div className="text-sm font-bold mb-3" style={{ color: 'var(--ink)' }}>Cột mốc & vật phẩm</div>
-        <div className="grid grid-cols-5 gap-2 mb-3">
-          {PET_GIFTS.map((g, i) => {
-            const got = p.lv >= g.lv;
-            return (
-              <div key={i} className="rounded-xl p-2 flex flex-col items-center gap-0.5" style={{ background: got ? 'var(--surface-soft)' : 'transparent', border: `1px dashed ${got ? 'transparent' : 'var(--border)'}` }}>
-                <span style={{ fontSize: 22, filter: got ? 'none' : 'grayscale(1)', opacity: got ? 1 : 0.4 }}>{got ? g.icon : '🔒'}</span>
-                <span className="text-[10px] text-center" style={{ color: 'var(--muted)' }}>{got ? g.name : 'Cấp ' + g.lv}</span>
-              </div>
-            );
-          })}
-        </div>
-        <div className="text-xs font-bold mb-2 mt-1" style={{ color: 'var(--muted)' }}>Hành trình tiến hóa — chạm để xem lại & chọn dạng hiển thị</div>
+        <div className="text-sm font-bold mb-2" style={{ color: 'var(--ink)' }}>Hành trình tiến hóa <span className="text-xs font-semibold" style={{ color: 'var(--muted)' }}>— chạm để xem lại & chọn dạng hiển thị</span></div>
         <div className="grid grid-cols-3 gap-2">
           {PET_STAGES.map((s, i) => {
             const reached = p.lv >= s.lv;
@@ -10008,8 +10138,31 @@ function App() {
         .env-weed { transform-origin: 50% 100%; animation: envWeed 3.5s ease-in-out infinite; }
         @keyframes envWeed { 0%,100% { transform: rotate(-2deg); } 50% { transform: rotate(2deg); } }
         .pet-cloudpad { animation: crFloat 3s ease-in-out infinite reverse; }
+        /* — chi tiết khung cảnh — */
+        .pet-scene { display: block; }
+        .pet-scene .env-weed, .pet-scene .env-fish { transform-box: view-box; }
+        .env-caustic { animation: envPulse 4.2s ease-in-out infinite; }
+        .env-mist { animation: envPulse 5.4s ease-in-out infinite; }
+        @keyframes envPulse { 0%, 100% { opacity: .14; } 50% { opacity: .5; } }
+        .env-fish { animation: envFish 16s linear infinite; }
+        @keyframes envFish { from { transform: translateX(-40px); } to { transform: translateX(250px); } }
+        .env-foam { animation: envFoam 2.4s ease-in-out infinite; }
+        @keyframes envFoam { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+        .env-cloudsway { animation: envSway 16s ease-in-out infinite; }
+        @keyframes envSway { 0%, 100% { transform: translateX(-9px); } 50% { transform: translateX(9px); } }
+        .env-sunspin { animation: envSpin 70s linear infinite; }
+        @keyframes envSpin { to { transform: rotate(360deg); } }
+        /* — hoạt ảnh biến hình — */
+        .pet-shake { animation: petShake .13s linear infinite; }
+        @keyframes petShake { 0%, 100% { transform: translate(0, 0) rotate(0); } 25% { transform: translate(-3px, 1px) rotate(-2deg); } 50% { transform: translate(3px, -1px) rotate(2deg); } 75% { transform: translate(-2px, -1px) rotate(-1.4deg); } }
+        .pet-popin { animation: petPopin .75s cubic-bezier(.34, 1.56, .64, 1); }
+        @keyframes petPopin { 0% { transform: scale(.25); opacity: 0; } 55% { transform: scale(1.14); opacity: 1; } 100% { transform: scale(1); } }
+        .pet-burstring { position: absolute; left: 50%; top: 56%; width: 44px; height: 44px; margin: -22px 0 0 -22px; border: 4px solid #FFE9A8; border-radius: 50%; animation: petRing 1.05s ease-out forwards; pointer-events: none; }
+        @keyframes petRing { from { transform: scale(.3); opacity: .95; } to { transform: scale(7); opacity: 0; } }
+        .pet-burstspark { position: absolute; left: 50%; top: 56%; color: #FFD66B; font-size: 18px; pointer-events: none; animation: petSpark .95s ease-out forwards; text-shadow: 0 0 8px rgba(255, 214, 107, .8); }
+        @keyframes petSpark { from { transform: rotate(var(--ba)) translateY(-24px); opacity: 1; } to { transform: rotate(var(--ba)) translateY(-118px); opacity: 0; } }
         @keyframes crFloat { 0%,100% { transform: translateY(0) rotate(-1.5deg) scale(1); } 50% { transform: translateY(-9px) rotate(1.5deg) scale(1.03); } }
-        @media (prefers-reduced-motion: reduce) { .cr-pet, .cr-pet svg g, .cr-pet svg circle, .env-cloud, .env-fall, .env-weed, .pet-cloudpad { animation:none !important; } }
+        @media (prefers-reduced-motion: reduce) { .cr-pet, .cr-pet svg g, .cr-pet svg circle, .pet-scene *, .env-cloud, .env-fall, .env-weed, .pet-cloudpad, .pet-shake { animation:none !important; } }
       `}</style>
 
       <SkyBackground dark={darkMode} />
